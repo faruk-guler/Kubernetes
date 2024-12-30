@@ -1,1 +1,5 @@
-#K8S Cheat Sheet
+$ multipass launch --name master -c 2 -m 2G -d 10G
+$ multipass launch --name node1 -c 2 -m 2G -d 10G
+
+$ sudo modprobe overlay
+$ sudo modprobe br_netfilter
