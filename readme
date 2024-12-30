@@ -9,7 +9,6 @@ https://kubernetes.io/
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 https://labs.play-with-k8s.com/
 
-
 Master node: sudo hostnamectl set-hostname master
 Node1 worker: sudo hostnamectl set-hostname node1
 Node2 worker: sudo hostnamectl set-hostname node2
@@ -37,7 +36,6 @@ $ sudo swapoff -a
 $ sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 $ free -m
 $ lscpu
-
 
 ---------Installing-------------->>
 
@@ -76,6 +74,11 @@ $ nc 127.0.0.1 6443 -v
 $ journalctl -u kubelet
 $ journalctl -xfe
 
+#Ports:
+6443 -> kubeapi server
+10250 -> kubelet server
+$ sudo ss -tuln | grep -E "6443|10250"
+
 #kubernetes cluster kurulumu:
 $ sudo kubeadm config images pull
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=<ip> --control-plane-endpoint=<ip>
@@ -85,7 +88,6 @@ $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-addr
 sudo scp /etc/kubernetes/admin.conf root@192.168.44.148:/etc/kubernetes/admin.conf
 /etc/kubernetes/admin.conf
 ~/.kube/config
-
 
 $ mkdir -p $HOME/.kube
 $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
