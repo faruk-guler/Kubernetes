@@ -3,7 +3,12 @@ Master:   192.168.44.145
 Worker1:  192.168.44.146
 Worker2:  192.168.44.147
 
+Docs:
+https://labs.play-with-k8s.com/
 
+Master node: sudo hostnamectl set-hostname master
+Node1 worker: sudo hostnamectl set-hostname node1
+Node2 worker: sudo hostnamectl set-hostname node2
 
 #Kernel modules aktivating
 $ sudo modprobe overlay
