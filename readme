@@ -18,6 +18,9 @@ sudo cat /sys/class/dmi/id/product_uuid
 #Firewall and ports:
 ufw
 
+#Stop SELINUX
+----------
+
 #RAM Swaps: 
 $ cat /proc/swaps
 $ swapon --show
@@ -61,6 +64,7 @@ https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-ku
 #kubernetes cluster kurulumu:
 $ sudo kubeadm config images pull
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=<ip> --control-plane-endpoint=<ip>
+$ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=192.168.44.145 --control-plane-endpoint=192.168.44.145
 
 $ mkdir -p $HOME/.kube
 $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
