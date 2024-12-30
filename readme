@@ -2,6 +2,7 @@ Kubectl:  192.168.44.140
 Master:   192.168.44.145
 Worker1:  192.168.44.146
 Worker2:  192.168.44.147
+Worker3:  192.168.44.148
 
 Docs:
 https://labs.play-with-k8s.com/
@@ -9,6 +10,7 @@ https://labs.play-with-k8s.com/
 Master node: sudo hostnamectl set-hostname master
 Node1 worker: sudo hostnamectl set-hostname node1
 Node2 worker: sudo hostnamectl set-hostname node2
+Node3 worker: sudo hostnamectl set-hostname node3
 
 #Uniq Servers:
 lsb_release -a
@@ -16,12 +18,16 @@ ip a
 sudo cat /sys/class/dmi/id/product_uuid
 
 #Firewall and ports:
+firewald
 ufw
 
-#Stop SELINUX
-----------
+#SELINUX
+$ sudo nano /etc/selinux/config
+SELINUX=disabled
+$ sudo reboot
+$ sestatus
 
-#RAM Swaps: 
+#Swap Areas:
 $ cat /proc/swaps
 $ swapon --show
 $ sudo swapoff -a
@@ -60,11 +66,20 @@ $ sudo systemctl restart container
 
 #Kubeadm kurulumu:
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+#apt-mark hold kubelet kubeadm kubectl
+#apt-mark unhold kubelet kubeadm kubectl
+$ nc 127.0.0.1 6443 -v
 
 #kubernetes cluster kurulumu:
 $ sudo kubeadm config images pull
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=<ip> --control-plane-endpoint=<ip>
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=192.168.44.145 --control-plane-endpoint=192.168.44.145
+
+#Kubernetes Configuration:
+sudo scp /etc/kubernetes/admin.conf root@192.168.44.148:/etc/kubernetes/admin.conf
+/etc/kubernetes/admin.conf
+~/.kube/config
+
 
 $ mkdir -p $HOME/.kube
 $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -75,12 +90,12 @@ $ kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25
 $ kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/custom-resources.yaml
 
 #Taint:
-kubectl taint nodes --all node-role.kubernetes.io/control-plane-
-kubectl taint nodes --all node-role.kubernetes.io/master-
+$ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+$ kubectl taint nodes --all node-role.kubernetes.io/master-
 
 #Kubectl Auto-Completion:
-source <(kubectl completion bash)
-echo "source <(kubectl completion bash)" >> ~/.bashrc
+$ source <(kubectl completion bash)
+$ echo "source <(kubectl completion bash)" >> ~/.bashrc
 #kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
 #sudo apt-get install bash-completion
 
