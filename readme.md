@@ -1,4 +1,4 @@
-![Alt text](https://www.cloudiqtech.com/wp-content/uploads/brizy/imgs/blog_banner9-925x451x0x0x925x451x1597916615.png)
+<img src="[gorsel-link](https://www.cloudiqtech.com/wp-content/uploads/brizy/imgs/blog_banner9-925x451x0x0x925x451x1597916615.png)" width="auto">
 
 #Inventory [GULER.COM]
 Kubectl:  192.168.44.140
