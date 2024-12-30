@@ -10,6 +10,17 @@ Master node: sudo hostnamectl set-hostname master
 Node1 worker: sudo hostnamectl set-hostname node1
 Node2 worker: sudo hostnamectl set-hostname node2
 
+#Uniq Servers:
+lsb_release -a
+ip a
+sudo cat /sys/class/dmi/id/product_uuid
+
+#Firewall and ports:
+ufw
+
+
+---------Installing-------------->>
+
 #Kernel modules aktivating
 $ sudo modprobe overlay
 $ sudo modprobe br_netfilter
@@ -58,3 +69,11 @@ $ kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25
 #Taint:
 kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 kubectl taint nodes --all node-role.kubernetes.io/master-
+
+#Kubectl Auto-Completion:
+source <(kubectl completion bash)
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+#kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
+#sudo apt-get install bash-completion
+
+
