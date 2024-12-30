@@ -65,7 +65,7 @@ $ sudo systemctl start containerd
 $ sudo mkdir -p /etc/containerd
 $ containerd config default | tee /etc/containerd/config.toml
 $ sudo sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
-$ sudo systemctl restart container
+$ sudo systemctl restart containerd
 
 #Kubeadm kurulumu:
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
@@ -96,6 +96,8 @@ $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 #Calico:
 $ #kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+$ #kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+$ #kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
 $ kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/tigera-operator.yaml
 $ kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/custom-resources.yaml
 
