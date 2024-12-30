@@ -69,6 +69,8 @@ https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-ku
 #apt-mark hold kubelet kubeadm kubectl
 #apt-mark unhold kubelet kubeadm kubectl
 $ nc 127.0.0.1 6443 -v
+$ journalctl -u kubelet
+$ journalctl -xfe
 
 #kubernetes cluster kurulumu:
 $ sudo kubeadm config images pull
@@ -86,6 +88,7 @@ $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 #Calico:
+$ #kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 $ kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/tigera-operator.yaml
 $ kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/custom-resources.yaml
 
@@ -98,5 +101,9 @@ $ source <(kubectl completion bash)
 $ echo "source <(kubectl completion bash)" >> ~/.bashrc
 #kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
 #sudo apt-get install bash-completion
+
+#Kubernetes dashboard:
+#Rancher
+#Headlamp
 
 
