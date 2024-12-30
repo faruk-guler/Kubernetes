@@ -113,7 +113,9 @@ $ echo "source <(kubectl completion bash)" >> ~/.bashrc
 #Headlamp
 
 #Begin >>>
-$ kubernetes get nodes
+$ kubectl cluster-info
+$ kubectl get nodes
 $ kubernetes get nodes -owide
+$ kubectl get cs
 
 
