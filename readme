@@ -5,7 +5,10 @@ Worker2:  192.168.44.147
 Worker3:  192.168.44.148
 
 Docs:
+https://kubernetes.io/
+https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 https://labs.play-with-k8s.com/
+
 
 Master node: sudo hostnamectl set-hostname master
 Node1 worker: sudo hostnamectl set-hostname node1
