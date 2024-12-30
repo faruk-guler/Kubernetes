@@ -1,4 +1,11 @@
-Kernel modulleri aktive ediyoruz.
+Kubectl:  192.168.44.140
+Master:   192.168.44.145
+Worker1:  192.168.44.146
+Worker2:  192.168.44.147
+
+
+
+#Kernel modules aktivating
 $ sudo modprobe overlay
 $ sudo modprobe br_netfilter
 
@@ -28,7 +35,7 @@ $ containerd config default | tee /etc/containerd/config.toml
 $ sudo sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
 $ sudo systemctl restart container
 
-#kubeadm kurulumu:
+#Kubeadm kurulumu:
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 
 #kubernetes cluster kurulumu:
