@@ -19,6 +19,7 @@ https://kubernetes.io/
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 https://labs.play-with-k8s.com/
 
+#Hosts file:
 Master node: sudo hostnamectl set-hostname master
 Node1 worker: sudo hostnamectl set-hostname node1
 Node2 worker: sudo hostnamectl set-hostname node2
