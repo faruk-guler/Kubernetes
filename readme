@@ -88,7 +88,8 @@ $ journalctl -xfe
 #Ports:
 6443 -> kubeapi server
 10250 -> kubelet server
-$ sudo ss -tuln | grep -E "6443|10250"
+$ sudo ss -tuln | grep 6443
+$ sudo ss -tuln | grep 10250
 
 #kubernetes cluster kurulumu:
 $ sudo kubeadm config images pull
