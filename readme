@@ -109,4 +109,8 @@ $ echo "source <(kubectl completion bash)" >> ~/.bashrc
 #Rancher
 #Headlamp
 
+#Begin >>>
+$ kubernetes get nodes
+$ kubernetes get nodes -owide
+
 
