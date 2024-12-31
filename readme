@@ -70,6 +70,7 @@ EOF
 
 $ sudo sysctl --system
 
+#Install Runtime Containerd:
 $ sudo apt update
 $ sudo apt install containerd
 $ sudo systemctl daemon-reload
