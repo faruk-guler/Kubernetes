@@ -94,7 +94,7 @@ $ journalctl -xfe
 $ sudo ss -tuln | grep 6443
 $ sudo ss -tuln | grep 10250
 
-#kubernetes cluster kurulumu:
+#Kubernetes Cluster:
 $ sudo kubeadm config images pull
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=<ip> --control-plane-endpoint=<ip>
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=192.168.44.145 --control-plane-endpoint=192.168.44.145
