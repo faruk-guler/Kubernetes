@@ -16,8 +16,6 @@ Master:   192.168.44.145
 Worker1:  192.168.44.146
 Worker2:  192.168.44.147
 Worker3:  192.168.44.148
-Worker4:  192.168.44.149
-Worker5:  192.168.44.150
 
 Docs:
 https://kubernetes.io/
@@ -29,7 +27,6 @@ Master1 node: sudo hostnamectl set-hostname master
 Node1 worker: sudo hostnamectl set-hostname node1
 Node2 worker: sudo hostnamectl set-hostname node2
 Node3 worker: sudo hostnamectl set-hostname node3
--------------------------------------------------
 
 #Uniq Servers:
 lsb_release -a
