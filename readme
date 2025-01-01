@@ -73,7 +73,7 @@ $ lscpu
 
 ---------Installing-------------->>
 
-#Kernel modules aktivating
+#Kernel modules activate:
 $ sudo modprobe overlay
 $ sudo modprobe br_netfilter
 
@@ -129,11 +129,10 @@ sudo scp /etc/kubernetes/admin.conf root@192.168.44.148:/etc/kubernetes/admin.co
 /etc/kubernetes/admin.conf
 ~/.kube/config
 
+#Kubectl:
 $ mkdir -p $HOME/.kube
 $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
-#Kubectl:
 $ kubectl config
 $ kubectl config get-contexts
 
