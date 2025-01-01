@@ -46,22 +46,16 @@ sudo cat /sys/class/dmi/id/product_uuid
 
 #Firewall Ports and Protocols:
 >> Control plane:
-TCP	Inbound	6443	Kubernetes API server	All
-TCP	Inbound	2379-2380	etcd server client API	kube-apiserver, etcd
-TCP	Inbound	10250	Kubelet API	Self, Control plane
-TCP	Inbound	10259	kube-scheduler	Self
-TCP	Inbound	10257	kube-controller-manager	Self
-
-TCP	6443	Kubernetes API Sunucusu	Tüm istemciler
-TCP	2379-2380	etcd server client API	kube-apiserver, etcd
-TCP	10250	Kubelet API	Kendi sunucusu, Kontrol Düzlemi
-TCP	10259	kube-scheduler	Kendi sunucusu
-TCP	10257	kube-controller-manager	Kendi sunucusu
+TCP 6443 (Inbound): Kubernetes API server – All
+TCP 2379-2380 (Inbound): etcd server client API – kube-apiserver, etcd
+TCP 10250 (Inbound): Kubelet API – Self, Control plane
+TCP 10259 (Inbound): kube-scheduler – Self
+TCP 10257 (Inbound): kube-controller-manager – Self
 
 >> Worker node(s):
-TCP	Inbound	10250	Kubelet API	Self, Control plane
-TCP	Inbound	10256	kube-proxy	Self, Load balancers
-TCP	Inbound	30000-32767	NodePort Services†	All
+TCP 10250 (Inbound): Kubelet API – Self, Control plane
+TCP 10256 (Inbound): kube-proxy – Self, Load balancers
+TCP 30000-32767 (Inbound): NodePort Services – All
 
 #SELINUX
 $ sudo nano /etc/selinux/config
