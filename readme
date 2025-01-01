@@ -29,6 +29,7 @@ Master1 node: sudo hostnamectl set-hostname master
 Node1 worker: sudo hostnamectl set-hostname node1
 Node2 worker: sudo hostnamectl set-hostname node2
 Node3 worker: sudo hostnamectl set-hostname node3
+-------------------------------------------------
 
 #Uniq Servers:
 lsb_release -a
