@@ -143,6 +143,7 @@ $ echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 #Installing Helm:
 https://helm.sh/docs/intro/install/
+https://artifacthub.io/packages/search?ts_query_web=rancher
 
 #Kubernetes dashboard:
 #Rancher
