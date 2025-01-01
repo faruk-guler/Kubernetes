@@ -141,6 +141,9 @@ $ echo "source <(kubectl completion bash)" >> ~/.bashrc
 #kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
 #sudo apt-get install bash-completion
 
+#Installing Helm:
+https://helm.sh/docs/intro/install/
+
 #Kubernetes dashboard:
 #Rancher
 #Headlamp
