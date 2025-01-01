@@ -28,7 +28,7 @@ Node1 worker: sudo hostnamectl set-hostname node1
 Node2 worker: sudo hostnamectl set-hostname node2
 Node3 worker: sudo hostnamectl set-hostname node3
 
-#Uniq Servers:
+#Uniq Servers Verify:
 lsb_release -a
 ip a
 sudo cat /sys/class/dmi/id/product_uuid
@@ -71,7 +71,7 @@ EOF
 #Apply:
 $ sudo sysctl --system
 
-#Install Runtime Containerd:
+#Runtime Containerd:
 $ sudo apt update
 $ sudo apt install containerd
 $ sudo systemctl daemon-reload
@@ -81,6 +81,9 @@ $ sudo mkdir -p /etc/containerd
 $ containerd config default | tee /etc/containerd/config.toml
 $ sudo sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
 $ sudo systemctl restart containerd
+
+#Runtime Docker:
+--------->>
 
 #Kubeadm kurulumu:
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
