@@ -44,9 +44,18 @@ lsb_release -a
 ip a
 sudo cat /sys/class/dmi/id/product_uuid
 
-#Firewall and ports:
-firewald
-ufw
+#Firewall Ports and Protocols:
+>> Control plane:
+TCP	Inbound	6443	Kubernetes API server	All
+TCP	Inbound	2379-2380	etcd server client API	kube-apiserver, etcd
+TCP	Inbound	10250	Kubelet API	Self, Control plane
+TCP	Inbound	10259	kube-scheduler	Self
+TCP	Inbound	10257	kube-controller-manager	Self
+
+>> Worker node(s):
+TCP	Inbound	10250	Kubelet API	Self, Control plane
+TCP	Inbound	10256	kube-proxy	Self, Load balancers
+TCP	Inbound	30000-32767	NodePort Services†	All
 
 #SELINUX
 $ sudo nano /etc/selinux/config
