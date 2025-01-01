@@ -124,7 +124,7 @@ $ sudo kubeadm config images pull
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=<ip> --control-plane-endpoint=<ip>
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=192.168.44.145 --control-plane-endpoint=192.168.44.145
 
-#Kubernetes Configuration:
+#Kubernetes Nodes Configuration:
 sudo scp /etc/kubernetes/admin.conf root@192.168.44.148:/etc/kubernetes/admin.conf
 /etc/kubernetes/admin.conf
 ~/.kube/config
