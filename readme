@@ -52,6 +52,12 @@ TCP	Inbound	10250	Kubelet API	Self, Control plane
 TCP	Inbound	10259	kube-scheduler	Self
 TCP	Inbound	10257	kube-controller-manager	Self
 
+TCP	6443	Kubernetes API Sunucusu	Tüm istemciler
+TCP	2379-2380	etcd server client API	kube-apiserver, etcd
+TCP	10250	Kubelet API	Kendi sunucusu, Kontrol Düzlemi
+TCP	10259	kube-scheduler	Kendi sunucusu
+TCP	10257	kube-controller-manager	Kendi sunucusu
+
 >> Worker node(s):
 TCP	Inbound	10250	Kubelet API	Self, Control plane
 TCP	Inbound	10256	kube-proxy	Self, Load balancers
