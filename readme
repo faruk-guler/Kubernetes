@@ -39,7 +39,6 @@ Node3 worker: sudo hostnamectl set-hostname node3
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
-
 #Uniq Servers Verify:
 lsb_release -a
 ip a
