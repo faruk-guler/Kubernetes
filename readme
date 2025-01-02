@@ -51,6 +51,7 @@ TCP 2379-2380 (Inbound): etcd server client API – kube-apiserver, etcd
 TCP 10250 (Inbound): Kubelet API – Self, Control plane
 TCP 10259 (Inbound): kube-scheduler – Self
 TCP 10257 (Inbound): kube-controller-manager – Self
+$ sudo ss -tuln | grep 6443
 
 >> Worker node(s):
 TCP 10250 (Inbound): Kubelet API – Self, Control plane
@@ -112,12 +113,6 @@ https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-ku
 $ nc 127.0.0.1 6443 -v
 $ journalctl -u kubelet
 $ journalctl -xfe
-
-#Ports:
-6443 -> kubeapi server
-10250 -> kubelet server
-$ sudo ss -tuln | grep 6443
-$ sudo ss -tuln | grep 10250
 
 #Kubernetes Cluster:
 $ sudo kubeadm config images pull
