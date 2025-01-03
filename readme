@@ -9,7 +9,7 @@
      |  _|___ ___ _ _| |_ ___ _ _| |___ ___  
      |  _| .'|  _| | | '_| . | | | | -_|  _|
 WWW .|_| |__,|_| |___|_,_|_  |___|_|___|_|.COM
-Name: Kubernetes Installation Script 2025 
+Name: Kubernetes Cluster Installation Script 2025 
 Author:faruk guler
 
 #Inventory [Hosts]
