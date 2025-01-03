@@ -75,7 +75,7 @@ $ lscpu
 
 ---------Installing-------------->>
 
-#Kernel modules activate:
+#Kernel and Network modules activate:
 $ sudo modprobe overlay
 $ sudo modprobe br_netfilter
 
