@@ -13,7 +13,7 @@ Name: Kubernetes Cluster Installation Script
 Author: faruk guler
 Date: 2025
 
-#Inventory [Hosts]
+#Server Inventory [Hosts]
 Kubectl:  192.168.44.140
 Master:   192.168.44.145
 Worker1:  192.168.44.146
@@ -93,7 +93,7 @@ net.bridge.bridge-nf-call-ip6tables = 1
 net.ipv4.ip_forward                 = 1
 EOF
 
-#Apply:
+#System Apply:
 $ sudo sysctl --system
 
 #Runtime Containerd:
@@ -107,7 +107,7 @@ $ containerd config default | tee /etc/containerd/config.toml
 $ sudo sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
 $ sudo systemctl restart containerd
 
-#Kubeadm kurulumu:
+#Install Kubeadm:
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 #apt-mark hold kubelet kubeadm kubectl
 #apt-mark unhold kubelet kubeadm kubectl
