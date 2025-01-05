@@ -161,6 +161,7 @@ https://artifacthub.io/packages/search?ts_query_web=rancher
 #Headlamp
 
 #Begin >>>
+$ systemctl status kubelet.service
 $ kubectl version
 $ kubectl cluster-info
 $ kubectl get nodes
