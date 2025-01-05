@@ -73,6 +73,7 @@ $ sestatus
 $ cat /proc/swaps
 $ swapon --show
 $ sudo swapoff -a
+$ cp /etc/fstab /etc/fstab.bak
 $ sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 $ free -m
 $ lscpu
