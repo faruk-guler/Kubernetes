@@ -164,8 +164,6 @@ https://artifacthub.io/packages/search?ts_query_web=rancher
 $ systemctl status kubelet.service
 $ kubectl version
 $ kubectl cluster-info
-$ kubectl get nodes
-$ kubernetes get nodes -owide
+$ kubectl get nodes -o wide
 $ kubectl get cs
-$ kubectl get all
 $ kubectl get all -A
