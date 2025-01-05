@@ -149,6 +149,7 @@ $ kubectl taint nodes --all node-role.kubernetes.io/master-
 #Kubectl Auto-Completion:
 $ source <(kubectl completion bash)
 $ echo "source <(kubectl completion bash)" >> ~/.bashrc
+$ source ~/.bashrc
 #kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
 #sudo apt-get install bash-completion
 
