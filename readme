@@ -100,9 +100,7 @@ $ sudo sysctl --system
 #Runtime Containerd:
 $ sudo apt update
 $ sudo apt install containerd
-$ sudo systemctl daemon-reload
 $ sudo systemctl enable --now containerd
-$ sudo systemctl start containerd
 $ sudo mkdir -p /etc/containerd
 $ containerd config default | tee /etc/containerd/config.toml
 $ sudo sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
