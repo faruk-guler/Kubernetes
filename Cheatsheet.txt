@@ -17,6 +17,12 @@ sudo ctr image pull docker.io/library/debian:12
 kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep infinity"
 kubectl exec -it debian-sv -- /bin/bash
 
+#Pod export to internet: [dns file]
+kubectl exec -ti nginx-1234567 -- bash
+echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
+apt update
+apt install neofetch
+
 #Pods-Services-Deployments-Nodes
 kubectl get nodes
 kubectl get pods -A -o wide
@@ -36,12 +42,6 @@ kubectl get secret -n web-page
 
 #Scaling:
 kubectl scale deployment nginx-deployment --replicas=10 -n web-page
-
-#Pod export to internet: [dns file]
-kubectl exec -ti nginx-1234567 -- bash
-echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
-apt update
-apt install nano
 
 #More:
 https://cheatsheets.zip/kubernetes
