@@ -55,6 +55,7 @@ kubectl expose pod <pod_name> --type=LoadBalancer --name=<service_name> -n <name
 kubectl expose pod <pod_name> --type=ClusterIP --name=<service_name> -n <namespace> [cluster ip]
 kubectl port-forward pod/<pod_name> 8080:80 [port forwarding]
 kubectl expose pod <pod_name> --type=NodePort --name=<service_name> -n <namespace> [node port]
+kubectl create ingress example-ingress --rule="host=www.farukguler.com, path=/blockchain/*, service=blockchain-service:80" -n web-page [ingress]
 
 #More:
 https://cheatsheets.zip/kubernetes
