@@ -3,7 +3,7 @@ kubectl version
 kubectl version --client
 kubectl config view
 kubectl cluster-info
-kubectl get componentstatuses
+kubectl get componentstatus
 
 #Image Manager:
 sudo ctr image ls
