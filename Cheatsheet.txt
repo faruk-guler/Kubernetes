@@ -62,4 +62,5 @@ kubectl expose pod <pod_name> --type=NodePort --name=<service_name> -n <namespac
 kubectl create ingress example-ingress --rule="host=www.farukguler.com, path=/blockchain/*, service=blockchain-service:80" -n web-page [ingress]
 
 #More:
+https://kubernetes.io/pt-br/docs/reference/kubectl/cheatsheet/
 https://cheatsheets.zip/kubernetes
