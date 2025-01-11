@@ -30,7 +30,7 @@ echo "nameserver 1.1.1.1" | tee -a /etc/resolv.conf
 apt update
 apt install neofetch
 
-#Nodes, Pods, Services, Deployments, ...........
+#Nodes, Pods, Services, Deployments, More...
 kubectl get nodes
 kubectl get pods -A -o wide
 kubectl get pods -n web-page -o wide
