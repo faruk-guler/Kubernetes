@@ -9,7 +9,7 @@ kubectl config view
 kubectl cluster-info
 kubectl get componentstatus
 
-#Helper:
+#Kubernetes Helper:
 kubectl -h
 kubectl create -h
 kubectl run -h
