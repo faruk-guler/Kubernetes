@@ -9,7 +9,13 @@ kubectl get componentstatuses
 sudo ctr image ls
 sudo ctr image ls | awk '{print $1}'
 sudo ctr image pull docker.io/library/nginx:latest
+sudo ctr image pull docker.io/library/debian:12
 #sudo ctr image rm rancherix
+
+
+#Interaction:
+kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep infinity"
+kubectl exec -it debian-sv -- /bin/bash
 
 #Pods-Services-Deployments-Nodes
 kubectl get nodes
