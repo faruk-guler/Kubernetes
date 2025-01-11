@@ -9,10 +9,17 @@
      |  _|___ ___ _ _| |_ ___ _ _| |___ ___  
      |  _| .'|  _| | | '_| . | | | | -_|  _|
 WWW .|_| |__,|_| |___|_,_|_  |___|_|___|_|.COM
+
 Name: Kubernetes Cluster Installation Script
 POC: Debian 12 "Bookworm"
 Author: faruk guler
 Date: 2025
+
+#System Requirements:
+-2 GB or more of RAM per machine
+-2 CPUs or more for control plane machine
+-Unique hostname, MAC address, and product_uuid for every node
+-A compatible Linux host. Linux distributions based on Debian and Red Hat
 
 #Server Inventory [Hosts]
 Kubectl:  192.168.44.140
