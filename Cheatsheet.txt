@@ -1,4 +1,4 @@
-ve#Kubernetes:
+#Kubernetes Info:
 kubectl version
 kubectl version --client
 kubectl config view
@@ -10,12 +10,14 @@ sudo ctr image ls
 sudo ctr image ls | awk '{print $1}'
 sudo ctr image pull docker.io/library/nginx:latest
 sudo ctr image pull docker.io/library/debian:12
-#sudo ctr image rm rancherix
+#sudo ctr image rm rancher:xxx
 
 
 #Imperative:
-kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep infinity"
+kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep infinity" [one pod]
 kubectl exec -it debian-sv -- /bin/bash
+#kubectl create deployment debian-dep --image=debian:12 -- /bin/bash -c "sleep infinity" [deployment for dcale]
+#kubectl scale --replicas=4 deployment/debian-dep [Scale]
 
 #Pod export to internet: [dns file]
 kubectl exec -ti nginx-1234567 -- bash
@@ -36,7 +38,7 @@ kubectl get services -A -o wide
 kubectl get services -n web-page
 kubectl get events -n web-page
 kubectl logs nginx-1234567 -n web-page
-kubectl logs nginx-1234567 -n web-page -c <container-name>
+kubectl logs nginx-1234567 -n web-page -c <container-name> [multi containers]
 kubectl get configmap -n web-page
 kubectl get secret -n web-page
 
