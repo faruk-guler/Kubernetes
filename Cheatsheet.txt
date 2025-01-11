@@ -1,4 +1,4 @@
-#Kubernetes Info:
+#Kubernetes:
 kubectl version
 kubectl version --client
 kubectl config view
@@ -9,6 +9,7 @@ kubectl get componentstatuses
 sudo ctr image ls
 sudo ctr image ls | awk '{print $1}'
 sudo ctr image pull docker.io/library/nginx:latest
+#sudo ctr image rm rancherix
 
 #Pods-Services-Deployments-Nodes
 kubectl get nodes
@@ -22,8 +23,8 @@ kubectl get namespaces
 kubectl get services -A -o wide
 kubectl get services -n web-page
 kubectl get events -n web-page
-kubectl logs nginx-123456 -n web-page
-kubectl logs nginx-123456 -n web-page -c <container-name>
+kubectl logs nginx-1234567 -n web-page
+kubectl logs nginx-1234567 -n web-page -c <container-name>
 kubectl get configmap -n web-page
 kubectl get secret -n web-page
 
@@ -31,7 +32,7 @@ kubectl get secret -n web-page
 kubectl scale deployment nginx-deployment --replicas=10 -n web-page
 
 #Pod export to internet: [dns file]
-kubectl exec -ti nginx-123456 -- bash
+kubectl exec -ti nginx-1234567 -- bash
 echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
 apt update
 apt install nano
