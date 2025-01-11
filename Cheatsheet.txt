@@ -1,4 +1,4 @@
-#Kubernetes:
+ve#Kubernetes:
 kubectl version
 kubectl version --client
 kubectl config view
@@ -13,7 +13,7 @@ sudo ctr image pull docker.io/library/debian:12
 #sudo ctr image rm rancherix
 
 
-#Interaction:
+#Imperative:
 kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep infinity"
 kubectl exec -it debian-sv -- /bin/bash
 
