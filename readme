@@ -33,7 +33,7 @@ https://kubernetes.io/
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 https://labs.play-with-k8s.com/
 
-#Hosts file:
+#Hosts file manage:
 Master1 node: sudo hostnamectl set-hostname master
 Node1 worker: sudo hostnamectl set-hostname node1
 Node2 worker: sudo hostnamectl set-hostname node2
@@ -44,11 +44,6 @@ Node3 worker: sudo hostnamectl set-hostname node3
 192.168.44.145  master
 192.168.44.146  worker1
 192.168.44.147  worker2
-
-# The following lines are desirable for IPv6 capable hosts
-::1     localhost ip6-localhost ip6-loopback
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
 
 #Uniq Servers Verify:
 lsb_release -a
