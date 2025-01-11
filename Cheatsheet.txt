@@ -40,16 +40,16 @@ kubectl get pods -A -o wide
 kubectl get pods -n web-page -o wide
 kubectl get deployment,svc -n web-page
 kubectl get pv,pvc -n web-page
-kubectl describe nodes
-kubectl describe node worker1
 kubectl get namespaces
 kubectl get services -A -o wide
 kubectl get services -n web-page
 kubectl get events -n web-page
-kubectl logs nginx-1234567 -n web-page
-kubectl logs nginx-1234567 -n web-page -c <container-name> [multi containers]
 kubectl get configmap -n web-page
 kubectl get secret -n web-page
+kubectl describe nodes
+kubectl describe node worker1
+kubectl logs nginx-1234567 -n web-page
+kubectl logs nginx-1234567 -n web-page -c <container-name> [multi containers]
 
 #Scaling:
 kubectl scale deployment nginx-deployment --replicas=10 -n web-page
