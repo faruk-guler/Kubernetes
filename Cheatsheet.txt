@@ -50,7 +50,7 @@ kubectl get secret -n web-page
 #Scaling:
 kubectl scale deployment nginx-deployment --replicas=10 -n web-page
 
-#Networking:
+#Kubernetes Networking:
 kubectl expose pod <pod_name> --type=LoadBalancer --name=<service_name> -n <namespace> [load balancer]
 kubectl expose pod <pod_name> --type=ClusterIP --name=<service_name> -n <namespace> [cluster ip]
 kubectl port-forward pod/<pod_name> 8080:80 [port forwarding]
