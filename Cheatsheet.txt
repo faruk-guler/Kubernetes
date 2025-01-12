@@ -1,6 +1,8 @@
+##################################################
 Name: Kubernetes Cheatsheet
 Author: faruk guler
 Date: 2025
+##################################################
 
 #Kubernetes Info:
 kubectl version
