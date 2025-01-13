@@ -10,6 +10,7 @@ kubectl version --client
 kubectl config view
 kubectl cluster-info
 kubectl get componentstatus
+kubectl get nodes
 
 #Kubernetes Helper:
 kubectl -h
