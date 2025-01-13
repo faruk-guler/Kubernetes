@@ -28,3 +28,6 @@ showmount -e localhost [NFS Server IP]
 kubectl get pv -n web-page
 kubectl get pvc -n web-page
 
+#ns create:
+kubectl create namespace zabbix
+
