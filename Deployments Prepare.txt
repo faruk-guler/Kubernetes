@@ -1,4 +1,4 @@
-#Work directory:
+#Work Directory:
 mkdir -p /kubernetes/webs
 touch farukguler-com.yaml
 
@@ -28,6 +28,6 @@ showmount -e localhost [NFS Server IP]
 kubectl get pv -n web-page
 kubectl get pvc -n web-page
 
-#ns create:
+#NS Create:
 kubectl create namespace zabbix
 
