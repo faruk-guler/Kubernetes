@@ -1,4 +1,4 @@
-#Persisten Deploymnets#
+#Persistent Deployments#
 
 #Work Directory:
 mkdir -p /kubernetes/webs
