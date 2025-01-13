@@ -1,5 +1,6 @@
-#Persistent Deployments#
-#Preparation v1.1
+#Name: Persistent Deployments Preparation
+#Version: 1.1
+#Author: faruk-guler
 
 #Work Directory:
 mkdir -p /kubernetes/webs
