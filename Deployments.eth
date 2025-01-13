@@ -4,7 +4,7 @@
 #Author: faruk-guler
 ##################################################
 
-#Work Directory:
+#Working Directory:
 mkdir -p /kubernetes/webs
 touch farukguler-com.yaml
 
