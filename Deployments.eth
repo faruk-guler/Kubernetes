@@ -34,6 +34,6 @@ showmount -e localhost [NFS Server IP]
 kubectl get pv -n web-page
 kubectl get pvc -n web-page
 
-#NS Create:
+#Create namespace:
 kubectl create namespace web-page
 
