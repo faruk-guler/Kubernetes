@@ -41,7 +41,7 @@ apt install neofetch
 kubectl get all -n web-page -o wide
 kubectl get pods -A -o wide
 kubectl get pods -n web-page -o wide
-kubectl get deployment,svc -n web-page
+kubectl get deployments,svc -n web-page
 kubectl get pv,pvc -n web-page
 kubectl get namespaces
 kubectl get services -A -o wide
