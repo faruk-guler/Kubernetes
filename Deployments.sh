@@ -19,7 +19,7 @@ chmod -R 755 /nfs/kubedata/farukguler-com/
 chown -R nobody:nogroup /nfs/kubedata/farukguler-com/
 ls -ld /nfs/kubedata/farukguler-com/
 
-NFS Server Perm:
+#NFS Server Perm:
 sudo nano /etc/exports
 Add: /nfs/kubedata *(rw,sync,subtree_check) [no_root_squash > full perm.]
 sudo exportfs -ra
