@@ -15,18 +15,18 @@ sudo apt install nfs-common [Worker Nodes]
 
 #NFS Server Config:
 mkdir -p /nfs/kubedata/farukguler/
-chmod -R 755 /nfs/kubedata/farukguler/
-chown -R nobody:nogroup /nfs/kubedata/farukguler/
-ls -ld /nfs/kubedata/farukguler/
+chmod -R 755 /nfs/kubedata/farukguler-com/
+chown -R nobody:nogroup /nfs/kubedata/farukguler-com/
+ls -ld /nfs/kubedata/farukguler-com/
 
-NFS Server Perm:
+#NFS Server Perm:
 sudo nano /etc/exports
 Add: /nfs/kubedata *(rw,sync,subtree_check) [no_root_squash > full perm.]
 sudo exportfs -ra
 sudo systemctl restart nfs-kernel-server
 
 #Pod Manual Mount:
-mount master:/nfs/kubedata/farukguler /repos
+mount master:/nfs/kubedata/farukguler-com /repos
 ls -l /repos
 
 #PV and NFS Check:
