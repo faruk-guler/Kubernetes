@@ -49,7 +49,6 @@ kubectl get services -n web-page
 kubectl get events -n web-page
 kubectl get configmap -n web-page
 kubectl get secret -n web-page
-kubectl describe nodes
 kubectl describe node worker1
 kubectl describe pod nginx-1234567 -n web-page
 kubectl logs nginx-1234567 -n web-page
