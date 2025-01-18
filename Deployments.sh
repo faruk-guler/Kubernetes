@@ -15,8 +15,8 @@ sudo apt install nfs-common [Worker Nodes]
 
 #NFS Server Config:
 mkdir -p /nfs/kubedata/farukguler/
-chmod -R 755 /nfs/kubedata/farukguler-com/
-chown -R nobody:nogroup /nfs/kubedata/farukguler-com/
+chmod -R 755 /nfs/kubedata/*
+chown -R nobody:nogroup /nfs/kubedata/*
 ls -ld /nfs/kubedata/farukguler-com/
 
 #NFS Server Perm:
