@@ -168,5 +168,3 @@ $ systemctl status kubelet.service
 $ kubectl version
 $ kubectl cluster-info
 $ kubectl get nodes -o wide
-$ kubectl get cs
-$ kubectl get all -A
