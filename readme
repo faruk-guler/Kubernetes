@@ -65,7 +65,7 @@ TCP 10256 (Inbound): kube-proxy – Self, Load balancers
 TCP 30000-32767 (Inbound): NodePort Services – All
 $ sudo ss -tuln | grep 10250
 
-#SELINUX
+#SELinux (Security-Enhanced Linux)
 $ sudo nano /etc/selinux/config
 SELINUX=disabled
 $ sudo reboot
@@ -109,7 +109,7 @@ $ containerd config default | tee /etc/containerd/config.toml
 $ sudo sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
 $ sudo systemctl restart containerd
 
-#Install Kubeadm:
+#Install: [kubelet kubeadm kubectl]
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 #apt-mark hold kubelet kubeadm kubectl
 #apt-mark unhold kubelet kubeadm kubectl
