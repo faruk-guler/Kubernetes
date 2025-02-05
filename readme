@@ -141,6 +141,9 @@ $ kubectl config get-contexts
 $ wget https://docs.projectcalico.org/manifests/calico.yaml
 $ kubectl apply -f calico.yaml
 
+#kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+#kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
+
 #Taint/Untaint:
 $ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 $ kubectl taint nodes --all node-role.kubernetes.io/master-
