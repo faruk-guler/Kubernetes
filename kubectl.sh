@@ -16,6 +16,7 @@ sudo ctr image pull docker.io/library/nginx:latest
 
 #Pods-Services-Deployments-Nodes
 kubectl get nodes
+kubectl get all -n web-page -o wide
 kubectl get pods -A -o wide
 kubectl get pods -n web-page -o wide
 kubectl get deployment,svc -n web-page
@@ -39,4 +40,3 @@ kubectl exec -ti nginx-1234567 -- bash
 echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
 apt update
 apt install nano
-

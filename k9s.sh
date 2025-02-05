@@ -1,6 +1,5 @@
-Default Kubectl yapılandıransını K9s otomatik olarak kullanır. 
+#K9s Default Kubectl yapılandıransını otomatik olarak kullanacaktır.
 
-#Kısaltmalar:
 csr: certificatesigningrequests
 cs: componentstatuses
 cm: configmaps
@@ -23,7 +22,6 @@ rc: replicationcontrollers
 quota: resourcequotas
 sa: serviceaccounts
 svc: services
-
 
 # List current version
 k9s version
