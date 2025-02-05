@@ -65,7 +65,7 @@ TCP 10256 (Inbound): kube-proxy – Self, Load balancers
 TCP 30000-32767 (Inbound): NodePort Services – All
 $ sudo ss -tuln | grep 10250
 
-#SELinux (Security-Enhanced Linux)
+#SELinux [Optional]
 $ sudo nano /etc/selinux/config
 SELINUX=disabled
 $ sudo reboot
