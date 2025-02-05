@@ -139,8 +139,8 @@ $ kubectl config get-contexts
 
 #Networking: Calico:
 $ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-$ #kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/tigera-operator.yaml
-$ #kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/custom-resources.yaml
+$ #kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/tigera-operator.yaml [advanced]
+$ #kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/custom-resources.yaml [advanced]
 
 #Taint/Untaint:
 $ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
