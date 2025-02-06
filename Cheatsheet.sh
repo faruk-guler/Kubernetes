@@ -2,7 +2,7 @@
 Name: Kubernetes Cheatsheet
 Author: faruk guler
 Date: 2025
-Version: 3.33
+Version: 3.36
 ##################################################
 
 #Kubernetes Info:
