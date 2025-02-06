@@ -28,6 +28,7 @@ kubectl logs nginx-1234567 -n web-page
 kubectl logs nginx-1234567 -n web-page -c <container-name>
 kubectl get configmap -n web-page
 kubectl get secret -n web-page
+kubectl get pod nginx-6478657dff-rzq94 -n web-page -o yaml
 
 #Scaling:
 kubectl scale deployment mysql --replicas=3 -n web-page
