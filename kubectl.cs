@@ -33,7 +33,7 @@ kubectl get configmap -n web-page
 kubectl get secret -n web-page
 
 #Scaling:
-kubectl scale deployment nginx-deployment --replicas=10 -n web-page
+kubectl scale deployment mysql --replicas=3 -n web-page
 
 #Pod export to internet: [dns file]
 kubectl exec -ti nginx-1234567 -- bash
