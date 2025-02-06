@@ -11,7 +11,6 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mnt/data/mysql
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -23,7 +22,6 @@ spec:
   resources:
     requests:
       storage: 1Gi
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -58,7 +56,6 @@ spec:
         - name: mysql-storage
           persistentVolumeClaim:
             claimName: mysql-pvc
-
 ---
 apiVersion: v1
 kind: Service
@@ -71,7 +68,31 @@ spec:
     - protocol: TCP
       port: 3306
       targetPort: 3306
-
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wordpress-pv
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/data/wordpress
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -103,7 +124,13 @@ spec:
               value: "rootpassword"
             - name: WORDPRESS_DB_NAME
               value: "wordpress"
-
+          volumeMounts:
+            - name: wordpress-storage
+              mountPath: /var/www/html
+      volumes:
+        - name: wordpress-storage
+          persistentVolumeClaim:
+            claimName: wordpress-pvc
 ---
 apiVersion: v1
 kind: Service
