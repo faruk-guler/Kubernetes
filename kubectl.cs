@@ -5,6 +5,10 @@ kubectl config view
 kubectl cluster-info
 kubectl get componentstatuses
 
+#Namespaces
+kubectl create namespace web-page
+kubectl delete namespace web-page
+
 #Image Manager:
 sudo ctr image ls
 sudo ctr image ls | awk '{print $1}'
