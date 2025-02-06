@@ -35,7 +35,7 @@ metadata:
   labels:
     app: mysql
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: mysql
@@ -113,7 +113,7 @@ metadata:
   labels:
     app: wordpress
 spec:
-  replicas: 6
+  replicas: 3
   selector:
     matchLabels:
       app: wordpress
