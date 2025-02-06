@@ -1,0 +1,161 @@
+# MySQL PersistentVolume (küme genelinde, namespace eklemeye gerek yok)
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/data/mysql
+---
+# MySQL PersistentVolumeClaim (web-site namespace'inde)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: web-site
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# MySQL Deployment (web-site namespace'inde)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: web-site
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:5.7
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "rootpassword"
+            - name: MYSQL_DATABASE
+              value: "wordpress"
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+---
+# MySQL Service (web-site namespace'inde)
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  namespace: web-site
+spec:
+  selector:
+    app: mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+---
+# WordPress PersistentVolume (küme genelinde, namespace eklemeye gerek yok)
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wordpress-pv
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/data/wordpress
+---
+# WordPress PersistentVolumeClaim (web-site namespace'inde)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc
+  namespace: web-site
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# WordPress Deployment (web-site namespace'inde)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: web-site
+  labels:
+    app: wordpress
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+        - name: wordpress
+          image: wordpress:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: WORDPRESS_DB_HOST
+              value: "mysql-service"
+            - name: WORDPRESS_DB_USER
+              value: "root"
+            - name: WORDPRESS_DB_PASSWORD
+              value: "rootpassword"
+            - name: WORDPRESS_DB_NAME
+              value: "wordpress"
+          volumeMounts:
+            - name: wordpress-storage
+              mountPath: /var/www/html
+      volumes:
+        - name: wordpress-storage
+          persistentVolumeClaim:
+            claimName: wordpress-pvc
+---
+# WordPress Service (web-site namespace'inde)
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-service
+  namespace: web-site
+spec:
+  type: NodePort
+  selector:
+    app: wordpress
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30099
