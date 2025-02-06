@@ -1,4 +1,4 @@
-# MySQL PersistentVolume (küme genelinde, namespace eklemeye gerek yok)
+# MySQL PersistentVolume
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -6,14 +6,14 @@ metadata:
 spec:
   capacity:
     storage: 1Gi
-  volumeMode: Filesystem
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /mnt/data/mysql
+  nfs:
+    path: /nfs/kubedata/mysql
+    server: 192.168.44.145
 ---
-# MySQL PersistentVolumeClaim (web-site namespace'inde)
+# MySQL PersistentVolumeClaim
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -21,12 +21,12 @@ metadata:
   namespace: web-site
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
 ---
-# MySQL Deployment (web-site namespace'inde)
+# MySQL Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -35,7 +35,7 @@ metadata:
   labels:
     app: mysql
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: mysql
@@ -62,7 +62,7 @@ spec:
           persistentVolumeClaim:
             claimName: mysql-pvc
 ---
-# MySQL Service (web-site namespace'inde)
+# MySQL Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -76,7 +76,7 @@ spec:
       port: 3306
       targetPort: 3306
 ---
-# WordPress PersistentVolume (küme genelinde, namespace eklemeye gerek yok)
+# WordPress PersistentVolume
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -84,14 +84,14 @@ metadata:
 spec:
   capacity:
     storage: 1Gi
-  volumeMode: Filesystem
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /mnt/data/wordpress
+  nfs:
+    path: /nfs/kubedata/wordpress
+    server: 192.168.44.145
 ---
-# WordPress PersistentVolumeClaim (web-site namespace'inde)
+# WordPress PersistentVolumeClaim
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -99,12 +99,12 @@ metadata:
   namespace: web-site
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
 ---
-# WordPress Deployment (web-site namespace'inde)
+# WordPress Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -113,7 +113,7 @@ metadata:
   labels:
     app: wordpress
 spec:
-  replicas: 3
+  replicas: 6
   selector:
     matchLabels:
       app: wordpress
@@ -144,7 +144,7 @@ spec:
           persistentVolumeClaim:
             claimName: wordpress-pvc
 ---
-# WordPress Service (web-site namespace'inde)
+# WordPress Service
 apiVersion: v1
 kind: Service
 metadata:
