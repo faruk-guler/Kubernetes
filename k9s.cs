@@ -1,4 +1,4 @@
-#K9s
+#K9S SHELL
 csr: certificatesigningrequests
 cs: componentstatuses
 cm: configmaps
