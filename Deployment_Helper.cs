@@ -1,6 +1,6 @@
 ##################################################
 #Name: Persistent Deployments Preparation
-#Version: 1.1
+#Version: 1.4
 #Author: faruk-guler
 ##################################################
 
