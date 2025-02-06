@@ -12,9 +12,6 @@ sudo ctr image pull docker.io/library/nginx:latest
 #sudo ctr image rm rancherix
 
 #Interaction:
-
-
-#Pods-Services-Deployments-Nodes
 kubectl get nodes
 kubectl get all -n web-page -o wide
 kubectl get pods -A -o wide
