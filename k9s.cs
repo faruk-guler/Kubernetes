@@ -1,5 +1,4 @@
-#K9s Default Kubectl yapılandıransını otomatik olarak kullanacaktır.
-
+#K9s
 csr: certificatesigningrequests
 cs: componentstatuses
 cm: configmaps
