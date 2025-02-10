@@ -35,6 +35,8 @@ ls -l /repos
 showmount -e localhost [NFS Server IP]
 kubectl get pv -n web-page
 kubectl get pvc -n web-page
+sudo systemctl status nfs-server
+sudo exportfs -v
 
 #Create namespace:
 kubectl create namespace web-page
