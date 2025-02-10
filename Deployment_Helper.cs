@@ -12,6 +12,8 @@ touch farukguler-com.yaml
 sudo apt update
 sudo apt install nfs-kernel-server
 sudo apt install nfs-common [Worker Nodes]
+sudo systemctl enable nfs-server
+sudo exportfs -a
 
 #NFS Server Config:
 mkdir -p /nfs/kubedata/farukguler/
