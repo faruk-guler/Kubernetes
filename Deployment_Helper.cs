@@ -11,7 +11,7 @@ touch farukguler-com.yaml
 #NFS Server Install:
 sudo apt update
 sudo apt install nfs-kernel-server
-sudo apt install nfs-common [Worker Nodes]
+sudo apt install nfs-common [Worker Nodes/Client]
 sudo systemctl enable nfs-server
 sudo exportfs -a
 
