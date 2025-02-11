@@ -38,6 +38,6 @@ kubectl get pvc -n web-page
 sudo systemctl status nfs-server
 sudo exportfs -v
 
-#Create namespace:
+#Namespaces:
 kubectl create namespace web-page
-
+kubectl get namespaces
