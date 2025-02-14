@@ -24,8 +24,6 @@ docker build .                        # creates image from dockerfile
 docker build -t github-trending-api . # creates an image and gives a tag name
 docker save my_image:my_tag | gzip > my_image.tar.gz   # save an image
 docker load < my_image.tar.gz                          # load image from file
-
 docker run <image> env                # returns env vars of image
-
 docker run $(docker ps -a -q)         # deletes all stopped containers
 docker rmi $(docker images -q) -f     # deletes ALL docker images
