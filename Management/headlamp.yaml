@@ -1,1 +1,21 @@
+https://headlamp.dev/#download-platforms
 
+ 1. Mevcut Kullanıcının Token’ını Alma:
+ kubectl create token default -n kube-system
+
+2. Yeni Bir ServiceAccount ve Token Oluşturma:
+kubectl create serviceaccount headlamp-user -n kube-system   # ServiceAccount Oluştur
+kubectl create clusterrolebinding headlamp-user-binding \
+  --clusterrole=cluster-admin \
+  --serviceaccount=kube-system:headlamp-user                 # Bu Kullanıcıya Admin Yetkisi Ver
+
+3. Token Al:
+kubectl create token headlamp-user -n kube-system
+
+4. Servisi NodePort Olarak Aç: (Kalıcı)
+kubectl patch svc headlamp -n kube-system -p '{"spec": {"type": "NodePort"}}'
+
+5. Get service and ip adress:
+kubectl get svc headlamp -n kube-system
+kubectl get svc -A
+kubectl get svc headlamp -n kube-system
