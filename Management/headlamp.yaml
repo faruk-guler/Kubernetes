@@ -13,6 +13,7 @@ kubectl create clusterrolebinding headlamp-user-binding \
 kubectl create token headlamp-user -n kube-system
 
 4. Servisi NodePort Olarak Aç: (Kalıcı)
+kubectl get svc -A
 kubectl patch svc headlamp -n kube-system -p '{"spec": {"type": "NodePort"}}'
 
 5. Get service and ip adress:
