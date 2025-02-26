@@ -1,6 +1,7 @@
+#Get Headlamp source:
 https://headlamp.dev/#download-platforms
 
- 1. Mevcut Kullanıcının Token’ını Alma:
+1. Mevcut Kullanıcının Token’ını Alma:
  kubectl create token default -n kube-system
 
 2. Yeni Bir ServiceAccount ve Token Oluşturma:
