@@ -10,7 +10,7 @@ kubectl create clusterrolebinding headlamp-user-binding \
   --clusterrole=cluster-admin \
   --serviceaccount=kube-system:headlamp-user                 # Bu Kullanıcıya Admin Yetkisi Ver
 
-3. Token Al:
+3. Admin user için Token Al:
 kubectl create token headlamp-user -n kube-system
 
 4. Servisi NodePort Olarak Aç: (Kalıcı)
