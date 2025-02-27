@@ -1,5 +1,5 @@
 #Kubernetes:
-kubectl version.
+kubectl version
 kubectl version --client
 kubectl config view
 kubectl cluster-info
