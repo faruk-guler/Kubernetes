@@ -1,1 +1,8 @@
+# docker-on-rancher
 docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 -v rancher:/var/lib/rancher rancher/rancher
+
+#Baslarken:
+https://<sunucu-ip>:8443 #gui panel
+docker logs <container-id> 2>&1 | grep "Bootstrap Password:" ##Get Bootstrap:
+/var/lib/docker/volumes/rancher  #PV
+docker volume inspect rancher   # Get inspect rancher volume
