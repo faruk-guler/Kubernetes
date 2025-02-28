@@ -23,7 +23,8 @@ spec:
     spec:
       containers:
       - name: rancher
-        image: rancher/rancher:v2.7.6  # Sabit versiyon kullanın
+        image: docker.io/rancher/rancher:v2.7.10   # Sabit versiyon kullanın
+        imagePullPolicy: IfNotPresent  # Yerel imajı kullan
         ports:
         - containerPort: 80
         args: ["--no-cacerts"]  # TLS devre dışı
