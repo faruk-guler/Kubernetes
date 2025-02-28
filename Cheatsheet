@@ -55,6 +55,7 @@ kubectl get secret -n web-page
 kubectl describe node worker1
 kubectl describe pod nginx-1234567 -n web-page
 kubectl logs nginx-1234567 -n web-page
+kubectl -n web-page logs nginx-1234567
 kubectl logs nginx-1234567 -n web-page -c <container-name> [multi containers]
 
 #Scaling:
