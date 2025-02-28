@@ -1,0 +1,48 @@
+RancherOS installation:
+https://steemit.com/rancheros/@ynoot/rancheros-installation
+https://github.com/rancher/os/releases/
+
+#When VM is ready and prompt comes up, open bash:
+rancher@rancher:~$ sudo /bin/bash
+rancher@rancher:~$ passwd root
+rancher@rancher:~$ passwd rancher
+USERNAME@HOSTNAME:~$ ssh rancher@192.168.30.40
+vi cloud-config.yml
+
+
+------------------------------
+#cloud-config
+# ssh keys for access
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN0gBupUQfBSZMn7XRlpap5qVth0B/7VPdXZMBOQnjGe ynoot_ed25519
+
+# rancherOS hostname
+hostname: rancheros
+
+# rancher-network settings
+rancher:
+  network:
+    interfaces:
+      eth0:
+        dhcp: false
+        address: 192.168.44.138/24
+        gateway: 192.168.44.1
+        mtu: 1500
+----------------------------------
+
+#Install RancherOS to disk:
+sudo ros install -c /home/rancher/cloud-config.yml -d /dev/sda
+
+
+#Install Rancher on RancherOS:
+docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 -v rancher:/var/lib/rancher rancher/rancher
+
+#Use a persitent volume to retain the configuration for Rancher:
+-v rancher:/var/lib/rancher
+
+#Overview:
+https://<sunucu-ip>:8443         # Overview
+docker ps                        # List containers
+docker logs <container-id> 2>&1 | grep "Bootstrap Password:" # Get Bootstrap:
+/var/lib/docker/volumes/rancher  # PV
+docker volume inspect rancher    # Get inspect rancher volume
