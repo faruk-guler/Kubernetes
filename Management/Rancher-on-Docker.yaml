@@ -7,3 +7,6 @@ docker ps                        # List containers
 docker logs <container-id> 2>&1 | grep "Bootstrap Password:" # Get Bootstrap:
 /var/lib/docker/volumes/rancher  # PV
 docker volume inspect rancher    # Get inspect rancher volume
+
+#see:
+https://farukguler.com/posts/what-is-rancher-rancher-nedir/
