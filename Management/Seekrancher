@@ -1,0 +1,45 @@
+# 1. Namespace Oluştur
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cattle-system
+
+---
+# 2. Rancher Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rancher
+  namespace: cattle-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rancher
+  template:
+    metadata:
+      labels:
+        app: rancher
+    spec:
+      containers:
+      - name: rancher
+        image: rancher/rancher:v2.7.6  # Sabit versiyon kullanın
+        ports:
+        - containerPort: 80
+        args: ["--no-cacerts"]  # TLS devre dışı
+
+---
+# 3. NodePort Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: rancher
+  namespace: cattle-system
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30080  # 30000-32767 arasında bir port seçin
+  selector:
+    app: rancher
