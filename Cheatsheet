@@ -39,7 +39,7 @@ echo "nameserver 1.1.1.1" | tee -a /etc/resolv.conf
 apt update
 apt install neofetch
 
-#Nodes, Pods, Services, Deployments, More...
+#Nodes, Pods, Services, Deployments and More...
 kubectl get all -n web-page -o wide
 kubectl get pods -A -o wide
 kubectl get pods -n web-page -o wide
@@ -49,6 +49,7 @@ kubectl get namespaces
 kubectl get services -A -o wide
 kubectl get services -n web-page
 kubectl get events -n web-page
+kubectl get events -n cattle-system | grep rancher
 kubectl get configmap -n web-page
 kubectl get secret -n web-page
 kubectl describe node worker1
