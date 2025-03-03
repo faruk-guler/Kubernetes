@@ -1,5 +1,5 @@
 # Install rancher container on Docker
-docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 -v rancher:/var/lib/rancher rancher/rancher
+docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 -v rancher:/var/lib/rancher rancher/rancher:latest
 
 #Baslarken:
 https://<sunucu-ip>:8443         # overview
