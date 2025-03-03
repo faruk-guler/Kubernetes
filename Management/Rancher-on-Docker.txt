@@ -1,5 +1,6 @@
 # Install rancher container on Docker
 docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 -v rancher:/var/lib/rancher rancher/rancher:latest
+docker run -d --privileged --restart=unless-stopped  -p 80:80 -p 443:443 rancher/rancher:latest
 
 # Getting Started:
 https://your-server-address:8443         # overview
