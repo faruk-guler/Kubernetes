@@ -41,7 +41,7 @@ docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 -v rancher:/var/li
 -v rancher:/var/lib/rancher
 
 #Overview:
-https://<sunucu-ip>:8443         # Overview
+https://<server-ip>:8443         # Overview
 docker ps                        # List containers
 docker logs <container-id> 2>&1 | grep "Bootstrap Password:" # Get Bootstrap:
 /var/lib/docker/volumes/rancher  # PV
