@@ -1,164 +1,190 @@
+# [helm cheat sheet](https://docs.helm.sh/)
+package manager for Kubernetes  
+( similar to pip for python, similar to apt to debian )
+
+## links
+* [helm documentation](https://helm.sh/docs/)
+* [helm quick start](https://helm.sh/docs/intro/quickstart/)
+* [interactive course helm](https://www.katacoda.com/aptem/scenarios/helm)
+
+## helm charts
+* [helm charts](https://artifacthub.io/)
+* [operator hub - solutions for installing](https://operatorhub.io/)
+
+## Architecture
+![main components](https://i.postimg.cc/gkBhFQHG/helm-architecture.png)
+
+## [installation](https://helm.sh/docs/intro/install/)
+```sh
+sudo snap install helm --classic
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+```
+
+## de-installation
+```sh
+helm reset
+```
+
+## initialization
+```sh
+helm init
+
+# add new repo
+helm repo add my_local_repo https://charts.bitnami.com/bitnami
+# helm install --set replica.replicaCount=1 my_local_repo/redis
+
+# sync latest available packages
+helm repo update
+```
+
+## useful variables
+```sh
+# the location of Helm's configuration
+echo $HELM_HOME
+# the host and port that Tiller is listening on
+echo $TILLER_HOST
+# the path to the helm command on your system
+echo $HELM_BIN
+# the full path to this plugin (not shown above, but we'll see it in a moment).
+echo $HELM_PLUGIN_DIR
+```
+
+## analyze local package
+```sh
+helm inspect { folder }
+helm lint { folder }
+```
+
+## search remote package
+```sh
+helm search 
+helm describe {full name of the package}
+```
+
+## information about remote package
+```sh
+helm info {name of resource}
+helm status {name of resource}
+```
+
+## create package locally
+```sh
+helm create 
+```
+![folder structure](https://i.postimg.cc/d1kXZrL7/helm-sceleton.png)
+
+### create package with local templates
+```sh
+ls -la ~/.helm/starters/
+```
+
+## install package
+```sh
+helm install { full name of the package }
+helm install --name {my name for new package} { full name of the package }
+helm install --name {my name for new package} --namespace {namespace} -f values.yml --debug --dry-run { full name of the package }
+
+# some examples 
+helm install bitname/postgresql
+helm install oci://registry-1.docker.io/bitnamicharts/postgresql
+helm install my_own_postgresql bitname/postgresql
+```
+
+## install aws plugin
+```sh
+helm plugin install https://github.com/hypnoglow/helm-s3.git
+```
+
+## list of installed packages
+```sh
+helm list
+helm list --all
+helm ls
+```
+
+## package upgrade
+local package
+```sh
+helm upgrade  {deployment/svc/rs/rc name} . --set replicas=2,maria.db.password="new password"
+```
+package by name
+```sh
+helm upgrade {name of package} {folder with helm scripts} --set replicas=2
+```
+
+check upgrade
+```sh
+helm history
+helm rollback {name of package} {revision of history}
+```
+
+## remove packageHelm
+```sh
+helm delete --purge {name of package}
+```
+
+
+## trouble shooting
+### issue with 'helm list'
+```
+E1209 22:25:57.285192    5149 portforward.go:331] an error occurred forwarding 40679 -> 44134: error forwarding port 44134 to pod de4963c7380948763c96bdda35e44ad8299477b41b5c4958f0902eb821565b19, uid : unable to do port forwarding: socat not found.
+Error: transport is closing
+```
+solution
+```sh
+sudo apt install socat
+```
+
+### incompatible version of client and server
+```
+Error: incompatible versions client[v2.12.3] server[v2.11.0]
+```
+solution
+```sh
+helm init --upgrade
+kubectl get pods --namespace kube-system # waiting for start Tiller
+helm version
+```
+
+
+### issue with postgresql, issue with mapping PV ebs.csi.aws.com
+```text
+"message": "running PreBind plugin \"VolumeBinding\": binding volumes: timed out waiting for the condition",
+```
+create local storage class instead of mapping to external ( EBS )
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: Immediate
 ---
-title: Helm
-category: Container
-layout: 2017/sheet
-updated: 2024-08-29
-keywords:
-    - "helm"
-    - "helm package manager"
-intro: |
-  Helm Cheat sheet
----
-
-Shortcuts
----------
-{: .-one-column}
-
-### Handy helm commands
-
-| `helm create hello-world` | Create a Helm chart (contain deployment.yml and serivce.yml) |
-| `helm list` | List installed releases |
-| `helm list --tiller-namespace [namespace]` | List installed releases for that namespace |
-| `helm history --tiller-namespace [namespace] [project name]` | List all releases for that app in a namespace |
-| `helm rollback --tiller-namespace [namespace] [project name] [revision]` | Rollback an app in a namespace to a specific version|
-| `helmfile --selector app=[name] sync --args --recreate-pods` | Pod recreation for an app, with downtime |
-| `helmfile --selector app=[name] sync` | Restart an app without down time, hot swap |
-| `helm upgrade --namespace=[namespace] --wait --install [release/service name] -i [chart name]` | Upgrade a release and waiting til deployment is done |
-| `helm install [release/service name] -i [chart name]` | Install a release |
-| `helm install [release/service name] --dry-run --debug` | Dynamic dry run a release |
-| `helm template [chart name]` | Static dry run |
-| `helm status [release/service name]` | Show the status |
-| `helm get all [release/service name]` | Get all details |
-| `helm uninstall [release/service name]` | Uninstall a chart |
-| `helm get manifesti [release/service name]` | Shows K8s objects created by the chart |
-| `helm install --set service.name = xyz` | Override a value of values.yaml file |
-| `helm install --set service.labels[0].name = xyz` | Override an array element value of values.yml file |
-| `{{.Files.Get config.ini}}` | Read value from an external file |
-| `helm package [chart name]` | Create a compressed `.tgz` helm package |
-| `helm repo list` | List helm repositories |
-| `helm repo add [repo name] [repo url]` | Add a repository to helm |
-| `helm repo remove [repo name]` | Remove a repository |
-| `helm search repo [chart name]` | Search for a chart |
-| `helm inspect [chart name]` | See a helm doc |
-| `helm fetch [chart name]` | Download a chart |
-| `helm lint [chart path]` | Lint a Helm char |
-
-### Predefiend directives
-
-```bash
-- {{.Release}} # {{.Release.Name}}
-- {{.Chart}} # {{.Chart.Name}}
-- {{.Capabilities}} # {{.Capabilities.KubeVersion}}
-```
-
-- `values.yml` diretive doesn't support `-` use `_` instead.
-- `values.yml` diretive substitudes `1.0` or `2.0` with `1` and `2`, use `"1.0"` or `"2.0"`.
-
-### Function and Pipeline
-
-List of functions from Sprig
-
-#### Functions
-
-| `default default_value value # == default(default_value, value)` | Default value |
-| `quote value` | Wrap a value in quote |
-| `upper value` | Uppercase a value |
-| `trunc value 63` | Truncate a value to 63 chars |
-| `b64enc value` | Base64 encode |
-| `toYaml value` | Convert a value to Yaml |
-| `indent 6 .Values.Name` | Indents a value in Yaml |
-
-#### Pipes
-
-| `value | default default_value` | Default value |
-| `value | quote` | Wrap a value in quote |
-| `value | upper` | Uppercase a value |
-| `value | trunc 63` | Truncate a value to 63 chars |
-| `value | b64enc` | Base64 encode |
-| `value | toYaml` | Convert a value to Yaml |
-
-```bash
-app.kubernetes.io/name: {{.Values.service.name | default .Chart.Name }}
-# if value doesn't exist use the default chart name for it
-```
-
-### `With` keyword
-
-To limit scope and avoid rewritting  `.Values` again and again,
-
-```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage
 spec:
-  {{ with .Values.service -}}
-  type: {{ .type }}
-  ports:
-    - port: {{ .port }}
-  {{-end }}
+  capacity:
+    storage: 8Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  local:
+    path: /tmp
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - <NODE_INSTANCE_IP>
 ```
-instead of
-
-```yaml
-spec:
-  type: {{ .Values.service.type }}
-  ports: {{ .Values.service.port }}
-```
-
-**Note:** the `-` removes an enter before directive if it's added before begining  of the directive. If added at the end of directive, it removes an enter after directive if it's placed at the end of directive.
-
-### Logical operators
-
-| `eq .Val1 .Val2` | Equal |
-| `ne .Val1 .Val2` | Not equal |
-| `gt .Val1 .Val2` | Greater than |
-| `lt .Val1 .Val2` | Less than |
-| `or .Val1 .Val2` | Or |
-| `and .Val1 .Val2` | And |
-| `not .Val1` | Not |
-
-### Conditions
-
-```yaml
-{{- if .Values.Service.Name -}}
-{{.Values.Service.Name}}
-{{ - else - }}
-{{.Chart.Name}}
-{{- end -}}
+```sh
+helm repo add $HELM_BITNAMI_REPO https://charts.bitnami.com/bitnami
+helm install $K8S_SERVICE_POSTGRESQL $HELM_BITNAMI_REPO/postgresql --set global.storageClass=local-storage
 ```
 
-### Loop
-
-Useful to read array in Yaml file
-
-```yaml
-{{ - range paths }}
-- path: {{ .path }}
-  backend:
-    serviceName: {{ .service }}
-{{-end}}
-```
-
-### Define a variable
-
-```yaml
-{{ $hostName := .Values.HostName }}
-
-spec:
-  name: {{ $hostName }}
-```
-
-### Notes
-
-- `charts` directory can host sub/child charts.
-
-### Resolve `another operation` issue
-
-```bash
-# get list of all releases
-$ helm ls -aA
-# uninstall the chart
-$ helm uninstall [release] -n [namespace]
-```
-
-### Reference
-
-[https://gist.github.com/tuannvm/4e1bcc993f683ee275ed36e67c30ac49](https://gist.github.com/tuannvm/4e1bcc993f683ee275ed36e67c30ac49)
-[Helm functions](http://masterminds.github.io/sprig)
