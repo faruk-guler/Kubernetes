@@ -44,6 +44,7 @@ Different Kuberentes service types:
 
 Commands
 ---------
+```sh
 {: .-one-column}
 
 ### Handy kubectl commands
