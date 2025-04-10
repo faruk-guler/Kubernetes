@@ -109,11 +109,11 @@ Commands
 | `kubectl -n [namespace] get certificate [certificate-name] -o jsonpath='{.spec.secretName}' | 
    xargs -I {} kubectl -n [namespace] get secret {} -o jsonpath='{.data.ca\.crt}'` | Extracting `ca.crt` from a cert decoded from base64 |
 
+```
+
 #### Deploying debug container (for installing tools to troubleshooting)
 
 kubectl -n [namespace] debug -it [podname] --image=arunvelsriram/utils --target=[namespace] -- /bin/bash
-
-```
 
 ### Copying file to/from K8s pods
 ```bash
