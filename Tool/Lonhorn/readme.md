@@ -1,6 +1,6 @@
-🔹 Longhorn Nedir?
-Longhorn, Rancher tarafından geliştirilen açık kaynaklı bir dağıtılmış blok depolama çözümüdür. Kubernetes kümelerinde kalıcı depolama (Persistent Storage) sağlamak için kullanılır.
-
+🔹🔹🔹 Longhorn Nedir?
+Longhorn, Rancher tarafından geliştirilen açık kaynaklı bir dağıtılmış blok depolama çözümüdür.
+Kubernetes kümelerinde kalıcı depolama (Persistent Storage) sağlamak için kullanılır.
 Longhorn, her Kubernetes node'unu bir depolama düğümü olarak kullanarak dağıtılmış bir depolama ağı oluşturur. Basit, hafif ve yüksek erişilebilirlik sağlayan bir Kubernetes native depolama çözümüdür. 🚀
 
 1. Create new VMs (3 in my example)
