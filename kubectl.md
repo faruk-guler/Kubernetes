@@ -11,6 +11,7 @@ A deployment is a blue print of a pod.
 A pod can contain multiple containers.
 
 Master node components consist of:
+```bash
 
 - `Store (etcd)` - like a database, stores information on which node to track
 - `Controller Manager` - to manage request. Whenever a request comes-in, the manager control and schedules it
@@ -33,16 +34,17 @@ Kubernetes support multiple deployment strategies:
 - `rollback` - when deploy a new version and doesn't work, so rollbacking to the previous version
 
 Pods live and die so their IP addresses will be changed. Services abstract pod IP addresses from consumers and allow them to access pods without the hassle of figuring out the IP address or anything else.
-
+```
 Different Kuberentes service types:
+```bash
 
 - `ClusterIP` - expose a service on a cluster-internal IP (default)
 - `NodePort` - expose a service on each Node's IP at a static port (allows external access to a node on random 31XXX port)
 - `LoadBalancer` - sits in front of nodes and provisions an external IP to act as a load balancer for the service (allows external access to a service with `localhost` and custom port set in service yaml file)
 - `ExternalName` - map a service to a DNS name
 
+```
 Commands
----------
 ```sh
 ### Handy kubectl commands
 
