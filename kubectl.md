@@ -1,4 +1,3 @@
-
 ### Basics
 
 Kubernetes is a container orchestration service. It has a master node which we can communicate with it through `kubectl`.
@@ -45,8 +44,6 @@ Different Kuberentes service types:
 Commands
 ---------
 ```sh
-{: .-one-column}
-
 ### Handy kubectl commands
 
 | `kubectl api-resources` | List supported resources by K8s |
@@ -128,11 +125,11 @@ kubectl -n [namespace] debug -it [podname] --image=arunvelsriram/utils --target=
 
 Volumes
 ---------
-{: .-one-column}
 
 ### Basics
 
 There are multiple types of volumes:
+```sh
 
 - `emptyDir` - it's for ephemeral/transient data (needed by pod during its life), useful for sharing files between multiple containers running in a pod. When a pod goes down, this volume will go away.
 - `hostPath` - pod mounts into a (worker) node's file system. Easy to set up but if the node goes down, the data will be lost.
@@ -145,7 +142,7 @@ A persistentVolume can be set up manually (static) or dynamically using StorageC
 
 ConfigMap
 ---------
-{: .-one-column}
+
 
 ### ConfigMaps Basics
 
@@ -299,7 +296,6 @@ spect:
 
 Secrets
 ---------
-{: .-one-column}
 
 ### Creating literal secret
 
@@ -359,7 +355,7 @@ spect:
 
 Miscellaneous
 ---------
-{: .-one-column}
+
 
 ### Kubectl config for multiple clusters
 
@@ -403,7 +399,7 @@ Then go to the url and past the token.
 More details [here](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/)
 
 ## Reference
-{: .-one-column}
+
 
 - [https://github.com/kubernetes/examples](https://github.com/kubernetes/examples)
 - [https://kubernetes.io/docs/reference/kubectl/cheatsheet/](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
