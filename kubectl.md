@@ -1,17 +1,3 @@
----
-title: kubectl
-category: Container
-layout: 2017/sheet
-updated: 2024-08-28
-keywords:
-  - kubectl
-  - Kubernetes kubectl
-prism_languages: [bash, yml]
----
-
-Getting started
----------
-{: .-one-column}
 
 ### Basics
 
