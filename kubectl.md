@@ -114,6 +114,7 @@ kubectl -n [namespace] debug -it [podname] --image=arunvelsriram/utils --target=
 ```
 
 ### Copying file to/from K8s pods
+```bash
 
 | `kubectl -n [namespace] cp /tmp/tmp.txt [namespace]/[pod]:/tmp` | Copy from local to a pod |
 | `kubectl -n [namespace] cp [namespace]/[pod]:/tmp/tmp.txt /tmp` | Copy from a pod to local |
@@ -123,6 +124,7 @@ kubectl -n [namespace] debug -it [podname] --image=arunvelsriram/utils --target=
 | `kubectl -n [namespace] port-forward pod/[podname] hostport:podport` | Port forward a single pod |
 | `kubectl -n [namespace] port-forward deployment/[deploymentname] hostport:podport` | Port forward a deployment |
 
+```
 Volumes
 ---------
 
