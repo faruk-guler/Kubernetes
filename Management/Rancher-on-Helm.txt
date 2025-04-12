@@ -13,7 +13,7 @@ chmod 700 get_helm.sh
 ./get_helm.sh
 helm version
 
-#Install Ingress Controller:
+#Install Ingress Controller: ????
 #kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
 
 #Ön Gereksinimlerin Kontrolü
@@ -25,8 +25,8 @@ kubectl cluster-info
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
-#Cert-Manager ve CRD Kurulumu
-Cert-Manager CRD'lerinin Yüklenmesi
+##Cert-Manager ve CRD Kurulumu##
+#Cert-Manager CRD'lerinin Yüklenmesi:
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.crds.yaml
 
 helm install cert-manager jetstack/cert-manager \
@@ -46,7 +46,7 @@ helm repo update
 #Namespace Oluşturma:
 kubectl create namespace cattle-system
 
-***Rancher Kurulum Son:
+***Rancher Kurulumu:
 helm install rancher rancher-latest/rancher \
   --namespace cattle-system \
   --set replicas=1 \
