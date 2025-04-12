@@ -145,8 +145,8 @@ $ kubectl apply -f calico.yaml
 
 #Taint and Untaint:
 kubectl describe node worker1 | grep Taint [Taint Check]
-kubectl taint nodes master node-role.kubernetes.io/control-plane:NoSchedule [ Master Node Taint ata]
-kubectl taint nodes master node-role.kubernetes.io/control-plane:NoSchedule- [Master Node Taint kaldır]
+kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule [Master1 Node Taint ata]
+kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule- [Master1 Node Taint kaldır]
 
 kubectl taint nodes worker1 custom=deny:NoSchedule [Worker1 Apply Taint]
 kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 Remove Taint]
