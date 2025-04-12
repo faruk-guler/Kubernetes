@@ -143,7 +143,7 @@ $ kubectl apply -f calico.yaml
 #kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
 #kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
 
-#Taint/Untaint:
+#Taint and Untaint:
 kubectl describe node worker1 | grep Taint [Taint Control]
 kubectl taint nodes master node-role.kubernetes.io/control-plane:NoSchedule [ Master Node Taint ata]
 kubectl taint nodes master node-role.kubernetes.io/control-plane:NoSchedule- [Master Node Taint kaldır]
