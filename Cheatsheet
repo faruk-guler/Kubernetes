@@ -33,11 +33,10 @@ sudo ctr image pull docker.io/library/nginx:latest [Get image on containerd]
 sudo ctr -n k8s.io image pull docker.io/library/nginx:latest [Get image on Kubernetes]
 
 >> Exporting image to file:
-sudo ctr -n k8s.io image export /root/imajlar/nginx.tar docker.io/library/nginx:latest
+sudo ctr -n k8s.io images export --platform linux/amd64 /root/imajlar/nginx-complete.tar docker.io/library/nginx:latest
 
 >> Importing image from file:
-sudo ctr -n k8s.io image import --platform amd64 - < /root/imajlar/nginx.tar
-
+sudo ctr -n k8s.io images import --platform linux/amd64 /root/imajlar/nginx-complete.tar
 
 #Imperativing:
 kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep infinity" [one pod]
