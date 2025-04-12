@@ -34,7 +34,6 @@ sudo ctr -n k8s.io image pull docker.io/library/nginx:latest [Get image on Kuber
 
 >> Exporting image to file:
 sudo ctr -n k8s.io images export --platform linux/amd64 /root/imajlar/nginx-complete.tar docker.io/library/nginx:latest
-
 >> Importing image from file:
 sudo ctr -n k8s.io images import --platform linux/amd64 /root/imajlar/nginx-complete.tar
 
