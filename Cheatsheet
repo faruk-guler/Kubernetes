@@ -25,7 +25,7 @@ sudo ctr -n k8s.io images list | awk '{print $1}' [images list kubernetes]
 sudo ctr -n k8s.io image pull docker.io/library/nginx:latest
 sudo ctr -n k8s.io image pull docker.io/library/debian:12
 sudo ctr -n k8s.io image pull docker.io/rancher/rancher:v2.10.3
-sudo ctr -n k8s.io images remove docker.io/library/xxxx:yyyy
+#sudo ctr -n k8s.io images rm docker.io/library/xxxx:yyyy
 
 >> Local Image Mamagement:
 Default Dir: /var/lib/containerd
