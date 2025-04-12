@@ -38,7 +38,7 @@ sudo ctr -n k8s.io images export --platform linux/amd64 /root/imajlar/nginx-comp
 >> Importing image from file:
 sudo ctr -n k8s.io images import --platform linux/amd64 /root/imajlar/nginx-complete.tar
 
-#Imperativing:
+#Imperative:
 kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep infinity" [one pod]
 kubectl exec -it debian-sv -- /bin/bash
 #kubectl create deployment debian-dep --image=debian:12 -- /bin/bash -c "sleep infinity" [deployment for dcale]
