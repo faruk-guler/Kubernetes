@@ -20,11 +20,11 @@ kubectl explain deploy.spec
 
 #Image Manager:
 sudo ctr image ls
-sudo ctr image ls | awk '{print $1}'
-sudo ctr image pull docker.io/library/nginx:latest
-sudo ctr image pull docker.io/library/debian:12
+sudo ctr -n k8s.io images list
+sudo ctr -n k8s.io image pull docker.io/library/nginx:latest
+sudo ctr -n k8s.io image pull docker.io/library/debian:12
 sudo ctr -n k8s.io image pull docker.io/rancher/rancher:v2.10.3
-#sudo ctr image rm rancher:xxx
+sudo ctr image rm xxrancherxx:xxx
 
 #Imperativing:
 kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep infinity" [one pod]
