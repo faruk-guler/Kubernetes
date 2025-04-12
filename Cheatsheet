@@ -23,6 +23,7 @@ sudo ctr image ls
 sudo ctr image ls | awk '{print $1}'
 sudo ctr image pull docker.io/library/nginx:latest
 sudo ctr image pull docker.io/library/debian:12
+sudo ctr -n k8s.io image pull docker.io/rancher/rancher:v2.10.3
 #sudo ctr image rm rancher:xxx
 
 #Imperativing:
