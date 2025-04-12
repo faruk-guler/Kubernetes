@@ -70,6 +70,14 @@ kubectl port-forward pod/<pod_name> 8080:80 [port forwarding]
 kubectl expose pod <pod_name> --type=NodePort --name=<service_name> -n <namespace> [node port]
 kubectl create ingress example-ingress --rule="host=www.farukguler.com, path=/blockchain/*, service=blockchain-service:80" -n web-page [ingress]
 
+#Taint and Untaint:
+kubectl describe node master1 | grep Taint [Taint Check]
+kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule [Master1 Node Applt Taint]
+kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule- [Master1 Node Remove Taint]
+
+kubectl taint nodes worker1 custom=deny:NoSchedule [Worker1 Apply Taint]
+kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 Remove Taint]
+
 #More:
 https://kubernetes.io/pt-br/docs/reference/kubectl/cheatsheet/
 https://cheatsheets.zip/kubernetes
