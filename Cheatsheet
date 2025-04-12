@@ -5,7 +5,7 @@ Author: faruk guler
 
 #Kubernetes Info:
 kubectl version
-ctr version
+ctr version [containerd version]
 kubectl version --client
 kubectl config view
 kubectl cluster-info
