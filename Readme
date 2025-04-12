@@ -147,6 +147,12 @@ $ kubectl apply -f calico.yaml
 $ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 $ kubectl taint nodes --all node-role.kubernetes.io/master-
 
+
+kubectl taint nodes worker1 custom=deny:NoSchedule
+kubectl describe node master | grep Taint [Control]
+kubectl taint nodes worker1 custom=deny:NoSchedule- [Untaint]
+
+
 #Kubectl Auto-Completion:
 $ source <(kubectl completion bash)
 $ echo "source <(kubectl completion bash)" >> ~/.bashrc
