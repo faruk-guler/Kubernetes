@@ -25,19 +25,18 @@ sudo ctr -n k8s.io images list | awk '{print $1}' [images list kubernetes]
 sudo ctr -n k8s.io image pull docker.io/library/nginx:latest
 sudo ctr -n k8s.io image pull docker.io/library/debian:12
 sudo ctr -n k8s.io image pull docker.io/rancher/rancher:v2.10.3
-sudo ctr image rm xxrancherxx:xxx
+sudo ctr -n k8s.io images remove docker.io/library/xxxx:yyyy
 
 >> Local Image Mamagement:
-Dir: /var/lib/containerd
+Default Dir: /var/lib/containerd
 sudo ctr image pull docker.io/library/nginx:latest [Get image on containerd]
 sudo ctr -n k8s.io image pull docker.io/library/nginx:latest [Get image on Kubernetes]
 
 >> Exporting image to file:
-sudo ctr -n k8s.io image export nginx.tar docker.io/library/nginx:latest
+sudo ctr -n k8s.io image export /root/imajlar/nginx.tar docker.io/library/nginx:latest
 
 >> Importing image from file:
-sudo ctr -n k8s.io images import nginx.tar
-
+sudo ctr -n k8s.io image import --platform amd64 - < /root/imajlar/nginx.tar
 
 
 #Imperativing:
