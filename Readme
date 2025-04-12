@@ -144,12 +144,12 @@ $ kubectl apply -f calico.yaml
 #kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
 
 #Taint and Untaint:
-kubectl describe node worker1 | grep Taint [Taint Control]
+kubectl describe node worker1 | grep Taint [Taint Check]
 kubectl taint nodes master node-role.kubernetes.io/control-plane:NoSchedule [ Master Node Taint ata]
 kubectl taint nodes master node-role.kubernetes.io/control-plane:NoSchedule- [Master Node Taint kaldır]
 
-kubectl taint nodes worker1 custom=deny:NoSchedule [Worker1 node Taint ata]
-kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 node Taint kaldır]
+kubectl taint nodes worker1 custom=deny:NoSchedule [Worker1 Apply Taint]
+kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 Remove Taint]
 
 #Kubectl Auto-Completion:
 $ source <(kubectl completion bash)
