@@ -1,1 +1,63 @@
-#
+#############################
+# Helm ile Rancher Kurulumu #
+#############################
+
+#Prerequisites Details:
+Kubernetes Cluster [RKE, K3s, RKE2, Amazon EKS, AKS, GKE]
+Ingress Controller [NGINX Ingress Controller, Traefik, HAProxy]
+CLI Tools [kubectl, helm]
+
+#Installing Helm
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+helm version
+
+#Install Ingress Controller:
+#kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+
+#Ön Gereksinimlerin Kontrolü
+kubectl version
+helm version
+kubectl cluster-info
+
+#Helm Reposunun Eklenmesi:
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+
+#Cert-Manager ve CRD Kurulumu
+Cert-Manager CRD'lerinin Yüklenmesi
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.crds.yaml
+
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.13.2
+
+#Kurulumun Doğrulanması:
+kubectl get pods -n cert-manager --watch
+
+##Rancher Install##
+
+#Helm Reposunun Eklenmesi:
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm repo update
+
+#Namespace Oluşturma:
+kubectl create namespace cattle-system
+
+***Rancher Kurulum Son:
+helm install rancher rancher-latest/rancher \
+  --namespace cattle-system \
+  --set replicas=1 \
+  --set hostname=rancher.guler.com
+
+#Kurulum Sonrası Kontroller:
+kubectl -n cattle-system rollout status deployment rancher
+kubectl -n cattle-system get deploy rancher
+kubectl -n cattle-system get pods
+helm list -A
+
+Rancher UI'ya Erişim:
+https://192.168.55.30
+https://rancher.guler.com
