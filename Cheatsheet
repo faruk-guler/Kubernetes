@@ -32,7 +32,7 @@ sudo ctr -n k8s.io image pull docker.io/library/nginx:latest
 sudo ctr -n k8s.io image pull docker.io/library/debian:12
 #sudo ctr -n k8s.io images rm docker.io/library/xxxx:yyyy
 
-# Image Migration: Containerd > Kubernetes
+# Image Migration: Containerd to >>> Kubernetes
 ctr -n k8s.io images pull docker.io/rancher/rancher-agent:v2.10.3
 ctr -n k8s.io images list | grep rancher-agent [Verify]
 
