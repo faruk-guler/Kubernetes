@@ -19,17 +19,19 @@ kubectl create -h
 kubectl run -h
 kubectl explain deploy.spec
 
-#Image Management:
-sudo ctr image ls [images list Containerd and Docker]
-sudo ctr -n k8s.io images list | awk '{print $1}' [images list Kubernetes]
+#Image Management: [List - Pull - Remove]
 
->> Image Pull Containerd
+>> Image List-Pull-Remove Containerd:
+sudo ctr images list [Images List Containerd]
+ctr images pull docker.io/nginx:latest
+#sudo ctr images rm docker.io/library/nginx:latest
 
 
->> Image Pull Kubernetes:
+>> Image List-List-Remove Kubernetes:
+sudo ctr -n k8s.io images list | awk '{print $1}'
 sudo ctr -n k8s.io image pull docker.io/library/nginx:latest
 sudo ctr -n k8s.io image pull docker.io/library/debian:12
-sudo ctr -n k8s.io image pull docker.io/rancher/rancher:v2.10.3
+
 #sudo ctr -n k8s.io images rm docker.io/library/xxxx:yyyy
 
 >> Local Image Mamagement:
