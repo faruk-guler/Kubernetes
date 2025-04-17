@@ -20,8 +20,8 @@ kubectl run -h
 kubectl explain deploy.spec
 
 #Image Management:
-sudo ctr image ls [images list only containerd]
-sudo ctr -n k8s.io images list | awk '{print $1}' [images list kubernetes]
+sudo ctr image ls [images list Containerd and Docker]
+sudo ctr -n k8s.io images list | awk '{print $1}' [images list Kubernetes]
 sudo ctr -n k8s.io image pull docker.io/library/nginx:latest
 sudo ctr -n k8s.io image pull docker.io/library/debian:12
 sudo ctr -n k8s.io image pull docker.io/rancher/rancher:v2.10.3
