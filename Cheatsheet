@@ -23,6 +23,9 @@ kubectl explain deploy.spec
 sudo ctr image ls [images list Containerd and Docker]
 sudo ctr -n k8s.io images list | awk '{print $1}' [images list Kubernetes]
 
+>> Image Pull Containerd
+
+
 >> Image Pull Kubernetes:
 sudo ctr -n k8s.io image pull docker.io/library/nginx:latest
 sudo ctr -n k8s.io image pull docker.io/library/debian:12
