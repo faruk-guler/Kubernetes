@@ -39,7 +39,7 @@ Node1 worker: sudo hostnamectl set-hostname node1
 Node2 worker: sudo hostnamectl set-hostname node2
 Node3 worker: sudo hostnamectl set-hostname node3
 
-#DNS(Domain Name System) Integration:
+#DNS Integration:
 127.0.0.1       localhost
 192.168.44.145  master
 192.168.44.146  worker1
