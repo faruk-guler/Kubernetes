@@ -9,7 +9,6 @@ rancher@rancher:~$ passwd rancher
 USERNAME@HOSTNAME:~$ ssh rancher@192.168.30.40
 vi cloud-config.yml
 
-
 ------------------------------
 #cloud-config
 # ssh keys for access
