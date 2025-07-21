@@ -1,15 +1,19 @@
 # Rancher RKE2 Kubernetes Multi-node cluster (2 nodes)
 
 ```console
-┌──(kali㉿kali)-[~]
-└─$ git clone https://github.com/pr0v3rbs/CVE-2025-32463_chwoot.git           
-Cloning into 'CVE-2025-32463_chwoot'...
-remote: Enumerating objects: 9, done.
-remote: Counting objects: 100% (9/9), done.
-remote: Compressing objects: 100% (7/7), done.
-remote: Total 9 (delta 2), reused 9 (delta 2), pack-reused 0 (from 0)
-Receiving objects: 100% (9/9), done.
-Resolving deltas: 100% (2/2), done.
+      __  __           __                                            __                       
+     /\ \/\ \         /\ \                                          /\ \__                 
+     \ \ \/'/'  __  __\ \ \____     __   _ __    ___      __    ____\ \ ,_\    __    ____  
+      \ \ , <  /\ \/\ \\ \ '__`\  /'__`\/\`'__\/' _ `\  /'__`\ /',__\\ \ \/  /'__`\ /',__\ 
+       \ \ \\`\\ \ \_\ \\ \ \L\ \/\  __/\ \ \/ /\ \/\ \/\  __//\__, `\\ \ \_/\  __//\__, `\
+        \ \_\ \_\ \____/ \ \_,__/\ \____\\ \_\ \ \_\ \_\ \____\/\____/ \ \__\ \____\/\____/
+         \/_/\/_/\/___/   \/___/  \/____/ \/_/  \/_/\/_/\/____/\/___/   \/__/\/____/\/___/
+      ___             _           _                         
+     |  _|___ ___ _ _| |_ ___ _ _| |___ ___  
+     |  _| .'|  _| | | '_| . | | | | -_|  _|
+WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
+
+Name: Classic (Vanilla) Kubernetes Cluster Installation Script.
 ```
 
 # Rancher RKE2 Kubernetes Multi-node cluster (2 nodes)
