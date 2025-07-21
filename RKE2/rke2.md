@@ -13,7 +13,7 @@
      |  _| .'|  _| | | '_| . | | | | -_|  _|
 WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
 
-Name: Rancher Kubernetes Engine (RKE) Cluster Installation Script.
+Name: Rancher Kubernetes Engine 2 (RKE2) Cluster Installation Script.
 ```
 ## Introduction:    
 RKE2 is the enterprise ready,stable and secure kubernetes distribution which is easy to install configure and manage. Most of the enterprise configurations comes out of the boxy from the installation like:
