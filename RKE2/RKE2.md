@@ -1,6 +1,6 @@
 # 🐄 Rancher RKE2 Kubernetes Multi-node cluster (2 nodes)
 
-```console.
+```console
       __  __           __                                            __                       
      /\ \/\ \         /\ \                                          /\ \__                 
      \ \ \/'/'  __  __\ \ \____     __   _ __    ___      __    ____\ \ ,_\    __    ____  
