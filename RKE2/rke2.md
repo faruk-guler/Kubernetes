@@ -165,10 +165,38 @@ One of the amazing feature in RKE2 is, any file found in ``/var/lib/rancher/rke2
 Install Helm
 ```bash
 curl -#L https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+helm version
 ```
 Install Rancher
 ```bash
-xxxxxx
+# Rancher Helm deposunu ekleyin
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm repo update
+
+# Jetstack (cert-manager) Helm deposunu ekleyin
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+
+# Cert-Manager CRD ve Kurulumu
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.crds.yaml
+
+# Cert-manager'ı Helm ile kurun veya güncelleyin
+helm upgrade -i cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace
+kubectl get pods -n cert-manager
+
+# Helm ile Rancher'i Yükle
+helm upgrade -i rancher rancher-latest/rancher \
+  --namespace cattle-system \
+  --create-namespace \
+  --set hostname=rancher.example.com \
+  --set bootstrapPassword=YourStrongPassword123 \
+  --set replicas=1
+
+# Rancher'i kontrol et
+kubectl get pod -A
+kubectl get pods -n cattle-system --watch
+https://rancher.example.com
+
 ```
 Install Longhorn
 ```bash
