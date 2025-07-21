@@ -161,7 +161,7 @@ When rke2 resets the cluster, it creates an empty file at ``/var/lib/rancher/rke
 ## Auto-Deploying Manifests
 One of the amazing feature in RKE2 is, any file found in ``/var/lib/rancher/rke2/server/manifests`` will automatically be deployed to Kubernetes in a manner similar to kubectl apply.
 
-# Bonus: Install Helm, Rancher and Longhorn as a StorageClass
+# ☸ Bonus: Install Helm, Rancher and Longhorn as a StorageClass
 Install Helm
 ```bash
 curl -#L https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
@@ -169,22 +169,22 @@ helm version
 ```
 Install Rancher
 ```bash
-# Rancher Helm deposunu ekleyin
+# Add Rancher Helm repository
 helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
 helm repo update
 
-# Jetstack (cert-manager) Helm deposunu ekleyin
+# Add Jetstack (cert-manager) Helm repository
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
-# Cert-Manager CRD ve Kurulumu
+# Cert-Manager CRD and Installation
 kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.crds.yaml
 
-# Cert-manager'ı Helm ile kurun veya güncelleyin
+# Install or update cert-manager with Helm
 helm upgrade -i cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace
 kubectl get pods -n cert-manager
 
-# Helm ile Rancher'i Yükle
+# Install Rancher with Helm
 helm upgrade -i rancher rancher-latest/rancher \
   --namespace cattle-system \
   --create-namespace \
@@ -192,11 +192,14 @@ helm upgrade -i rancher rancher-latest/rancher \
   --set bootstrapPassword=YourStrongPassword123 \
   --set replicas=1
 
-# Rancher'i kontrol et
+# Verify a Rancher
 kubectl get pod -A
 kubectl get pods -n cattle-system --watch
 https://rancher.example.com
 
+# For updates:
+helm repo update
+helm upgrade rancher rancher-latest/rancher --namespace cattle-system
 ```
 Install Longhorn
 ```bash
