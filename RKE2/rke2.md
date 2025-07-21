@@ -12,9 +12,6 @@ Receiving objects: 100% (9/9), done.
 Resolving deltas: 100% (2/2), done.
 ```
 
-
-
-
 # Rancher RKE2 Kubernetes Multi-node cluster (2 nodes)
 ## Introduction:    
 RKE2 is the enterprise ready,stable and secure kubernetes distribution which is easy to install configure and manage. Most of the enterprise configurations comes out of the boxy from the installation like:
