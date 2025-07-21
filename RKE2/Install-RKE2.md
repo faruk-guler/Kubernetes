@@ -92,7 +92,7 @@ For the dynamic provisioning we need a storage class and rancher have the answer
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.23/deploy/local-path-storage.yaml
 ``````### Cert manager installation:
 ```bash
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.7.1/cert-manager.yaml
 ```
 You can patch this storageClass to act as default
 ```bash
@@ -105,7 +105,7 @@ kubectl create -f https://raw.githubusercontent.com/rancher/local-path-provision
 ```
 ### Cert manager installation:
 ```bash
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.7.1/cert-manager.yaml
 ```
 
 ### ETCD backup restore
