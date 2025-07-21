@@ -90,10 +90,7 @@ For the dynamic provisioning we need a storage class and rancher have the answer
 - Setup the provisioner
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.23/deploy/local-path-storage.yaml
-``````### Cert manager installation:
-```bash
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
-```
+``````
 You can patch this storageClass to act as default
 ```bash
 kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
