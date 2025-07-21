@@ -161,7 +161,7 @@ When rke2 resets the cluster, it creates an empty file at ``/var/lib/rancher/rke
 ## Auto-Deploying Manifests
 One of the amazing feature in RKE2 is, any file found in ``/var/lib/rancher/rke2/server/manifests`` will automatically be deployed to Kubernetes in a manner similar to kubectl apply.
 
-# ☸️ Bonus: Install Helm, Rancher and Longhorn as a StorageClass
+# ☸️ Bonus: Install Helm, Rancher and Longhorn
 Install Helm
 ```bash
 curl -#L https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
