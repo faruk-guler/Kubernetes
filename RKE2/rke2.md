@@ -59,7 +59,7 @@ A token that can be used to register other server or agent nodes will be created
 sudo cat /var/lib/rancher/rke2/server/node-token
 ```
 
-## Agent/worker node setup
+## Agent/Worker node setup
 Install and enable the worker node or agent binary
 ```bash
 sudo bash
