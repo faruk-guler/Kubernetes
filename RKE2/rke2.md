@@ -13,7 +13,7 @@
      |  _| .'|  _| | | '_| . | | | | -_|  _|
 WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
 
-Name: Classic (Vanilla) Kubernetes Cluster Installation Script.
+Name: Rancher Kubernetes Engine (RKE) Cluster Installation Script.
 ```
 
 # Rancher RKE2 Kubernetes Multi-node cluster (2 nodes)
