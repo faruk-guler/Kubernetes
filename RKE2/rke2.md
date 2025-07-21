@@ -1,4 +1,4 @@
-# Rancher RKE2 Kubernetes Multi-node cluster (2 nodes)
+# 🐄 Rancher RKE2 Kubernetes Multi-node cluster (2 nodes)
 
 ```console
       __  __           __                                            __                       
