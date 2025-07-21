@@ -172,5 +172,6 @@ helm repo add longhorn https://charts.longhorn.io
 helm repo update
 helm upgrade -i longhorn longhorn/longhorn --namespace longhorn-system --create-namespace
 ```
-Congratulations!
-Thank you for following along. You have successfully installed a Kubernetes cluster using RKE2! 🎉
+Congratulations! 🎉
+
+Thank you for following along. You have successfully installed a Kubernetes cluster using RKE2! 🎉🎉🎉
