@@ -1,6 +1,8 @@
 ##################################################
-Name: Kubernetes Cheatsheet
-Author: faruk guler
+# Name: Kubernetes Cheatsheet
+# Author: faruk guler
+#
+#
 ##################################################
 
 # Kubernetes Info:
@@ -77,9 +79,6 @@ kubectl logs nginx-1234567 -n web-page
 kubectl -n web-page logs nginx-1234567
 kubectl logs nginx-1234567 -n web-page -c <container-name> [multi containers]
 
-# Scaling:
-kubectl scale deployment nginx-deployment --replicas=5 -n web-page
-
 # Updating:
 kubectl set image deployment/nginx-deployment nginx=nginx:latest -n web-page
 
@@ -98,6 +97,51 @@ kubectl taint nodes master1 node.kubernetes.io/unschedulable:NoSchedule-      [M
 
 kubectl taint nodes worker1 custom=deny:NoSchedule [Worker1 Apply Taint]
 kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 Remove Taint]
+
+# Kubernetes:
+kubectl version
+kubectl version --client
+kubectl config view
+kubectl cluster-info
+kubectl get componentstatuses
+
+# Namespaces
+kubectl create namespace web-page
+kubectl delete namespace web-page
+
+# Image Manager:
+sudo ctr image ls
+sudo ctr image ls | awk '{print $1}'
+sudo ctr image pull docker.io/library/nginx:latest
+#sudo ctr image rm rancherix
+
+# Interaction:
+kubectl get nodes
+kubectl get all -n web-page -o wide
+kubectl get pods -A -o wide
+kubectl get pods -n web-page -o wide
+kubectl get deployment,svc -n web-page
+kubectl get pv,pvc -n web-page
+kubectl describe nodes
+kubectl describe node worker1
+kubectl get namespaces
+kubectl get services -A -o wide
+kubectl get services -n web-page
+kubectl get events -n web-page
+kubectl logs nginx-1234567 -n web-page
+kubectl logs nginx-1234567 -n web-page -c <container-name>
+kubectl get configmap -n web-page
+kubectl get secret -n web-page
+kubectl get pod nginx-6478657dff-rzq94 -n web-page -o yaml
+
+# Scaling:
+kubectl scale deployment mysql --replicas=3 -n web-page
+
+# Pod acces to internet: [dns file]
+kubectl exec -ti nginx-1234567 -- bash
+echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
+apt update
+apt install nano
 
 # More:
 https://kubernetes.io/pt-br/docs/reference/kubectl/cheatsheet/
