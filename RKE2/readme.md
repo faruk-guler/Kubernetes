@@ -210,3 +210,11 @@ helm upgrade -i longhorn longhorn/longhorn --namespace longhorn-system --create-
 Congratulations! 🎉
 
 Thank you for following along. You have successfully installed a Kubernetes cluster using RKE2! 🎉🎉🎉
+
+# Referance
+```
+https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
+
+
+```
