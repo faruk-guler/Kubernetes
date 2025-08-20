@@ -15,42 +15,42 @@ POC: Debian 12 "Bookworm"
 Author: faruk guler
 Date: 2025
 
-#System Requirements:
+# System Requirements:
 -2 GB or more of RAM per machine
 -2 CPUs or more for control plane machine
 -Unique hostname, MAC address, and product_uuid for every node
 -A compatible Linux host. Linux distributions based on Debian and Red Hat
 
-#Server Inventory [Hosts]
+# Server Inventory [Hosts]
 Kubectl:  192.168.44.140
 Master:   192.168.44.145
 Worker1:  192.168.44.146
 Worker2:  192.168.44.147
 Worker3:  192.168.44.148
 
-Docs:
+# Docs:
 https://kubernetes.io/
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 https://labs.play-with-k8s.com/
 
-#Hosts file configuration:
+# Hosts file configuration:
 Master1 node: sudo hostnamectl set-hostname master
 Node1 worker: sudo hostnamectl set-hostname node1
 Node2 worker: sudo hostnamectl set-hostname node2
 Node3 worker: sudo hostnamectl set-hostname node3
 
-#DNS Integration:
+# DNS Integration:
 127.0.0.1       localhost
 192.168.44.145  master
 192.168.44.146  worker1
 192.168.44.147  worker2
 
-#Uniq Servers Verify:
+# Uniq Servers Verify:
 lsb_release -a
 ip a
 sudo cat /sys/class/dmi/id/product_uuid
 
-#Firewall Ports and Protocols:
+# Firewall Ports and Protocols:
 >> Control plane:
 TCP 6443 (Inbound): Kubernetes API server – All
 TCP 2379-2380 (Inbound): etcd server client API – kube-apiserver, etcd
@@ -65,13 +65,13 @@ TCP 10256 (Inbound): kube-proxy – Self, Load balancers
 TCP 30000-32767 (Inbound): NodePort Services – All
 $ sudo ss -tuln | grep 10250
 
-#SELinux [Optional]
+# SELinux and AppArmor [Optional]
 $ sudo nano /etc/selinux/config
 SELINUX=disabled
 $ sudo reboot
 $ sestatus
 
-#Swap Areas:
+# Swap Space:
 $ cat /proc/swaps
 $ swapon --show
 $ sudo swapoff -a
@@ -82,7 +82,7 @@ $ lscpu
 
 ********** Installing **********
 
-#Kernel and Network modules activate:
+# Kernel and Network modules activate:
 $ sudo modprobe overlay
 $ sudo modprobe br_netfilter
 
@@ -97,10 +97,10 @@ net.bridge.bridge-nf-call-ip6tables = 1
 net.ipv4.ip_forward                 = 1
 EOF
 
-#System Apply:
+# System Apply:
 $ sudo sysctl --system
 
-#Container Runtime: [Containerd]
+# Container Runtime: [Containerd, .etc]
 $ sudo apt update
 $ sudo apt install containerd
 $ sudo systemctl enable --now containerd
@@ -109,7 +109,7 @@ $ containerd config default | tee /etc/containerd/config.toml
 $ sudo sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
 $ sudo systemctl restart containerd
 
-#Install: [kubelet kubeadm kubectl]
+# Install: [kubelet kubeadm kubectl]
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 #apt-mark hold kubelet kubeadm kubectl
 #apt-mark unhold kubelet kubeadm kubectl
@@ -117,33 +117,33 @@ $ nc 127.0.0.1 6443 -v
 $ journalctl -u kubelet
 $ journalctl -xfe
 
-#Kubernetes Cluster: [kubeadm init]
+# Kubernetes Cluster: [kubeadm init]
 $ sudo kubeadm config images pull
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=<ip> --control-plane-endpoint=<ip>
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=192.168.44.145 --control-plane-endpoint=192.168.44.145
 
-#Join a Cluster: [kubeadm join]
+# Join a Cluster: [kubeadm join]
 $ kubeadm token create --print-join-command
 
-#Kubernetes Nodes Configuration:
+# Kubernetes Nodes Configuration:
 sudo scp /etc/kubernetes/admin.conf root@192.168.44.148:/etc/kubernetes/admin.conf
 /etc/kubernetes/admin.conf
 ~/.kube/config
 
-#Kubectl:
+# Kubectl:
 $ mkdir -p $HOME/.kube
 $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 $ kubectl config
 $ kubectl config get-contexts
 
-#Networking: Calico:
+# Networking: Calico:
 $ wget https://docs.projectcalico.org/manifests/calico.yaml
 $ kubectl apply -f calico.yaml
 #kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
 #kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
 
-#Taint and Untaint:
+# Taint and Untaint:
 kubectl describe node master1 | grep Taint [Taint Check]
 kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule [Master1 Node Apply Taint]
 kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule- [Master1 Node Remove Taint]
@@ -151,19 +151,17 @@ kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule- [M
 kubectl taint nodes worker1 custom=deny:NoSchedule [Worker1 Apply Taint]
 kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 Remove Taint]
 
-#Kubectl Auto-Completion:
+# Kubectl Auto-Completion:
 $ source <(kubectl completion bash)
 $ echo "source <(kubectl completion bash)" >> ~/.bashrc
 $ source ~/.bashrc
 #kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
 #sudo apt-get install bash-completion
 
-#Installing Helm:
-https://helm.sh/docs/intro/install/
-https://artifacthub.io/packages/search?ts_query_web=rancher
-
-#Get Starting >>>
+# Get Starting >>>
 $ systemctl status kubelet.service
 $ kubectl version
 $ kubectl cluster-info
 $ kubectl get nodes -o wide
+
+# Enjoy :)
