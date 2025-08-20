@@ -1,21 +1,21 @@
-#Kubernetes:
+# Kubernetes:
 kubectl version
 kubectl version --client
 kubectl config view
 kubectl cluster-info
 kubectl get componentstatuses
 
-#Namespaces
+# Namespaces
 kubectl create namespace web-page
 kubectl delete namespace web-page
 
-#Image Manager:
+# Image Manager:
 sudo ctr image ls
 sudo ctr image ls | awk '{print $1}'
 sudo ctr image pull docker.io/library/nginx:latest
 #sudo ctr image rm rancherix
 
-#Interaction:
+# Interaction:
 kubectl get nodes
 kubectl get all -n web-page -o wide
 kubectl get pods -A -o wide
@@ -34,10 +34,10 @@ kubectl get configmap -n web-page
 kubectl get secret -n web-page
 kubectl get pod nginx-6478657dff-rzq94 -n web-page -o yaml
 
-#Scaling:
+# Scaling:
 kubectl scale deployment mysql --replicas=3 -n web-page
 
-#Pod export to internet: [dns file]
+# Pod acces to internet: [dns file]
 kubectl exec -ti nginx-1234567 -- bash
 echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
 apt update
