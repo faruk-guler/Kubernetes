@@ -3,7 +3,7 @@ Name: Kubernetes Cheatsheet
 Author: faruk guler
 ##################################################
 
-#Kubernetes Info:
+# Kubernetes Info:
 kubectl version
 ctr version [containerd version]
 kubectl version --client
@@ -13,13 +13,13 @@ kubectl get componentstatus
 kubectl get nodes
 kubectl get namespaces
 
-#Kubernetes Helper:
+# Kubernetes Helper:
 kubectl -h
 kubectl create -h
 kubectl run -h
 kubectl explain deploy.spec
 
-#Image Management: [List - Pull - Remove]
+# Image Management: [List - Pull - Remove]
 
 >> Image List-Pull-Remove Containerd:
 sudo ctr images list [Images List Containerd]
@@ -46,19 +46,19 @@ sudo ctr -n k8s.io images export --platform linux/amd64 /root/imajlar/nginx-comp
 >> Importing image from file:
 sudo ctr -n k8s.io images import --platform linux/amd64 /root/imajlar/nginx-complete.tar
 
-#Imperative:
+# Imperative:
 kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep infinity" [one pod]
 kubectl exec -it debian-sv -- /bin/bash
 #kubectl create deployment debian-dep --image=debian:12 -- /bin/bash -c "sleep infinity" [deployment for dcale]
 #kubectl scale --replicas=4 deployment/debian-dep [Scale]
 
-#Pod export to internet: [dns file]
+# Pod export to internet: [dns file]
 kubectl exec -ti nginx-1234567 -- bash
 echo "nameserver 1.1.1.1" | tee -a /etc/resolv.conf
 apt update
 apt install neofetch
 
-#Nodes, Pods, Services, Deployments and More...
+# Nodes, Pods, Services, Deployments and More...
 kubectl get all -n web-page -o wide
 kubectl get pods -A -o wide
 kubectl get pods -n web-page -o wide
@@ -77,20 +77,20 @@ kubectl logs nginx-1234567 -n web-page
 kubectl -n web-page logs nginx-1234567
 kubectl logs nginx-1234567 -n web-page -c <container-name> [multi containers]
 
-#Scaling:
+# Scaling:
 kubectl scale deployment nginx-deployment --replicas=5 -n web-page
 
-#Updating:
+# Updating:
 kubectl set image deployment/nginx-deployment nginx=nginx:latest -n web-page
 
-#Kubernetes Networking:
+# Kubernetes Networking:
 kubectl expose pod <pod_name> --type=LoadBalancer --name=<service_name> -n <namespace> [load balancer]
 kubectl expose pod <pod_name> --type=ClusterIP --name=<service_name> -n <namespace> [cluster ip]
 kubectl port-forward pod/<pod_name> 8080:80 [port forwarding]
 kubectl expose pod <pod_name> --type=NodePort --name=<service_name> -n <namespace> [node port]
 kubectl create ingress example-ingress --rule="host=www.farukguler.com, path=/blockchain/*, service=blockchain-service:80" -n web-page [ingress]
 
-#Taint and Untaint:
+# Taint and Untaint:
 kubectl describe node master1 | grep Taint [Taint Check]
 kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule  [Master1 Node Apply Taint]
 kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule- [Master1 Node Remove Taint]
@@ -99,6 +99,6 @@ kubectl taint nodes master1 node.kubernetes.io/unschedulable:NoSchedule-      [M
 kubectl taint nodes worker1 custom=deny:NoSchedule [Worker1 Apply Taint]
 kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 Remove Taint]
 
-#More:
+# More:
 https://kubernetes.io/pt-br/docs/reference/kubectl/cheatsheet/
 https://cheatsheets.zip/kubernetes
