@@ -161,7 +161,7 @@ When rke2 resets the cluster, it creates an empty file at ``/var/lib/rancher/rke
 ## Auto-Deploying Manifests
 One of the amazing feature in RKE2 is, any file found in ``/var/lib/rancher/rke2/server/manifests`` will automatically be deployed to Kubernetes in a manner similar to kubectl apply.
 
-# ☸️ Bonus: Install Helm, Rancher, Longhorn
+# ☸️ Bonus: Install Helm, Rancher, Longhorn, NeuVector
 - Install Helm:
 ```bash
 curl -#L https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
@@ -206,6 +206,23 @@ helm upgrade rancher rancher-latest/rancher --namespace cattle-system
 helm repo add longhorn https://charts.longhorn.io
 helm repo update
 helm upgrade -i longhorn longhorn/longhorn --namespace longhorn-system --create-namespace
+```
+
+- Install NeuVector:
+```bash
+# helm repo add
+helm repo add neuvector https://neuvector.github.io/neuvector-helm/ --force-update
+
+# helm install 
+export RANCHER1_IP=192.168.1.12
+
+helm upgrade -i neuvector --namespace cattle-neuvector-system neuvector/core --create-namespace --set manager.svc.type=ClusterIP --set controller.pvc.enabled=true --set controller.pvc.capacity=500Mi --set manager.ingress.enabled=true --set manager.ingress.host=neuvector.$RANCHER1_IP.sslip.io --set manager.ingress.tls=true 
+
+# add for single sign-on
+# --set controller.ranchersso.enabled=true --set global.cattle.url=https://rancher.$RANCHER1_IP.sslip.io
+
+# # check
+kubectl get pod -n cattle-neuvector-system
 ```
 Congratulations! 🎉
 
