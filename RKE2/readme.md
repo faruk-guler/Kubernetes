@@ -32,7 +32,7 @@ master-01	4	8Gi	192.168.1.12	60GB	Ubuntu 22.04 x64
 worker-02	4	8Gi	192.168.1.74	60GB	Ubuntu 22.04 x64
 worker-03	4	8Gi	192.168.1.247	60GB	Ubuntu 22.04 x64
 ```
-## Server/Master node Setup
+## Master node Setup
 The server or master node vm.   
 Install RKE2 binaries:
 ```bash
