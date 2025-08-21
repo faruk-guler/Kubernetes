@@ -26,7 +26,12 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
  - Core DNS
  - ETCD backup and restore snapshot script
 ## Prerequisites:
-- Fresh 2 ubuntu 22.04 server VM
+```bash
+name	core	memory	ip	disk	os
+master-01	4	8Gi	192.168.1.12	60GB	Ubuntu 22.04 x64
+worker-02	4	8Gi	192.168.1.74	60GB	Ubuntu 22.04 x64
+worker-03	4	8Gi	192.168.1.247	60GB	Ubuntu 22.04 x64
+```
 ## Server/Master node Setup
 The server or master node vm.   
 Install RKE2 binaries:
