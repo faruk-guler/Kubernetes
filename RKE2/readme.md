@@ -1,4 +1,4 @@
-# 🐄 Rancher RKE2 Kubernetes Multi-node cluster (2 nodes)
+# 🐄 Install and configure Kubernetes with RKE2
 
 ```console
       __  __           __                                            __                       
