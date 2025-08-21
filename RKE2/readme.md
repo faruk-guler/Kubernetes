@@ -28,9 +28,9 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 ## Prerequisites:
 ```bash
 name	core	memory	ip	disk	os
-master-01	4	8Gi	192.168.1.12	60GB	Ubuntu 22.04 x64
-worker-02	4	8Gi	192.168.1.74	60GB	Ubuntu 22.04 x64
-worker-03	4	8Gi	192.168.1.247	60GB	Ubuntu 22.04 x64
+master-01	4	8Gi	192.168.1.12	100GB	Debian 12 "Bookworm" x64
+worker-02	4	8Gi	192.168.1.74	100GB	Debian 12 "Bookworm" x64
+worker-03	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
 ```
 ## Master node Setup
 The server or master node vm.   
