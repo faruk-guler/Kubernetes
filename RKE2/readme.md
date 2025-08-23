@@ -10,10 +10,6 @@ token: <token from server node>
 ```
 Replace the server from the real master server ip or hostname and replace the correct token.
 
-Now join the agent 
-```bash
-systemctl start rke2-agent.service
-```
 # All these commands to run from master node.
 ### Local storage provisioner installation:
 #### Dynamic storage provisioning
