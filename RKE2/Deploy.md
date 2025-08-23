@@ -190,58 +190,6 @@ sudo certbot certonly --manual --preferred-challenges dns -d '*.devopskings.com.
 
 ```
 
-## Install Rancher with HELM
-``` bash
-# Create ns
-kubectl create namespace cattle-system
-
-# Create Kubernetes TLS Secret with Your Certs
-kubectl -n cattle-system create secret tls tls-rancher-ingress \
-  --cert=rancher.crt \
-  --key=rancher.key
-
-# check
-kubectl get secrets -n cattle-system
-
-# adding repo
-helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
-helm repo update
-
-# install
-helm install rancher rancher-latest/rancher \
-  --namespace cattle-system \
-  --set hostname=rancher.devopskings.com.tr \
-  --set ingress.tls.source=secret \
-  --set replicas=1 \
-  --set bootstrapPassword=chBoBQv6T6gB
-  
----
-helm upgrade --install rancher rancher-latest/rancher \
-  --namespace cattle-system \
-  --set hostname=rancher.devopskings.com.tr \
-  --set replicas=1 \
-  --set ingress.tls.source=secret \
-  --set bootstrapPassword=admin
----
-helm install rancher rancher-latest/rancher \
-  --namespace cattle-system \
-  --set hostname=rancher.example.com \
-  --set replicas=2 \
-  --set ingress.tls.source=secret \
-  --set bootstrapPassword=admin \
-  --set affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].key=app \
-  --set affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].operator=In \
-  --set affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].values[0]=rancher \
-  --set affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].topologyKey=kubernetes.io/hostname \
-  --set resources.requests.cpu=500m \
-  --set resources.requests.memory=1Gi \
-  --set resources.limits.cpu=1 \
-  --set resources.limits.memory=2Gi \
-  --set autoscaling.enabled=true \
-  --set autoscaling.minReplicas=2 \
-  --set autoscaling.maxReplicas=5 \
-  --set autoscaling.targetCPUUtilizationPercentage=80
----
 
 ```
 Congratulations! 🎉
