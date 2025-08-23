@@ -1,13 +1,5 @@
 
-```
-If you have extra ips or domains as API endpoints add them in config file ``/etc/rancher/rke2/config.yaml``  like this-
-```bash
-vim /etc/rancher/rke2/config.yaml
 
-write-kubeconfig-mode: "0644"
-tls-san:
-  - "foo.local" # or any other ip external public ip in azure vm case
-```
 Now start RKE2 server
 ```bash
 sudo systemctl start rke2-server.service
