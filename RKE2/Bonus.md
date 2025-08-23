@@ -78,8 +78,8 @@ kubectl top po
 ```
 
 # Installation Local Storage Provisioner:
-- Dynamic storage provisioning, For the dynamic provisioning we need a storage class and rancher have the answer for this lab.
-- All these commands to run from master node.
+- We need a storage class for Dynamic Provisioning. It can also be configured through Rancher.
+- All these commands must be run from the master node.
 ```bash
 # Setup the provisioner
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.23/deploy/local-path-storage.yaml
