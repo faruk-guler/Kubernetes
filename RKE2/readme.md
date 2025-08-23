@@ -31,7 +31,7 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
  - Canal CNI plugin
  - Core DNS
  - ETCD backup and restore snapshot script
-## Prerequisites:
+## VM Prerequisites:
 ```bash
 name	core	memory	ip	disk	os
 master-01	4	8Gi	192.168.1.12	100GB	Debian 12 "Bookworm" x64
