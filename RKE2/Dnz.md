@@ -8,7 +8,8 @@ sudo swapoff -a
 sudo sed -i '/ swap / s/^/#/' /etc/fstab [Permanently]
 
 # Require package
-sudo apt update && sudo apt install -y curl wget gnupg lsb-release
+sudo apt update
+sudo apt install -y curl wget gnupg lsb-release
 
 # Firewall Disable: (optional)
 sudo ufw disable
