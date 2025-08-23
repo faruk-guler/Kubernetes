@@ -1,4 +1,5 @@
-# ☸️ Bonus: Install Helm, Rancher, Longhorn, NeuVector, Metric Server
+# ☸️ Bonus
+# Install Helm, Rancher, Longhorn, NeuVector, Metric Server
 # Install Helm:
 ```bash
 curl -#L https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
