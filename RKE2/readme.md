@@ -1,9 +1,3 @@
-
-A token that can be used to register other server or agent nodes will be created at ``/var/lib/rancher/rke2/server/node-token`` copy the token when registering your client/worker nodes.
-```bash
-sudo cat /var/lib/rancher/rke2/server/node-token
-```
-
 ## Agent/Worker node setup
 Install and enable the worker node or agent binary
 ```bash
