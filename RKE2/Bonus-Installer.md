@@ -104,4 +104,4 @@ sudo certbot certonly --manual --preferred-challenges dns -d '*.devopskings.com.
 
 ```
 
-Congratulations! 🎉 🎉
+Congratulations! 🎉
