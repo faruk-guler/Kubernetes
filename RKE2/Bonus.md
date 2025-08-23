@@ -7,7 +7,7 @@ chmod 700 get_helm.sh
 ./get_helm.sh
 helm version
 ```
-# Install Rancher:
+# Install Rancher with Helm:
 ```bash
 # Add Rancher Helm repository
 helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
