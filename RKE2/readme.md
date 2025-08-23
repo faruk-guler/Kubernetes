@@ -1,14 +1,3 @@
-
-
-Now start RKE2 server
-```bash
-sudo systemctl start rke2-server.service
-```
-
-if you want to see the logs of process run this in seperate shell of server
-```bash
-sudo journalctl -u rke2-server -f
-```
 Now enable your kubernetes credentials for the user
 ```bash
 mkdir ~/.kube
