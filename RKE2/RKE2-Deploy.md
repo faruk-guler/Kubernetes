@@ -48,7 +48,7 @@ worker-03	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
 sudo swapoff -a
 sudo sed -i '/ swap / s/^/#/' /etc/fstab [Permanently]
 
-# Require package
+# Require packages
 sudo apt update
 sudo apt install -y curl wget gnupg lsb-release
 
@@ -180,7 +180,7 @@ sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/c
 
 ## Creating wildcard ssl with certbot
 ``` bash
-# install certbot on ubuntu
+# install certbot
 sudo apt update 
 sudo apt install -y certbot
 
