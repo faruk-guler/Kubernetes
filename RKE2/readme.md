@@ -1,10 +1,3 @@
-## Agent/Worker node setup
-Install and enable the worker node or agent binary
-```bash
-sudo bash
-curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
-systemctl enable rke2-agent.service
-```
 Now before we start the node we need to configure the token and master node api address. run bellow commands to create config folder and configure the master details.
 ```bash
 mkdir -p /etc/rancher/rke2/
