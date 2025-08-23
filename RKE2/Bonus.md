@@ -1,5 +1,5 @@
 # ☸️ Bonus
-## Install Helm, Rancher, Longhorn, NeuVector, Metric Server, Local Storage Provisioner
+## Install Helm, Rancher, Longhorn, NeuVector, Metric Server, Local Storage Provisioner, Certbot
 
 # Install Helm:
 ```bash
@@ -90,6 +90,18 @@ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storagec
 # Create a pvc and pod
 kubectl create -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/examples/pvc/pvc.yaml
 kubectl create -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/examples/pod/pod.yaml
+```
+
+# Install Certbot: [wildcard ssl]
+``` bash
+# install certbot
+sudo apt update 
+sudo apt install -y certbot
+
+# wildcard ssl generate
+sudo certbot certonly --manual --preferred-challenges dns -d '*.your_domain.com'
+sudo certbot certonly --manual --preferred-challenges dns -d '*.devopskings.com.tr'
+
 ```
 
 Congratulations! 🎉
