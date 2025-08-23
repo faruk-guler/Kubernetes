@@ -1,5 +1,5 @@
 # ☸️ Bonus Installer:
-## Helm, Rancher, Longhorn, NeuVector, Metric Server, Local Storage Provisioner, Certbot
+## Helm, Rancher, Longhorn, NeuVector, Metric Server, Local Storage Provisioner, Certbot ...
 
 # Install Helm:
 ```bash
