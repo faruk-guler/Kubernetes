@@ -66,7 +66,7 @@ helm upgrade -i neuvector --namespace cattle-neuvector-system neuvector/core --c
 # # check
 kubectl get pod -n cattle-neuvector-system
 ```
-# Install Metric Server
+# Install Metric Server:
 ``` bash
 # install
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.5.0/components.yaml
