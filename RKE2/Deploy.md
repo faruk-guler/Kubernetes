@@ -42,7 +42,7 @@ worker-03	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
 ----
 ```
 
-## Swap,....
+## Other Prerequisites:
 ``` bash
 # Swap off
 sudo swapoff -a
