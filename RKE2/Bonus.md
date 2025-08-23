@@ -1,10 +1,10 @@
-# ☸️ Bonus: Install Helm, Rancher, Longhorn, NeuVector
-- Install Helm:
+# ☸️ Bonus: Install Helm, Rancher, Longhorn, NeuVector, Metric Server
+# Install Helm:
 ```bash
 curl -#L https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm version
 ```
-- Install Rancher:
+# Install Rancher:
 ```bash
 # Add Rancher Helm repository
 helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
@@ -38,14 +38,14 @@ https://rancher.example.com
 helm repo update
 helm upgrade rancher rancher-latest/rancher --namespace cattle-system
 ```
-- Install Longhorn:
+# Install Longhorn:
 ```bash
 helm repo add longhorn https://charts.longhorn.io
 helm repo update
 helm upgrade -i longhorn longhorn/longhorn --namespace longhorn-system --create-namespace
 ```
 
-- Install NeuVector:
+# Install NeuVector:
 ```bash
 # helm repo add
 helm repo add neuvector https://neuvector.github.io/neuvector-helm/ --force-update
@@ -61,4 +61,15 @@ helm upgrade -i neuvector --namespace cattle-neuvector-system neuvector/core --c
 # # check
 kubectl get pod -n cattle-neuvector-system
 ```
+# Install Metric Server
+``` bash
+# install
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.5.0/components.yaml
+
+# check
+kubectl get po -n kube-system
+kubectl top po
+
+```
+
 Congratulations! 🎉
