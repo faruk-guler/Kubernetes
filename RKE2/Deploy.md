@@ -190,8 +190,6 @@ sudo certbot certonly --manual --preferred-challenges dns -d '*.devopskings.com.
 
 ```
 
-
-```
 Congratulations! 🎉
 
 Thank you for following along. You have successfully installed a Kubernetes cluster using RKE2! 🎉🎉🎉
