@@ -45,6 +45,8 @@ worker-03	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
 # Swap off
 sudo swapoff -a
 sudo sed -i '/ swap / s/^/#/' /etc/fstab [Permanently]
+sudo mount -a
+free -h
 
 # Require packages
 sudo apt update
@@ -55,10 +57,6 @@ sudo ufw disable
 sudo systemctl disable firewalld
 sudo systemctl disable iptables
 sudo systemctl disable nftables
-
-# Confirm setting is correct
-sudo mount -a
-free -h
 
 ```
 
