@@ -5,16 +5,16 @@
 ``` bash
 # Swap off
 sudo swapoff -a
-sudo sed -i '/ swap / s/^/#/' /etc/fstab
-
-# Permanently: swapfile -> adding in front of swapfile #
-sudo vim /etc/fstab
+sudo sed -i '/ swap / s/^/#/' /etc/fstab [Permanently]
 
 # Require package
 sudo apt update && sudo apt install -y curl wget gnupg lsb-release
 
-# Firewall (optional)
+# Firewall Disable: (optional)
 sudo ufw disable
+sudo systemctl disable firewalld
+sudo systemctl disable iptables
+sudo systemctl disable nftables
 
 # Confirm setting is correct
 sudo mount -a
