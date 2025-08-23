@@ -1,7 +1,7 @@
 # Install and configure Kubernetes with RKE2
 
 
-## Turn-off Swap on all Nodes
+## Prerequisites
 ``` bash
 # Swap off
 sudo swapoff -a
