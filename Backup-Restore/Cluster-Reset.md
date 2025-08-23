@@ -5,5 +5,6 @@ To pass the reset flag, first you need to stop RKE2 service if its enabled via s
 ```bash
 systemctl stop rke2-server
 rke2 server --cluster-reset
+systemctl start rke2-server
 ```
 **Result:** A message in the logs say that RKE2 can be restarted without the flags. Start rke2 again and it should start rke2 as a 1 member cluster.
