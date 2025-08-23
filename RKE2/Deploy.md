@@ -147,17 +147,6 @@ kubectl version
 
 ```
 
-## Install Metric Server
-``` bash
-# install
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.5.0/components.yaml
-
-# check
-kubectl get po -n kube-system
-kubectl top po
-
-```
-
 ## Install Containerd
 ``` bash
 # Install required packages
