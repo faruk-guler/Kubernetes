@@ -68,9 +68,10 @@ free -h
 ``` bash
 # Before running the install script, create the config file
 sudo mkdir -p /etc/rancher/rke2
-sudo tee /etc/rancher/rke2/config.yaml > /dev/null <<EOF
+sudo nano /etc/rancher/rke2/config.yaml
+
+#config file:
 node-name: k8s-master-1
-EOF
 
 # install
 curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="server" sh -
@@ -101,12 +102,11 @@ curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="agent" sh -
 
 # Preparing config file: Creating file
 sudo mkdir -p /etc/rancher/rke2
+sudo nano /etc/rancher/rke2/config.yaml
 
-# config file: template
-sudo tee /etc/rancher/rke2/config.yaml > /dev/null <<EOF
-server: https://master_IP:Port
-token: Node Token
-EOF
+# config file: [Master server ip or Hostname]
+server: https://<server>:9345
+token: <token from master server node>
 
 # apply
 sudo tee /etc/rancher/rke2/config.yaml > /dev/null <<EOF
