@@ -43,13 +43,13 @@ worker-03	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
 
 ## Other Prerequisites:
 ``` bash
-# Swap off
+# Swap off:
 sudo swapoff -a
 sudo sed -i '/ swap / s/^/#/' /etc/fstab [Permanently]
 sudo mount -a
 free -h
 
-# Require packages
+# Require packages:
 sudo apt update
 sudo apt upgrade
 sudo apt install -y curl wget gnupg lsb-release
@@ -64,38 +64,38 @@ sudo systemctl disable nftables
 
 ## Install Master Node
 ``` bash
-# Before running the install script, create the config file
+# Before running the install script, create the config file:
 sudo mkdir -p /etc/rancher/rke2
 sudo nano /etc/rancher/rke2/config.yaml
 
 # config file:
 node-name: master-01
 
-# install
+# install:
 curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="server" sh -
 
-# Starting service
+# Starting service:
 sudo systemctl enable rke2-server.service
 sudo systemctl start rke2-server.service
 sudo journalctl -u rke2-server -f
 
-# logs
+# logs:
 journalctl -u rke2-server -f
 
-# copy kubeconfig
+# copy kubeconfig:
 mkdir -p $HOME/.kube
 sudo cp /etc/rancher/rke2/rke2.yaml $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 sudo chown $(whoami):$(whoami) ~/.kube/config
 
-# Get tokens for worker node
+# Get tokens for worker node:
 sudo cat /var/lib/rancher/rke2/server/node-token
 
 ```
 
 ## Install Worker-Node
 ``` bash
-# install
+# install:
 curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="agent" sh -
 
 # Preparing config file: Creating file
@@ -113,58 +113,58 @@ node-name: worker-01
 token: K10347e1369de4d6b2c4d7195ad6df8738a1d26b458ac997ef99ded44f09c7c7289::server:bed45765f5ef39e91feb99100b83e7ba
 EOF
 
-# Starting Service
+# Starting Service:
 sudo systemctl enable rke2-agent.service
 sudo systemctl start rke2-agent.service
 
-# logs
+# logs:
 journalctl -u rke2-agent -f
 
 ```
 
 ## Install Kubectl
 ``` bash
-# update
+# update:
 sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl
 
-# dowloand
+# download:
 curl -LO https://dl.k8s.io/release/v1.33.0/bin/linux/amd64/kubectl
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
 
-# validate
+# validate:
 echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
 
-# install
+# install:
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 chmod +x kubectl
 mkdir -p ~/.local/bin
 mv ./kubectl ~/.local/bin/kubectl
 
-# kubectl check
+# kubectl check:
 kubectl version
 
 ```
 
 ## Install Containerd
 ``` bash
-# Install required packages
+# Install required packages:
 sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
 
-# Add Docker repo
+# Add Docker repo:
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
-# Install containerd
+# Install containerd:
 sudo apt update
 sudo apt install -y containerd.io
 
-# Configure containerd and start service
+# Configure containerd and start service:
 sudo su -
 mkdir -p /etc/containerd
 containerd config default>/etc/containerd/config.toml
 
-# restart containerd
+# restart containerd:
 sudo systemctl restart containerd
 sudo systemctl enable containerd
 sudo systemctl status containerd
