@@ -78,19 +78,17 @@ kubectl top po
 ```
 
 # Installation Local Storage Provisioner:
-Dynamic storage provisioning, For the dynamic provisioning we need a storage class and rancher have the answer for this lab.
+```bash
+**Dynamic storage provisioning, For the dynamic provisioning we need a storage class and rancher have the answer for this lab.
 **All these commands to run from master node.
 
-- Setup the provisioner
-```bash
+# Setup the provisioner
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.23/deploy/local-path-storage.yaml
-``````
-You can patch this storageClass to act as default
-```bash
+
+# You can patch this storageClass to act as default
 kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-```
-Create a pvc and pod
-```bash
+
+# Create a pvc and pod
 kubectl create -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/examples/pvc/pvc.yaml
 kubectl create -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/examples/pod/pod.yaml
 ```
