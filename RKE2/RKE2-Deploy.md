@@ -66,7 +66,7 @@ sudo systemctl disable nftables
 sudo mkdir -p /etc/rancher/rke2
 sudo nano /etc/rancher/rke2/config.yaml
 
-#config file:
+# config file:
 node-name: k8s-master-1
 
 # install
@@ -139,7 +139,7 @@ chmod +x kubectl
 mkdir -p ~/.local/bin
 mv ./kubectl ~/.local/bin/kubectl
 
-# check
+# kubectl check
 kubectl version
 
 ```
@@ -166,7 +166,6 @@ containerd config default>/etc/containerd/config.toml
 sudo systemctl restart containerd
 sudo systemctl enable containerd
 sudo systemctl status containerd
-
 
 # To use the systemd cgroup driver, set plugins.cri.systemd_cgroup = true 
 cat /etc/containerd/config.toml | grep SystemdCgroup
