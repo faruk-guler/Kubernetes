@@ -43,7 +43,7 @@ worker-03	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
 
 ## Other Requirements:
 ``` bash
-# Swap off:
+# Disable swap space:
 sudo swapoff -a
 sudo sed -i '/ swap / s/^/#/' /etc/fstab [Permanently]
 sudo mount -a
