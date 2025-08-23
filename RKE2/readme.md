@@ -1,9 +1,4 @@
-Now enable your kubernetes credentials for the user
-```bash
-mkdir ~/.kube
-sudo cp /etc/rancher/rke2/rke2.yaml ~/.kube/config
-sudo chown $(whoami):$(whoami) ~/.kube/config
-```
+
 A token that can be used to register other server or agent nodes will be created at ``/var/lib/rancher/rke2/server/node-token`` copy the token when registering your client/worker nodes.
 ```bash
 sudo cat /var/lib/rancher/rke2/server/node-token
