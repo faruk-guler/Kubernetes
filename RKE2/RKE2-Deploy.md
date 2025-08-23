@@ -178,18 +178,6 @@ sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/c
 
 ```
 
-## Creating wildcard ssl with certbot
-``` bash
-# install certbot
-sudo apt update 
-sudo apt install -y certbot
-
-# wildcard ssl generate
-sudo certbot certonly --manual --preferred-challenges dns -d '*.your_domain.com'
-sudo certbot certonly --manual --preferred-challenges dns -d '*.devopskings.com.tr'
-
-```
-
 Congratulations! 🎉
 
 Thank you for following along. You have successfully installed a Kubernetes cluster using RKE2! 🎉🎉🎉
