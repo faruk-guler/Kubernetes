@@ -1,9 +1,4 @@
-## Master node Setup
-The server or master node vm.   
-Install RKE2 binaries:
-```bash
-curl -sfL https://get.rke2.io | sudo sh -
-sudo systemctl enable rke2-server.service
+
 ```
 If you have extra ips or domains as API endpoints add them in config file ``/etc/rancher/rke2/config.yaml``  like this-
 ```bash
