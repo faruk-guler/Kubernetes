@@ -1,5 +1,5 @@
-# ☸️ Bonus
-## Install Helm, Rancher, Longhorn, NeuVector, Metric Server, Local Storage Provisioner, Certbot
+# ☸️ Bonus Installer:
+## Helm, Rancher, Longhorn, NeuVector, Metric Server, Local Storage Provisioner, Certbot
 
 # Install Helm:
 ```bash
@@ -77,7 +77,7 @@ kubectl top po
 
 ```
 
-# Installation Local Storage Provisioner:
+# Install Local Storage Provisioner:
 - We need a storage class for Dynamic Provisioning. It can also be configured through Rancher.
 - All these commands must be run from the master node.
 ```bash
@@ -92,7 +92,7 @@ kubectl create -f https://raw.githubusercontent.com/rancher/local-path-provision
 kubectl create -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/examples/pod/pod.yaml
 ```
 
-# Install Certbot: [wildcard ssl]
+# Install Certbot: [for wildcard ssl]
 ``` bash
 # install certbot
 sudo apt update 
