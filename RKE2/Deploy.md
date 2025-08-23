@@ -85,6 +85,7 @@ journalctl -u rke2-server -f
 mkdir -p $HOME/.kube
 sudo cp /etc/rancher/rke2/rke2.yaml $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
+sudo chown $(whoami):$(whoami) ~/.kube/config
 
 # Get tokens for worker node
 sudo cat /var/lib/rancher/rke2/server/node-token
