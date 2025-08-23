@@ -50,6 +50,7 @@ free -h
 
 # Require packages
 sudo apt update
+sudo apt upgrade
 sudo apt install -y curl wget gnupg lsb-release
 
 # Firewall Disable: (optional)
