@@ -1,4 +1,3 @@
-# Install and configure Kubernetes with RKE2
 # 🐄 Install and configure Kubernetes with RKE2
 
 ```console
