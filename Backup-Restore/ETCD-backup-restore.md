@@ -38,6 +38,3 @@ systemctl start rke2-server
 
 When rke2 resets the cluster, it creates an empty file at ``/var/lib/rancher/rke2/server/db/reset-flag.`` This file is harmless to leave in place, but must be removed in order to perform subsequent resets or restores. This file is deleted when rke2 starts normally.
 
-## Auto-Deploying Manifests
-One of the amazing feature in RKE2 is, any file found in ``/var/lib/rancher/rke2/server/manifests`` will automatically be deployed to Kubernetes in a manner similar to kubectl apply.
-
