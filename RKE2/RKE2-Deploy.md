@@ -30,8 +30,8 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 - Canal CNI Plugin (Calico + Flannel)
 - CoreDNS
 - ETCD (embedded
-- 
- - 
+-
+-
 ## VM Prerequisites:
 ```bash
 name	core	memory	ip	disk	os
