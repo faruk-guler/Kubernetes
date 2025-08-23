@@ -33,7 +33,7 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 -
 ## VM Prerequisites:
 ```bash
-name	core	memory	ip	disk	os
+| name	| core |	memory |	ip |	disk | 	os |
 master-01	4	8Gi	192.168.1.12	100GB	Debian 12 "Bookworm" x64
 worker-01	4	8Gi	192.168.1.245	100GB	Debian 12 "Bookworm" x64
 worker-02	4	8Gi	192.168.1.246	100GB	Debian 12 "Bookworm" x64
