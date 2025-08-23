@@ -71,7 +71,7 @@ node-name: k8s-master-1
 EOF
 
 # install
-curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="server" sh -
+curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="server" sh -
 
 # Starting service
 sudo systemctl enable rke2-server.service
