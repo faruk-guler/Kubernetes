@@ -35,7 +35,8 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 ```bash
 name	core	memory	ip	disk	os
 master-01	4	8Gi	192.168.1.12	100GB	Debian 12 "Bookworm" x64
-worker-02	4	8Gi	192.168.1.74	100GB	Debian 12 "Bookworm" x64
+worker-01	4	8Gi	192.168.1.245	100GB	Debian 12 "Bookworm" x64
+worker-02	4	8Gi	192.168.1.246	100GB	Debian 12 "Bookworm" x64
 worker-03	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
 ----
 ```
@@ -68,7 +69,7 @@ sudo mkdir -p /etc/rancher/rke2
 sudo nano /etc/rancher/rke2/config.yaml
 
 # config file:
-node-name: k8s-master-1
+node-name: master-01
 
 # install
 curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="server" sh -
@@ -108,7 +109,7 @@ token: <token from master server node>
 # quick example:
 sudo tee /etc/rancher/rke2/config.yaml > /dev/null <<EOF
 server: https://192.168.1.41:9345
-node-name: k8s-worker-1
+node-name: worker-01
 token: K10347e1369de4d6b2c4d7195ad6df8738a1d26b458ac997ef99ded44f09c7c7289::server:bed45765f5ef39e91feb99100b83e7ba
 EOF
 
