@@ -105,7 +105,7 @@ sudo nano /etc/rancher/rke2/config.yaml
 server: https://<server>:9345
 token: <token from master server node>
 
-# apply
+# quick example:
 sudo tee /etc/rancher/rke2/config.yaml > /dev/null <<EOF
 server: https://192.168.1.41:9345
 node-name: k8s-worker-1
@@ -127,7 +127,7 @@ journalctl -u rke2-agent -f
 sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl
 
-# dowland
+# dowloand
 curl -LO https://dl.k8s.io/release/v1.33.0/bin/linux/amd64/kubectl
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
 
