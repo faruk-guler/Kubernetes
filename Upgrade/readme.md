@@ -3,6 +3,8 @@
 2. Backup data and volumes if necessary
 3. Drain nodes / scale down deployments
 
+# https://docs.rke2.io/upgrades/upgrade
+
 # Upgrade Rancher
 ```
 helm upgrade rancher rancher-latest/rancher \
