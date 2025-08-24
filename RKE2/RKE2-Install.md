@@ -50,6 +50,7 @@ worker-03	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
 - In general, RKE2 should work on any Linux distribution that uses systemd and iptables.
 - Windows Support requires choosing Calico or Flannel as the CNI for the RKE2 cluster
 - The Windows Server Containers feature needs to be enabled for the RKE2 Windows agent to work.
+- It is always recommended to have an odd number of server nodes.
 -
 - https://docs.rke2.io/install/requirements
 
