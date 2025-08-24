@@ -31,6 +31,7 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 - ETCD (embedded
 - Integrated Containerd
 - Air-Gapped Support
+- FIPS 140-2 compliance
 -
 ## VM Requirements:
 ```bash
