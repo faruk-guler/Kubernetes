@@ -1,6 +1,6 @@
 ##################################################
 # Name: Persistent Deployments Preparation
-# Version: 1.7
+# Version: 1.7d
 # Author: faruk-guler
 # 
 ##################################################
@@ -42,3 +42,4 @@ sudo exportfs -v
 # Namespaces:
 kubectl create namespace web-page
 kubectl get namespaces
+
