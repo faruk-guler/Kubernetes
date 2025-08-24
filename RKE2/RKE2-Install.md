@@ -24,8 +24,8 @@ POC: Debian 12 "Bookworm"
 Author: faruk guler
 Date: 2025
 ```
-## Introduction:    
-RKE2 is the enterprise ready,stable and secure kubernetes distribution which is easy to install configure and manage. Most of the enterprise configurations comes out of the boxy from the installation like:
+## Introduction:
+RKE2 is the enterprise ready,stable and secure kubernetes distribution which is easy to install configure and manage. It is a fully conformant Kubernetes distribution that focuses on security and compliance within the U.S. Federal Government sector. Most of the enterprise configurations comes out of the boxy from the installation like:
 - Canal CNI Plugin (Calico + Flannel)
 - CoreDNS
 - ETCD (embedded)
