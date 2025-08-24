@@ -1,0 +1,1 @@
+https://docs.rke2.io/install/uninstall
