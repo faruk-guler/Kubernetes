@@ -68,7 +68,7 @@ sudo apt update
 sudo apt upgrade
 sudo apt install -y curl wget gnupg lsb-release
 
-# Firewall Disable: (optional)
+# Firewall Requirements and Ports: (optional)
 sudo ufw disable
 sudo systemctl disable firewalld
 sudo systemctl disable iptables
