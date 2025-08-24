@@ -28,7 +28,7 @@ Date: 2025
 RKE2 is the enterprise ready,stable and secure kubernetes distribution which is easy to install configure and manage. Most of the enterprise configurations comes out of the boxy from the installation like:
 - Canal CNI Plugin (Calico + Flannel)
 - CoreDNS
-- ETCD (embedded
+- ETCD (embedded)
 - Integrated Containerd
 - Air-Gapped Support
 - FIPS 140-2 compliance
