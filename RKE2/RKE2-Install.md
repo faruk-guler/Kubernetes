@@ -53,6 +53,7 @@ worker-03	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
 - It is always recommended to have an odd number of server nodes.
 -
 - https://docs.rke2.io/install/requirements
+- https://docs.rke2.io/architecture
 
 
 # Disable swap space:
