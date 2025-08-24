@@ -74,7 +74,7 @@ sudo systemctl disable nftables
 
 ```
 
-## Install Master Node
+## Install Server/Master Node
 ``` bash
 # Before running the install script, create the config file:
 sudo mkdir -p /etc/rancher/rke2
@@ -105,7 +105,7 @@ sudo cat /var/lib/rancher/rke2/server/node-token
 
 ```
 
-## Install Worker-Node
+## Install Worker/Agent Node
 ``` bash
 # install:
 curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="agent" sh -
