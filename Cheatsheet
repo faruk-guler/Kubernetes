@@ -54,7 +54,7 @@ sudo ctr -n k8s.io images import --platform linux/amd64 /root/imajlar/nginx-comp
 # Imperative:
 kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep infinity" [one pod]
 kubectl exec -it debian-sv -- /bin/bash
-#kubectl create deployment debian-dep --image=debian:12 -- /bin/bash -c "sleep infinity" [deployment for dcale]
+#kubectl run debian-dep --image=debian:12 --restart=Always -- /bin/bash -c "sleep infinity"
 
 # Nodes, Pods, Services, Deployments and More...
 kubectl get all -n web-page -o wide
