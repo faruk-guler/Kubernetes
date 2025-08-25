@@ -311,8 +311,8 @@ kubectl get po [pod_name] -o yaml --export > pod.yaml
 
 ```bash
 kubectl -h
-kubectl create -h
 kubectl run -h
+kubectl create -h
 kubectl explain deploy.spec
 ```
 
