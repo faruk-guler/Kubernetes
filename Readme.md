@@ -17,6 +17,7 @@ Author: faruk guler
 Date: 2025
 ```
 
+# Preparation
 ```console
 # System Requirements:
 -2 GB or more of RAM per machine
