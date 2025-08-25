@@ -22,11 +22,15 @@ kubectl run -h
 kubectl explain deploy.spec
 
 # Image Management: [List - Pull - Remove]
-
+sudo ctr image ls
+sudo ctr image ls | awk '{print $1}'
+sudo ctr image pull docker.io/library/nginx:latest
+#sudo ctr image rm rancherix
 >> Image List-Pull-Remove Containerd:
 sudo ctr images list [Images List Containerd]
 ctr images pull docker.io/nginx:latest
 #sudo ctr images rm docker.io/library/nginx:latest
+
 
 >> Image List-List-Remove Kubernetes:
 sudo ctr -n k8s.io images list | awk '{print $1}'
@@ -102,12 +106,6 @@ kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 Remove Taint]
 # Namespaces
 kubectl create namespace web-page
 kubectl delete namespace web-page
-
-# Image Manager:
-sudo ctr image ls
-sudo ctr image ls | awk '{print $1}'
-sudo ctr image pull docker.io/library/nginx:latest
-#sudo ctr image rm rancherix
 
 # Scaling:
 kubectl scale deployment mysql --replicas=3 -n web-page
