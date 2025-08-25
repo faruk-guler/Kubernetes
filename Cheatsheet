@@ -71,6 +71,7 @@ kubectl get services -A -o wide
 kubectl get services -n web-page
 kubectl get events -n web-page
 kubectl get events -n cattle-system | grep rancher
+kubectl get pod nginx-6478657dff-rzq94 -n web-page -o yaml
 kubectl get configmap -n web-page
 kubectl get secret -n web-page
 kubectl describe node worker1
@@ -107,25 +108,6 @@ sudo ctr image ls
 sudo ctr image ls | awk '{print $1}'
 sudo ctr image pull docker.io/library/nginx:latest
 #sudo ctr image rm rancherix
-
-# Interaction:
-kubectl get nodes
-kubectl get all -n web-page -o wide
-kubectl get pods -A -o wide
-kubectl get pods -n web-page -o wide
-kubectl get deployment,svc -n web-page
-kubectl get pv,pvc -n web-page
-kubectl describe nodes
-kubectl describe node worker1
-kubectl get namespaces
-kubectl get services -A -o wide
-kubectl get services -n web-page
-kubectl get events -n web-page
-kubectl logs nginx-1234567 -n web-page
-kubectl logs nginx-1234567 -n web-page -c <container-name>
-kubectl get configmap -n web-page
-kubectl get secret -n web-page
-kubectl get pod nginx-6478657dff-rzq94 -n web-page -o yaml
 
 # Scaling:
 kubectl scale deployment mysql --replicas=3 -n web-page
