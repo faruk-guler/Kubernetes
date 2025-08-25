@@ -84,9 +84,9 @@ free -m
 lscpu
 ```
 
-```console
-
 # Installing:
+
+```console
 
 # Kernel and Network modules activate:
 sudo modprobe overlay
