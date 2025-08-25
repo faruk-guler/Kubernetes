@@ -253,6 +253,11 @@ kubectl cordon [node_name] # node maintenance
 kubectl uncordon [node_name] # node is schedulable
 ```
 
+### Updating
+```bash
+kubectl set image deployment/nginx-deployment nginx=nginx:latest -n web-page
+```
+
 ### clear
 
 ```bash
