@@ -331,7 +331,3 @@ kubectl config
 kubectl cluster-info
 kubectl get componentstatus
 ```
-
-## Also See
-
-- [Kubernetes Official Documentation](https://kubernetes.io/zh-cn/docs/reference/kubectl/) _(kubernetes.io)_
