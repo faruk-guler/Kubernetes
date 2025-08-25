@@ -17,7 +17,7 @@ Author: faruk guler
 Date: 2025
 ```
 
-# Preparation
+# Preparation:
 ```console
 # System Requirements:
 -2 GB or more of RAM per machine
@@ -86,7 +86,6 @@ lscpu
 ```
 
 # Installing:
-
 ```console
 
 # Kernel and Network modules activate:
