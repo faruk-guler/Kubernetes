@@ -82,8 +82,11 @@ cp /etc/fstab /etc/fstab.bak
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 free -m
 lscpu
+```
 
-********** Installing **********
+```console
+
+# Installing:
 
 # Kernel and Network modules activate:
 sudo modprobe overlay
