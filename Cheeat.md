@@ -327,7 +327,12 @@ kubectl get --raw /apis/metrics.k8s.io/
 ### Information
 
 ```bash
-kubectl config
 kubectl cluster-info
+kubectl version
+kubectl version --client
+ctr version [containerd version]
+kubectl config view
 kubectl get componentstatus
+kubectl get nodes
+kubectl get namespaces
 ```
