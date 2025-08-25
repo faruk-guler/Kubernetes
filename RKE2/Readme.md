@@ -19,7 +19,7 @@
      |  _| .'|  _| | | '_| . | | | | -_|  _|
 WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
 
-Name: Rancher Kubernetes Engine 2 (RKE2) Cluster Installation Script.
+Name: RKE2 (Rancher Kubernetes Engine 2) Cluster Installation Script.
 POC: Debian 12 "Bookworm"
 Author: faruk guler
 Date: 2025
