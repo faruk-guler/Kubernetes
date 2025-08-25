@@ -15,7 +15,9 @@ Name: Classic (Vanilla) Kubernetes Cluster Installation Script
 POC: Debian 12 "Bookworm"
 Author: faruk guler
 Date: 2025
+```
 
+```console
 # System Requirements:
 -2 GB or more of RAM per machine
 -2 CPUs or more for control plane machine
