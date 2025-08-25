@@ -57,12 +57,6 @@ kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep i
 kubectl exec -it debian-sv -- /bin/bash
 #kubectl create deployment debian-dep --image=debian:12 -- /bin/bash -c "sleep infinity" [deployment for dcale]
 
-# Pod export to internet: [dns file]
-kubectl exec -ti nginx-1234567 -- bash
-echo "nameserver 1.1.1.1" | tee -a /etc/resolv.conf
-apt update
-apt install neofetch
-
 # Nodes, Pods, Services, Deployments and More...
 kubectl get all -n web-page -o wide
 kubectl get pods -A -o wide
@@ -113,7 +107,7 @@ kubectl scale deployment mysql --replicas=3 -n web-page
 kubectl exec -ti nginx-1234567 -- bash
 echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
 apt update
-apt install nano
+apt install neofetch
 
 # More:
 https://kubernetes.io/pt-br/docs/reference/kubectl/cheatsheet/
