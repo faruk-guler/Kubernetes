@@ -156,7 +156,7 @@ kubectl get ing
 kubectl get ing --all-namespaces
 ```
 
-# Image Management: [List - Pull - Remove]
+### Image Management [List - Pull - Remove]
 
 ```bash
 sudo ctr image list
