@@ -311,7 +311,7 @@ kubectl set image deployment/nginx-deployment nginx=nginx:latest -n web-page
 kubectl drain [node_name] # empty the node
 ```
 
-### Node/Pod {.row-span-2}
+### Node/Pod
 
 ```bash
 kubectl delete node [node_name]
