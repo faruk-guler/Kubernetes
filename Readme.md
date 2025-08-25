@@ -166,6 +166,6 @@ $ systemctl status kubelet.service
 $ kubectl version
 $ kubectl cluster-info
 $ kubectl get nodes -o wide
-```console
+```
 
 ### Enjoy :)
