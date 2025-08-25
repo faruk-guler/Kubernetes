@@ -1,4 +1,4 @@
-# ☸️ Bonus Installer:
+# ☸️ Bonus Installs:
 ## Helm, Rancher, Longhorn, NeuVector, Metric Server, Local Storage Provisioner, Certbot ...
 
 # Install Helm:
