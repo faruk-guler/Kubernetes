@@ -18,37 +18,3 @@ kubectl describe pod nginx-1234567 -n web-page
 kubectl logs nginx-1234567 -n web-page
 kubectl -n web-page logs nginx-1234567
 kubectl logs nginx-1234567 -n web-page -c <container-name> [multi containers]
-
-
-# Kubernetes Networking:
-kubectl expose pod <pod_name> --type=LoadBalancer --name=<service_name> -n <namespace> [load balancer]
-kubectl expose pod <pod_name> --type=ClusterIP --name=<service_name> -n <namespace> [cluster ip]
-kubectl port-forward pod/<pod_name> 8080:80 [port forwarding]
-kubectl expose pod <pod_name> --type=NodePort --name=<service_name> -n <namespace> [node port]
-kubectl create ingress example-ingress --rule="host=www.farukguler.com, path=/blockchain/*, service=blockchain-service:80" -n web-page [ingress]
-
-# Taint and Untaint:
-kubectl describe node master1 | grep Taint [Taint Check]
-kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule  [Master1 Node Apply Taint]
-kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule- [Master1 Node Remove Taint]
-kubectl taint nodes master1 node.kubernetes.io/unschedulable:NoSchedule-      [Master1 Node Remove Taint]
-
-kubectl taint nodes worker1 custom=deny:NoSchedule [Worker1 Apply Taint]
-kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 Remove Taint]
-
-# Namespaces
-kubectl create namespace web-page
-kubectl delete namespace web-page
-
-# Scaling:
-kubectl scale deployment mysql --replicas=3 -n web-page
-
-# Pod acces to internet: [dns file]
-kubectl exec -ti nginx-1234567 -- bash
-echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
-apt update
-apt install neofetch
-
-# More:
-https://kubernetes.io/pt-br/docs/reference/kubectl/cheatsheet/
-https://cheatsheets.zip/kubernetes
