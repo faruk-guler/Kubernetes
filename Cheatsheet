@@ -19,8 +19,6 @@ kubectl logs nginx-1234567 -n web-page
 kubectl -n web-page logs nginx-1234567
 kubectl logs nginx-1234567 -n web-page -c <container-name> [multi containers]
 
-# Updating:
-kubectl set image deployment/nginx-deployment nginx=nginx:latest -n web-page
 
 # Kubernetes Networking:
 kubectl expose pod <pod_name> --type=LoadBalancer --name=<service_name> -n <namespace> [load balancer]
