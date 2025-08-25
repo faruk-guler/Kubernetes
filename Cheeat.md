@@ -337,6 +337,10 @@ kubectl create deploy [deploy_name] --image=nginx
 
 ```bash
 kubectl run [pod_name] --image=busybox --rm -it --restart=Never --sh
+kubectl run debian-sv --image=debian:12 --restart=Never -- /bin/bash -c "sleep infinity" [one pod]
+kubectl run debian-sv --image=debian:12 --restart=Always -- /bin/bash -c "sleep infinity"
+kubectl exec -it debian-sv -- /bin/bash
+
 ```
 
 ### Output YAML
