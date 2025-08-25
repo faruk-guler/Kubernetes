@@ -60,73 +60,73 @@ TCP 2379-2380 (Inbound): etcd server client API – kube-apiserver, etcd
 TCP 10250 (Inbound): Kubelet API – Self, Control plane
 TCP 10259 (Inbound): kube-scheduler – Self
 TCP 10257 (Inbound): kube-controller-manager – Self
-$ sudo ss -tuln | grep 6443
+sudo ss -tuln | grep 6443
 
 >> Worker node(s):
 TCP 10250 (Inbound): Kubelet API – Self, Control plane
 TCP 10256 (Inbound): kube-proxy – Self, Load balancers
 TCP 30000-32767 (Inbound): NodePort Services – All
-$ sudo ss -tuln | grep 10250
+sudo ss -tuln | grep 10250
 
 # SELinux and AppArmor [Optional]
-$ sudo nano /etc/selinux/config
+sudo nano /etc/selinux/config
 SELINUX=disabled
-$ sudo reboot
-$ sestatus
+sudo reboot
+sestatus
 
 # Swap Space:
-$ cat /proc/swaps
-$ swapon --show
-$ sudo swapoff -a
-$ cp /etc/fstab /etc/fstab.bak
-$ sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
-$ free -m
-$ lscpu
+cat /proc/swaps
+swapon --show
+sudo swapoff -a
+cp /etc/fstab /etc/fstab.bak
+sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+free -m
+lscpu
 
 ********** Installing **********
 
 # Kernel and Network modules activate:
-$ sudo modprobe overlay
-$ sudo modprobe br_netfilter
+sudo modprobe overlay
+sudo modprobe br_netfilter
 
-$ cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
 br_netfilter
 EOF
 
-$ cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-iptables  = 1
 net.bridge.bridge-nf-call-ip6tables = 1
 net.ipv4.ip_forward                 = 1
 EOF
 
 # System Apply:
-$ sudo sysctl --system
+sudo sysctl --system
 
 # Container Runtime: [Containerd, .etc]
-$ sudo apt update
-$ sudo apt install containerd
-$ sudo systemctl enable --now containerd
-$ sudo mkdir -p /etc/containerd
-$ containerd config default | tee /etc/containerd/config.toml
-$ sudo sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
-$ sudo systemctl restart containerd
+sudo apt update
+sudo apt install containerd
+sudo systemctl enable --now containerd
+sudo mkdir -p /etc/containerd
+containerd config default | tee /etc/containerd/config.toml
+sudo sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
+sudo systemctl restart containerd
 
 # Install: [kubelet kubeadm kubectl]
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 #apt-mark hold kubelet kubeadm kubectl
 #apt-mark unhold kubelet kubeadm kubectl
-$ nc 127.0.0.1 6443 -v
-$ journalctl -u kubelet
-$ journalctl -xfe
+nc 127.0.0.1 6443 -v
+journalctl -u kubelet
+journalctl -xfe
 
 # Kubernetes Cluster: [kubeadm init]
-$ sudo kubeadm config images pull
-$ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=<ip> --control-plane-endpoint=<ip>
-$ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=192.168.44.145 --control-plane-endpoint=192.168.44.145
+sudo kubeadm config images pull
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=<ip> --control-plane-endpoint=<ip>
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=192.168.44.145 --control-plane-endpoint=192.168.44.145
 
 # Join a Cluster: [kubeadm join]
-$ kubeadm token create --print-join-command
+kubeadm token create --print-join-command
 
 # Kubernetes Nodes Configuration:
 sudo scp /etc/kubernetes/admin.conf root@192.168.44.148:/etc/kubernetes/admin.conf
@@ -134,15 +134,15 @@ sudo scp /etc/kubernetes/admin.conf root@192.168.44.148:/etc/kubernetes/admin.co
 ~/.kube/config
 
 # Kubectl:
-$ mkdir -p $HOME/.kube
-$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
-$ kubectl config
-$ kubectl config get-contexts
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+kubectl config
+kubectl config get-contexts
 
 # Networking: Calico:
-$ wget https://docs.projectcalico.org/manifests/calico.yaml
-$ kubectl apply -f calico.yaml
+wget https://docs.projectcalico.org/manifests/calico.yaml
+kubectl apply -f calico.yaml
 #kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
 #kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
 
@@ -155,17 +155,17 @@ kubectl taint nodes worker1 custom=deny:NoSchedule [Worker1 Apply Taint]
 kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 Remove Taint]
 
 # Kubectl Auto-Completion:
-$ source <(kubectl completion bash)
-$ echo "source <(kubectl completion bash)" >> ~/.bashrc
-$ source ~/.bashrc
+source <(kubectl completion bash)
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+source ~/.bashrc
 #kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
 #sudo apt-get install bash-completion
 
 # Get Starting >>>
-$ systemctl status kubelet.service
-$ kubectl version
-$ kubectl cluster-info
-$ kubectl get nodes -o wide
+systemctl status kubelet.service
+kubectl version
+kubectl cluster-info
+kubectl get nodes -o wide
 ```
 
 ### Enjoy :)
