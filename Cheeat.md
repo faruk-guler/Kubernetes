@@ -168,6 +168,13 @@ ctr images pull docker.io/nginx:latest
 #sudo ctr images rm docker.io/library/nginx:latest
 ```
 
+### Local Image Management
+```bash
+Default Dir: /var/lib/containerd
+sudo ctr image pull docker.io/library/nginx:latest [Get image on containerd]
+sudo ctr -n k8s.io image pull docker.io/library/nginx:latest [Get image on Kubernetes]
+```
+
 ### Image Migration Containerd to Kubernetes
 
 ```bash
