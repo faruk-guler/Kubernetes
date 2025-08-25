@@ -1,5 +1,5 @@
-
-## Viewing and finding resources {.cols-2}
+# Kubernetes cheatsheet
+## Viewing and finding resources
 
 ### Nodes
 
