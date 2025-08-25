@@ -168,6 +168,15 @@ ctr images pull docker.io/nginx:latest
 #sudo ctr images rm docker.io/library/nginx:latest
 ```
 
+### Image List-List-Remove Kubernetes
+
+```bash
+sudo ctr -n k8s.io images list | awk '{print $1}'
+sudo ctr -n k8s.io image pull docker.io/library/nginx:latest
+sudo ctr -n k8s.io image pull docker.io/library/debian:12
+#sudo ctr -n k8s.io images rm docker.io/library/xxxx:yyyy
+```
+
 ### Persistent Volumes
 
 Resource name: persistentvolumes, abbreviation: pv
