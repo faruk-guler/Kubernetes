@@ -168,6 +168,13 @@ ctr images pull docker.io/nginx:latest
 #sudo ctr images rm docker.io/library/nginx:latest
 ```
 
+### Image Migration Containerd to Kubernetes
+
+```bash
+ctr -n k8s.io images pull docker.io/rancher/rancher-agent:v2.10.3
+ctr -n k8s.io images list | grep rancher-agent [Verify]
+```
+
 ### Image List-List-Remove Kubernetes
 
 ```bash
