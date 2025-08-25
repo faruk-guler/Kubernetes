@@ -281,7 +281,7 @@ kubectl edit node [node_name]
 kubectl edit pod [pod_name]
 ```
 
-### Stateless/Namespaced {.row-span-2}
+### Networking/Stateless/Namespaced
 
 ```bash
 kubectl edit deploy [deploy_name]
@@ -290,6 +290,11 @@ kubectl expose deploy [deploy_name] --port=80 --type=NodePort
 kubectl scale deploy [deploy_name] --replicas=5
 kubectl delete ns
 kubectl edit ns [ns_name]
+kubectl expose pod <pod_name> --type=LoadBalancer --name=<service_name> -n <namespace> [load balancer]
+kubectl expose pod <pod_name> --type=ClusterIP --name=<service_name> -n <namespace> [cluster ip]
+kubectl port-forward pod/<pod_name> 8080:80 [port forwarding]
+kubectl expose pod <pod_name> --type=NodePort --name=<service_name> -n <namespace> [node port]
+kubectl create ingress example-ingress --rule="host=www.farukguler.com, path=/blockchain/*, service=blockchain-service:80" -n web-page [ingress]
 ```
 
 ### Service
