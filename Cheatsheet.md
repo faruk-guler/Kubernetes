@@ -3,26 +3,43 @@ This page contains a list of commonly used kubectl commands and flags.
 
 ## https://cheatsheets.zip
 
-### Favorites
+### Favorites Commands
 ```bash
-kubectl get all -n web-page -o wide
-kubectl get pods -A -o wide
-kubectl get pods -n web-page -o wide
-kubectl get deployments,svc -n web-page
-kubectl get pv,pvc -n web-page
-kubectl get namespaces
-kubectl get services -A -o wide
-kubectl get services -n web-page
-kubectl get events -n web-page
-kubectl get events -n cattle-system | grep rancher
-kubectl get pod nginx-6478657dff-rzq94 -n web-page -o yaml
-kubectl get configmap -n web-page
-kubectl get secret -n web-page
-kubectl describe node worker1
-kubectl describe pod nginx-1234567 -n web-page
-kubectl logs nginx-1234567 -n web-page
-kubectl -n web-page logs nginx-1234567
-kubectl logs nginx-1234567 -n web-page -c <container-name> [multi containers]
+# ===> Namespace ve Generak Sources
+kubectl get namespaces                                  # List all namespaces
+kubectl get all -n web-page -o wide                     # All resources in the web-page namespace (detailed)
+
+# ===> Pod and Deployment Controls
+kubectl get pods -A -o wide                             # List of pods in all namespaces
+kubectl get pods -n web-page -o wide                    # pods in web-page namespace
+kubectl get deployments,svc -n web-page                 # Deployment and Services in web-page
+kubectl describe pod nginx-1234567 -n web-page          # Details about a specific pod
+
+# ===> Storage (PV / PVC)
+kubectl get pv,pvc -n web-page                          # PV ve PVC Information
+
+# ===> Services
+kubectl get services -A -o wide                         # All namespaces services
+kubectl get services -n web-page                        # web-page namespace services
+
+# ===> Events
+kubectl get events -n web-page                          # web-page events
+kubectl get events -n cattle-system | grep rancher      # cattle-system Rancher events
+
+# ===> Log ve Debug
+kubectl logs nginx-1234567 -n web-page                  # Pod loga
+kubectl logs nginx-1234567 -n web-page -c <container>   # Multi-container pods
+
+# ===> ConfigMap & Secret
+kubectl get configmap -n web-page                       # ConfigMap list
+kubectl get secret -n web-page                          # Secret list
+
+# ===> Node Details
+kubectl describe node worker1                           # Node details
+
+# ===> Pod YAML Format
+kubectl get pod nginx-6478657dff-rzq94 -n web-page -o yaml # Pod YAML manifest
+
 ```
 
 ### Nodes
