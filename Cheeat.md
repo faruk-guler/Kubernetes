@@ -348,6 +348,11 @@ kubectl exec -it debian-sv -- /bin/bash
 
 ```
 
+### Scaling
+```bash
+kubectl scale deployment mysql --replicas=3 -n web-page
+```
+
 ### Output YAML
 
 ```bash
