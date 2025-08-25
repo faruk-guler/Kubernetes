@@ -2,6 +2,7 @@
 This page contains a list of commonly used kubectl commands and flags.
 
 ## Viewing and finding resources
+## https://cheatsheets.zip
 
 ### Nodes
 
