@@ -156,6 +156,18 @@ kubectl get ing
 kubectl get ing --all-namespaces
 ```
 
+# Image Management: [List - Pull - Remove]
+
+```bash
+sudo ctr image list
+sudo ctr image list | awk '{print $1}'
+sudo ctr image pull docker.io/library/nginx:latest
+#sudo ctr image rm rancherix
+>> Image List-Pull-Remove Containerd:
+ctr images pull docker.io/nginx:latest
+#sudo ctr images rm docker.io/library/nginx:latest
+```
+
 ### Persistent Volumes
 
 Resource name: persistentvolumes, abbreviation: pv
