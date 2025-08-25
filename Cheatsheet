@@ -98,13 +98,6 @@ kubectl taint nodes master1 node.kubernetes.io/unschedulable:NoSchedule-      [M
 kubectl taint nodes worker1 custom=deny:NoSchedule [Worker1 Apply Taint]
 kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 Remove Taint]
 
-# Kubernetes:
-kubectl version
-kubectl version --client
-kubectl config view
-kubectl cluster-info
-kubectl get componentstatuses
-
 # Namespaces
 kubectl create namespace web-page
 kubectl delete namespace web-page
