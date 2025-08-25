@@ -173,6 +173,10 @@ ctr images pull docker.io/nginx:latest
 Default Dir: /var/lib/containerd
 sudo ctr image pull docker.io/library/nginx:latest [Get image on containerd]
 sudo ctr -n k8s.io image pull docker.io/library/nginx:latest [Get image on Kubernetes]
+>> Exporting image to file:
+sudo ctr -n k8s.io images export --platform linux/amd64 /root/imajlar/nginx-complete.tar docker.io/library/nginx:latest
+>> Importing image from file:
+sudo ctr -n k8s.io images import --platform linux/amd64 /root/imajlar/nginx-complete.tar
 ```
 
 ### Image Migration Containerd to Kubernetes
