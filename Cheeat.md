@@ -42,6 +42,8 @@ Resource name: pods, abbreviation: po
 kubectl get ns
 kubectl get ns -o yaml
 kubectl describe ns
+kubectl create namespace web-page
+kubectl delete namespace web-page
 ```
 
 Resource name: namespaces, abbreviation: ns
