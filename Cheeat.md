@@ -235,10 +235,16 @@ kubectl get all --all-namespaces
 
 ## Updating resources
 
-### Taint
+### Taint/Untaint
 
 ```bash
 kubectl taint [node_name] [taint_name]
+kubectl describe node master1 | grep Taint [Taint Check]
+kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule  [Master1 Node Apply Taint]
+kubectl taint nodes master1 node-role.kubernetes.io/control-plane:NoSchedule- [Master1 Node Remove Taint]
+kubectl taint nodes master1 node.kubernetes.io/unschedulable:NoSchedule-      [Master1 Node Remove Taint]
+kubectl taint nodes worker1 custom=deny:NoSchedule [Worker1 Apply Taint]
+kubectl taint nodes worker1 custom=deny:NoSchedule- [Worker1 Remove Taint]
 ```
 
 ### Label
