@@ -10,6 +10,11 @@ helm version
 ```
 # Install Rancher: [with Helm]
 ```bash
+
+## VM Requirements:
+| name	| core |	memory |	ip |	disk | 	os |
+rancher1 	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
+
 # Add Rancher Helm repository
 helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
 helm repo update
