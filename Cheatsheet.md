@@ -5,7 +5,7 @@ This page contains a list of commonly used kubectl commands and flags.
 
 ### Favorites Commands
 ```bash
-# ===> Namespace ve Generak Sources
+# ===> Namespace ve General Sources
 kubectl get namespaces                                  # List all namespaces
 kubectl get all -n web-page -o wide                     # All resources in the web-page namespace (detailed)
 
