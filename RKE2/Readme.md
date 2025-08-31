@@ -76,6 +76,15 @@ sudo apt upgrade
 sudo apt install -y curl wget gnupg lsb-release
 
 # Firewall Requirements and Ports: (optional)
+
+**Control Plane Node
+- TCP: 6443, 2379-2380, 10250, 10257, 10259
+- UDP: 8472 (VXLAN)
+
+**Worker Node**
+- TCP: 10250, 30000-32767
+- UDP: 8472 (VXLAN)
+
 sudo ufw disable
 sudo systemctl disable firewalld
 sudo systemctl disable iptables
