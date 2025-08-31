@@ -77,7 +77,7 @@ sudo apt update
 sudo apt upgrade
 sudo apt install -y curl wget gnupg lsb-release
 
-# Firewall Requirements and Ports: (optional)
+# Firewall Requirements and Ports:
 
 **Control Plane Node
 - TCP: 6443, 2379-2380, 10250, 10257, 10259
@@ -86,11 +86,6 @@ sudo apt install -y curl wget gnupg lsb-release
 **Worker Node**
 - TCP: 10250, 30000-32767
 - UDP: 8472 (VXLAN)
-
-sudo ufw disable
-sudo systemctl disable firewalld
-sudo systemctl disable iptables
-sudo systemctl disable nftables
 
 Open Ports: https://docs.rke2.io/install/requirements
 sudo netstat -tuln | grep -E '6443|9345'
