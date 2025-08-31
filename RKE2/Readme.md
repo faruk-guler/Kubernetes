@@ -82,6 +82,7 @@ sudo systemctl disable iptables
 sudo systemctl disable nftables
 
 Open Ports: https://docs.rke2.io/install/requirements
+sudo netstat -tuln | grep -E '6443|9345'
 
 ```
 
