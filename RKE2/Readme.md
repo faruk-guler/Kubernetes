@@ -209,6 +209,9 @@ sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/c
 # Düğümleri listele:
 kubectl get nodes -o wide
 
+# Servisi listele:
+sudo systemctl status rke2-server
+
 # Pod'ları kontrol et:
 kubectl get pods -A
 ```
