@@ -153,58 +153,7 @@ journalctl -u rke2-agent -f
 
 ```
 
-## Install Kubectl
 ``` bash
-# update:
-sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl
-
-# download:
-curl -LO https://dl.k8s.io/release/v1.33.0/bin/linux/amd64/kubectl
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
-
-# validate:
-echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
-
-# install:
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-chmod +x kubectl
-mkdir -p ~/.local/bin
-mv ./kubectl ~/.local/bin/kubectl
-
-# kubectl check:
-kubectl version
-
-```
-
-## Install Containerd
-``` bash
-# Install required packages:
-sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
-
-# Add Docker Registry repo:
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-
-# Install containerd:
-sudo apt update
-sudo apt install -y containerd.io
-
-# Configure containerd and start service:
-sudo su -
-mkdir -p /etc/containerd
-containerd config default>/etc/containerd/config.toml
-
-# restart containerd:
-sudo systemctl restart containerd
-sudo systemctl enable containerd
-sudo systemctl status containerd
-
-# To use the systemd cgroup driver, set plugins.cri.systemd_cgroup = true 
-cat /etc/containerd/config.toml | grep SystemdCgroup
-sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
-
-```
 ## Verify Installation:
 ``` bash
 # Düğümleri listele:
