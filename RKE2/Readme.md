@@ -153,7 +153,6 @@ journalctl -u rke2-agent -f
 
 ```
 
-``` bash
 ## Verify Installation:
 ``` bash
 # Düğümleri listele:
