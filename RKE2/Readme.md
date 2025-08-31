@@ -36,7 +36,7 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 ## VM Requirements:
 ```bash
 | name	| core |	memory |	ip |	disk | 	os |
-master-01	4	8Gi	192.168.1.12	100GB	Debian 12 "Bookworm" x64
+master-01	4	8Gi	192.168.1.120	100GB	Debian 12 "Bookworm" x64
 worker-01	4	8Gi	192.168.1.245	100GB	Debian 12 "Bookworm" x64
 worker-02	4	8Gi	192.168.1.246	100GB	Debian 12 "Bookworm" x64
 worker-03	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
@@ -56,6 +56,12 @@ worker-03	4	8Gi	192.168.1.247	100GB	Debian 12 "Bookworm" x64
 - https://docs.rke2.io/install/requirements
 - https://docs.rke2.io/architecture
 
+
+# Adding Hostname to "/etc/hosts" file:
+echo "192.168.1.120 master-01" | sudo tee -a /etc/hosts
+echo "192.168.1.245 worker-01" | sudo tee -a /etc/hosts
+echo "192.168.1.246 worker-02" | sudo tee -a /etc/hosts
+echo "192.168.1.247 worker-03" | sudo tee -a /etc/hosts
 
 # Disable swap space:
 sudo swapoff -a
@@ -129,7 +135,7 @@ token: <token from master server node>
 
 # quick example:
 sudo tee /etc/rancher/rke2/config.yaml > /dev/null <<EOF
-server: https://192.168.1.12:9345
+server: https://192.168.1.120:9345
 node-name: worker-01
 token: K10347e1369de4d6b2c4d7195ad6df8738a1d26b458ac997ef99ded44f09c7c7289::server:bed45765f5ef39e91feb99100b83e7ba
 EOF
