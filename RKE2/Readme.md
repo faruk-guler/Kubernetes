@@ -129,7 +129,7 @@ token: <token from master server node>
 
 # quick example:
 sudo tee /etc/rancher/rke2/config.yaml > /dev/null <<EOF
-server: https://192.168.1.41:9345
+server: https://192.168.1.12:9345
 node-name: worker-01
 token: K10347e1369de4d6b2c4d7195ad6df8738a1d26b458ac997ef99ded44f09c7c7289::server:bed45765f5ef39e91feb99100b83e7ba
 EOF
