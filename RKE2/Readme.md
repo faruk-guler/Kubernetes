@@ -86,8 +86,6 @@ sudo nano /etc/rancher/rke2/config.yaml
 
 # config file:
 node-name: master-01
-
-# config file: ???????????????
 write-kubeconfig-mode: "0644"
 
 # install:
