@@ -154,16 +154,16 @@ sudo rke2 certificate rotate
 
 ## Verify Installation:
 ``` bash
-# Düğümleri listele:
+# list nodes:
 kubectl get nodes -o wide
 
 # kubectl check:
 kubectl version
 
-# Servisi listele:
+# list services:
 sudo systemctl status rke2-server
 
-# Pod'ları kontrol et:
+# check pods:
 kubectl get pods -A
 ```
 
