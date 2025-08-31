@@ -147,6 +147,7 @@ sudo systemctl start rke2-agent.service
 journalctl -u rke2-agent -f
 
 # Renew RKE2 certificates(365):
+sudo rke2 certificate rotate
 -----
 
 ```
