@@ -198,6 +198,14 @@ cat /etc/containerd/config.toml | grep SystemdCgroup
 sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
 
 ```
+## Verify Installation:
+``` bash
+# Düğümleri listele:
+kubectl get nodes -o wide
+
+# Pod'ları kontrol et:
+kubectl get pods -A
+```
 
 Congratulations! 🎉
 
