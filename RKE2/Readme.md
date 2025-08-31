@@ -37,7 +37,7 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 
 
 
-# ???????????
+```bash
 ## Bu kritik adımlar eksik:
 Kernel modülleri
 sudo modprobe br_netfilter
@@ -51,7 +51,7 @@ net.ipv4.ip_forward = 1
 EOF
 sudo sysctl --system
 
-
+```
 
 
 ## VM Requirements:
