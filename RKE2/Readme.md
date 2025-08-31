@@ -59,10 +59,12 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 
 
 # Adding Hostname to "/etc/hosts" file:
-echo "192.168.1.120 master-01" | sudo tee -a /etc/hosts
-echo "192.168.1.245 worker-01" | sudo tee -a /etc/hosts
-echo "192.168.1.246 worker-02" | sudo tee -a /etc/hosts
-echo "192.168.1.247 worker-03" | sudo tee -a /etc/hosts
+cat <<EOF | sudo tee /etc/hosts
+192.168.1.120 master-01
+192.168.1.245 worker-01
+192.168.1.246 worker-02
+192.168.1.247 worker-03
+EOF
 
 # Disable swap space:
 sudo swapoff -a
