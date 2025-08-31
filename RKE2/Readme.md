@@ -186,5 +186,9 @@ Thank you for following along. You have successfully installed a Kubernetes clus
 ```
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
+https://docs.rke2.io/
+https://docs.rke2.io/install/quickstart/
+https://docs.rke2.io/install/requirements/
+https://docs.rke2.io/architecture/
 
 ```
