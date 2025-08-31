@@ -141,6 +141,9 @@ sudo systemctl start rke2-agent.service
 # logs:
 journalctl -u rke2-agent -f
 
+# Renew RKE2 certificates(365):
+-----
+
 ```
 
 ## Install Kubectl
