@@ -81,7 +81,7 @@ sudo systemctl disable firewalld
 sudo systemctl disable iptables
 sudo systemctl disable nftables
 
-Ports: https://docs.rke2.io/install/requirements
+Open Ports: https://docs.rke2.io/install/requirements
 
 ```
 
