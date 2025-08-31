@@ -38,12 +38,12 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 
 
 # ???????????
-# Bu kritik adımlar eksik:
-# Kernel modülleri
+## Bu kritik adımlar eksik:
+Kernel modülleri
 sudo modprobe br_netfilter
 sudo modprobe overlay
 
-# Sysctl ayarları
+## Sysctl ayarları
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
@@ -110,6 +110,9 @@ sudo apt install -y curl wget gnupg lsb-release
 
 Open Ports: https://docs.rke2.io/install/requirements
 sudo netstat -tuln | grep -E '6443|9345'
+
+# NTP Synchronization:
+1111111111
 
 ```
 
