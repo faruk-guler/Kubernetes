@@ -105,7 +105,7 @@ sudo cp /etc/rancher/rke2/rke2.yaml $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 sudo chown $(whoami):$(whoami) ~/.kube/config
 
-# make binaries persistent
+# persistent binaries
 echo 'export PATH=$PATH:/var/lib/rancher/rke2/bin/' >> ~/.bashrc
 source ~/.bashrc
 
