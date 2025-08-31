@@ -66,7 +66,7 @@ echo "192.168.1.247 worker-03" | sudo tee -a /etc/hosts
 
 # Disable swap space:
 sudo swapoff -a
-sudo sed -i '/ swap / s/^/#/' /etc/fstab [Permanently]
+sudo sed -i '/ swap / s/^/#/' /etc/fstab # Permanently
 sudo mount -a
 free -h
 
@@ -94,6 +94,7 @@ sudo nano /etc/rancher/rke2/config.yaml
 # config file:
 node-name: master-01
 write-kubeconfig-mode: "0644"
+cluster-init: true  # required for single master
 
 # install:
 curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="server" sh -
