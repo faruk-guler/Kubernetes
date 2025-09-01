@@ -77,12 +77,12 @@ net.ipv4.ip_forward = 1
 EOF
 sudo sysctl --system
 
-# Hostname configuration:
+# Unique Hostname configuration:
 Master Node: sudo hostnamectl set-hostname master-01
 Worker Node: sudo hostnamectl set-hostname worker-01
 -------
 
-# DNS Integration: "/etc/hosts" file:
+# Simple DNS Integration: "/etc/hosts" file:
 cat <<EOF | sudo tee /etc/hosts
 192.168.1.120 master-01
 192.168.1.245 worker-01
