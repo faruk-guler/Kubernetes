@@ -192,6 +192,11 @@ sudo rke2 certificate rotate
 
 ## Verify Installation:
 ``` bash
+
+# Cluster Status:
+kubectl cluster-info
+kubectl get componentstatuses
+
 # list nodes:
 kubectl get nodes -o wide
 
