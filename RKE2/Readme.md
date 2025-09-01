@@ -120,7 +120,7 @@ sudo systemctl start chronyd
 sudo timedatectl
 ```
 
-## Install Server/Master Node
+## Install Control-Plane/Master Node
 ``` bash
 # Before running the install script, create the config file:
 sudo mkdir -p /etc/rancher/rke2
