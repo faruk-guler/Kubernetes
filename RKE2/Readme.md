@@ -58,13 +58,15 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 - https://docs.rke2.io/install/requirements
 - https://docs.rke2.io/architecture
 
-# Kernel modules:
+# Load kernel modules:
 sudo modprobe br_netfilter
 sudo modprobe overlay
 
 # Persistent Kernel modules:
-echo 'br_netfilter' | sudo tee /etc/modules-load.d/k8s.conf
-echo 'overlay' | sudo tee /etc/modules-load.d/k8s.conf
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+EOF
 
 # Sysctl conf.
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
@@ -130,7 +132,7 @@ write-kubeconfig-mode: "0644"
 cluster-init: true  # required for single master HA
 
 # install:
-curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="server" sh -
+curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="stable" sh -
 
 # Starting service:
 sudo systemctl enable rke2-server.service
