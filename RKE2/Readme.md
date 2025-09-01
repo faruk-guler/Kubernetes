@@ -205,9 +205,12 @@ echo "0 0 1 * * root /usr/local/bin/rke2 certificate rotate >> /var/log/rke2/cer
 kubectl cluster-info
 kubectl get componentstatuses
 
-#RKE version:
+# RKE version:
 rke2 --version
 rke config --list-version --all
+
+# Check control-plane services:
+sudo systemctl status rke2-server --no-pager
 
 # list nodes:
 kubectl get nodes -o wide
