@@ -170,7 +170,8 @@ sudo nano /etc/rancher/rke2/config.yaml
 # >> config.yaml file:
 node-name: worker-01
 server: https://192.168.1.120:9345
-sudo cat /var/lib/rancher/rke2/server/node-token > /etc/rancher/rke2/token
+sudo cat /var/lib/rancher/rke2/server/node-token > /etc/rancher/rke2/token ????
+echo "MASTER_NODEDAN_ALINAN_TOKEN_DEGERI" | sudo tee /etc/rancher/rke2/token ????
 token-file: /etc/rancher/rke2/token
 
 # Setting File Permissions:
