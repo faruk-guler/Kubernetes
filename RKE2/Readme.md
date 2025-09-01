@@ -112,10 +112,10 @@ Open Ports: https://docs.rke2.io/install/requirements
 sudo netstat -tuln | grep -E '6443|9345'
 
 # NTP Synchronization:
-sudo apt install ntp -y
-sudo systemctl start ntp
-sudo systemctl enable ntp
-sudo timedatectl status
+sudo apt install -y chrony
+sudo systemctl enable chronyd
+sudo systemctl start chronyd
+sudo timedatectl
 ```
 
 ## Install Server/Master Node
