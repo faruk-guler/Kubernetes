@@ -140,6 +140,7 @@ sudo chmod 600 $HOME/.kube/config
 
 # persistent binaries
 echo 'export PATH=$PATH:/var/lib/rancher/rke2/bin/' >> ~/.bashrc
+echo 'export KUBECONFIG=~/.kube/config' >> ~/.bashrc
 source ~/.bashrc
 
 # Get tokens for worker node:
