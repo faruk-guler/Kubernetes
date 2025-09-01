@@ -169,6 +169,7 @@ sudo nano /etc/rancher/rke2/config.yaml
 # >> config.yaml file:
 node-name: worker-01
 server: https://192.168.1.120:9345
+sudo cat /var/lib/rancher/rke2/server/node-token > /etc/rancher/rke2/token
 token-file: /etc/rancher/rke2/token
 
 # Setting File Permissions:
