@@ -174,11 +174,11 @@ token: <token from master server node>
 >> Edit file >> /etc/rancher/rke2/config.yaml
 server: https://192.168.1.120:9345
 node-name: worker-01
-
-sudo chmod 600 /etc/rancher/rke2/token
 token-file: /etc/rancher/rke2/token
-# 
+
+# ???:
 sudo chmod 600 /etc/rancher/rke2/config.yaml
+sudo chmod 600 /etc/rancher/rke2/token
 
 # Starting Service:
 sudo systemctl enable rke2-agent.service
