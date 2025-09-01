@@ -146,6 +146,7 @@ journalctl -u rke2-server -f
 mkdir -p $HOME/.kube
 sudo cp /etc/rancher/rke2/rke2.yaml $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
+sudo chmod 600 $HOME/.kube/config
 
 # persistent binaries
 echo 'export PATH=$PATH:/var/lib/rancher/rke2/bin/' >> ~/.bashrc
