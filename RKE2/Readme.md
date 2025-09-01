@@ -130,7 +130,7 @@ sudo nano /etc/rancher/rke2/config.yaml
 # config file:
 node-name: master-01
 write-kubeconfig-mode: "0644"
-cluster-init: true  # required for single master
+cluster-init: true  # required for single master HA
 
 # install:
 curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="server" sh -
