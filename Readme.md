@@ -42,7 +42,7 @@ Master Node: sudo hostnamectl set-hostname master
 Worker Node: sudo hostnamectl set-hostname worker1
 -------
 
-# DNS Integration: "/etc/hosts" file:
+# Simple DNS Integration: "/etc/hosts" file:
 cat <<EOF | sudo tee /etc/hosts
 127.0.0.1      localhost
 192.168.44.145 master
