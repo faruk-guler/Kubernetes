@@ -179,6 +179,8 @@ token-file: /etc/rancher/rke2/token
 # ???:
 sudo chmod 600 /etc/rancher/rke2/config.yaml
 sudo chmod 600 /etc/rancher/rke2/token
+sudo chown root:root /etc/rancher/rke2/config.yaml
+sudo chown root:root /etc/rancher/rke2/token
 
 # Starting Service:
 sudo systemctl enable rke2-agent.service
