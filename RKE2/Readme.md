@@ -117,7 +117,7 @@ sudo netstat -tuln | grep -E '6443|9345'
 sudo apt install -y chrony
 sudo systemctl enable chronyd
 sudo systemctl start chronyd
-sudo timedatectl
+sudo systemctl status chrony
 ```
 
 ## Install Control-Plane/Master Node
