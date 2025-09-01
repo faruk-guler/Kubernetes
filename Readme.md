@@ -85,6 +85,12 @@ cp /etc/fstab /etc/fstab.bak
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 free -m
 lscpu
+
+# NTP Synchronization:
+sudo apt install -y chrony
+sudo systemctl enable chronyd
+sudo systemctl start chronyd
+sudo timedatectl
 ```
 
 # Installing:
