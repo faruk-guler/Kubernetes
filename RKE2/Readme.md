@@ -208,6 +208,10 @@ sudo systemctl status rke2-server
 
 # check pods:
 kubectl get pods -A
+
+# Network connectivity test
+curl -k https://192.168.1.120:6443/version
+
 ```
 
 Congratulations! 🎉
