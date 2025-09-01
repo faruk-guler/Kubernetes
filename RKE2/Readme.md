@@ -204,6 +204,7 @@ kubectl cluster-info
 kubectl get componentstatuses
 
 #RKE version:
+rke2 --version
 rke config --list-version --all
 
 # list nodes:
@@ -220,6 +221,9 @@ kubectl get pods -A
 
 # Network connectivity test
 curl -k https://192.168.1.120:6443/version
+
+# CNI control:
+kubectl get daemonset -n kube-system | grep -i cni
 
 ```
 
