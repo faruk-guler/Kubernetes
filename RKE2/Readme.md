@@ -152,6 +152,7 @@ echo 'export PATH=$PATH:/var/lib/rancher/rke2/bin/' >> ~/.bashrc
 source ~/.bashrc
 
 # Get tokens for worker node:
+sudo rke2 token create
 sudo cat /var/lib/rancher/rke2/server/node-token
 
 ```
@@ -169,11 +170,13 @@ sudo nano /etc/rancher/rke2/config.yaml
 server: https://<server>:9345
 token: <token from master server node>
 
-# quick example:
+# ?????:
 >> Edit file >> /etc/rancher/rke2/config.yaml
 server: https://192.168.1.120:9345
 node-name: worker-01
-token: <token-from-master-node>
+
+sudo chmod 600 /etc/rancher/rke2/token
+token-file: /etc/rancher/rke2/token
 # 
 sudo chmod 600 /etc/rancher/rke2/config.yaml
 
