@@ -197,12 +197,14 @@ journalctl -u rke2-agent -f
 Open Ports: https://docs.rke2.io/install/requirements
 sudo netstat -tuln | grep -E '6443|9345'
 
-# Renew RKE2 certificates(365):
+```
+
+``` bash
+## RKE2 certificates(365):
 sudo rke2 certificate rotate
 sudo systemctl restart rke2-server # on server nodes
 sudo systemctl restart rke2-agent  # on agent nodes
 echo "0 0 1 * * root /usr/local/bin/rke2 certificate rotate >> /var/log/rke2/cert-rotate.log 2>&1" | sudo tee /etc/cron.d/rke2-cert-rotate
-
 ```
 
 ## Verify Installation:
