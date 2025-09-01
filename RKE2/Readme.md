@@ -46,7 +46,7 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 ----
 ```
 
-## Other Requirements:
+## Other Prerequisites (All Nodes):
 ``` bash
 # General Information
 - Hostnames must be unique:
@@ -102,19 +102,6 @@ sudo apt update
 sudo apt upgrade
 sudo apt install -y curl wget gnupg lsb-release apt-transport-https ca-certificates
 
-# Disable Firewall or Allow Requirements Ports:
-
-**Control Plane Node
-- TCP: 6443, 2379-2380, 10250, 10257, 10259
-- UDP: 8472 (VXLAN)
-
-**Worker Node**
-- TCP: 10250, 30000-32767
-- UDP: 8472 (VXLAN)
-
-Open Ports: https://docs.rke2.io/install/requirements
-sudo netstat -tuln | grep -E '6443|9345'
-
 # NTP Synchronization:
 sudo apt install -y chrony
 sudo systemctl enable chronyd
@@ -158,6 +145,15 @@ source ~/.bashrc
 sudo rke2 token create
 sudo cat /var/lib/rancher/rke2/server/node-token
 
+# Disable Firewall or Allow Requirements Ports:
+
+**Control Plane Node
+- TCP: 6443, 2379-2380, 10250, 10257, 10259
+- UDP: 8472 (VXLAN)
+
+Open Ports: https://docs.rke2.io/install/requirements
+sudo netstat -tuln | grep -E '6443|9345'
+
 ```
 
 ## Install Worker/Agent Node
@@ -191,6 +187,15 @@ sudo systemctl start rke2-agent.service
 
 # logs:
 journalctl -u rke2-agent -f
+
+# Disable Firewall or Allow Requirements Ports:
+
+**Worker Node**
+- TCP: 10250, 30000-32767
+- UDP: 8472 (VXLAN)
+
+Open Ports: https://docs.rke2.io/install/requirements
+sudo netstat -tuln | grep -E '6443|9345'
 
 # Renew RKE2 certificates(365):
 sudo rke2 certificate rotate
