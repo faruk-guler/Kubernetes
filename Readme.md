@@ -38,16 +38,15 @@ https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-ku
 https://labs.play-with-k8s.com/
 
 # Hosts file configuration:
-Master1 node: sudo hostnamectl set-hostname master
-Node1 worker: sudo hostnamectl set-hostname node1
-Node2 worker: sudo hostnamectl set-hostname node2
-Node3 worker: sudo hostnamectl set-hostname node3
+Master Node: sudo hostnamectl set-hostname master
 
 # DNS Integration:
-127.0.0.1       localhost
-192.168.44.145  master
-192.168.44.146  worker1
-192.168.44.147  worker2
+cat <<EOF | sudo tee /etc/hosts
+127.0.0.1      localhost
+192.168.44.145 master
+192.168.44.146 worker1
+192.168.44.147 worker2
+EOF
 
 # Uniq Servers Verify:
 lsb_release -a
