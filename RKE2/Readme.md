@@ -58,7 +58,7 @@ sudo sysctl --system
 ```bash
 | Name       | CPU | RAM    | IP             | Disk  | OS                       | Role       | Node Type   |
 |------------|-----|--------|----------------|-------|--------------------------|------------|-------------|
-| master-01  | 4   | 8Gi    | 192.168.1.120  | 100GB | Debian 12 "Bookworm" x64 | master-01  | server      |
+| master-01  | 4   | 8Gi    | 192.168.1.120  | 100GB | Debian 12 "Bookworm" x64 | master-*   | server      |
 | worker-01  | 4   | 8Gi    | 192.168.1.245  | 100GB | Debian 12 "Bookworm" x64 | worker-*   | agent       |
 | worker-02  | 4   | 8Gi    | 192.168.1.246  | 100GB | Debian 12 "Bookworm" x64 | worker-*   | agent       |
 | worker-03  | 4   | 8Gi    | 192.168.1.247  | 100GB | Debian 12 "Bookworm" x64 | worker-*   | agent       |
