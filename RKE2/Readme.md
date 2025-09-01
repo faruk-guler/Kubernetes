@@ -117,8 +117,8 @@ sudo netstat -tuln | grep -E '6443|9345'
 
 # NTP Synchronization:
 sudo apt install ntp -y
-sudo systemctl enable ntp
 sudo systemctl start ntp
+sudo systemctl enable ntp
 sudo timedatectl status
 ```
 
