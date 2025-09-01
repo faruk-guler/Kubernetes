@@ -26,7 +26,7 @@ Date: 2025
 -A compatible Linux host. Linux distributions based on Debian and Red Hat
 
 # Server Inventory [Hosts]
-Kubectl:  192.168.44.140
+KubectlExt:  192.168.44.140
 Master:   192.168.44.145
 Worker1:  192.168.44.146
 Worker2:  192.168.44.147
@@ -37,8 +37,10 @@ https://kubernetes.io/
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 https://labs.play-with-k8s.com/
 
-# Hosts file configuration:
+# Hostname configuration:
 Master Node: sudo hostnamectl set-hostname master
+Worker Node: sudo hostnamectl set-hostname worker1
+-------
 
 # DNS Integration:
 cat <<EOF | sudo tee /etc/hosts
@@ -46,6 +48,7 @@ cat <<EOF | sudo tee /etc/hosts
 192.168.44.145 master
 192.168.44.146 worker1
 192.168.44.147 worker2
+192.168.44.148 worker3
 EOF
 
 # Uniq Servers Verify:
