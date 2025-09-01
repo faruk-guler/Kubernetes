@@ -197,6 +197,9 @@ sudo rke2 certificate rotate
 kubectl cluster-info
 kubectl get componentstatuses
 
+#RKE version:
+rke config --list-version --all
+
 # list nodes:
 kubectl get nodes -o wide
 
