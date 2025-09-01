@@ -115,7 +115,7 @@ sudo systemctl status chrony
 sudo mkdir -p /etc/rancher/rke2
 sudo nano /etc/rancher/rke2/config.yaml
 
-# config file:
+# >> config.yaml file:
 node-name: master-01
 write-kubeconfig-mode: "0644"
 cluster-init: true  # required for HA, only on the first master
@@ -131,7 +131,7 @@ sudo systemctl start rke2-server.service
 # logs:
 journalctl -u rke2-server -f
 
-# copy kubeconfig:
+# Kubeconfig for kubectl:
 mkdir -p $HOME/.kube
 sudo cp /etc/rancher/rke2/rke2.yaml $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
