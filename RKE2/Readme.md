@@ -119,7 +119,7 @@ sudo nano /etc/rancher/rke2/config.yaml
 node-name: master-01
 write-kubeconfig-mode: "0644"
 
-# HA:
+#  >> config.yaml file: HA:
 cluster-init: true  # For HA, only on the first master
 server: https://192.168.1.120:9345 # For HA setup (second and subsequent nodes)
 
