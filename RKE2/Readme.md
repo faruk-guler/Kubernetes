@@ -199,7 +199,6 @@ sudo netstat -tuln | grep -E '6443|9345'
 sudo rke2 certificate rotate
 sudo systemctl restart rke2-server # on server nodes
 sudo systemctl restart rke2-agent  # on agent nodes
-echo "0 0 1 * * root /usr/local/bin/rke2 certificate rotate >> /var/log/rke2/cert-rotate.log 2>&1" | sudo tee /etc/cron.d/rke2-cert-rotate
 ```
 
 ## Verify Installation:
