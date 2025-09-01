@@ -99,7 +99,7 @@ free -h
 # Require packages:
 sudo apt update
 sudo apt upgrade
-sudo apt install -y curl wget gnupg lsb-release
+sudo apt install -y curl wget gnupg lsb-release apt-transport-https ca-certificates
 
 # Disable Firewall or Allow Requirements Ports:
 
