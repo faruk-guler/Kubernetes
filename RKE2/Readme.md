@@ -98,7 +98,7 @@ sudo apt update
 sudo apt upgrade
 sudo apt install -y curl wget gnupg lsb-release
 
-# Firewall Requirements and Ports:
+# Disable Firewall or Allow Requirements Ports:
 
 **Control Plane Node
 - TCP: 6443, 2379-2380, 10250, 10257, 10259
