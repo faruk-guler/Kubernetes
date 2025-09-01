@@ -132,7 +132,8 @@ write-kubeconfig-mode: "0644"
 cluster-init: true  # required for single master HA
 
 # install:
-curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="stable" sh -
+curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_VERSION="v1.27.8+rke2r1" sudo sh - [specific version]
+curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_CHANNEL="stable" sudo sh -         [specific channel]
 
 # Starting service:
 sudo systemctl enable rke2-server.service
