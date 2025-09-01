@@ -94,6 +94,7 @@ EOF
 sudo swapoff -a
 sudo sed -i '/ swap / s/^/#/' /etc/fstab # Permanently
 sudo mount -a
+swapon --show
 free -h
 
 # Require packages:
@@ -195,6 +196,7 @@ journalctl -u rke2-agent -f
 sudo rke2 certificate rotate
 sudo systemctl restart rke2-server # on server nodes
 sudo systemctl restart rke2-agent  # on agent nodes
+echo "0 0 1 * * root /usr/local/bin/rke2 certificate rotate >> /var/log/rke2/cert-rotate.log 2>&1" | sudo tee /etc/cron.d/rke2-cert-rotate
 
 ```
 
