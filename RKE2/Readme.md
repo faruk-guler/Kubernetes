@@ -34,29 +34,6 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 - FIPS 140-2 compliance
 -
 
-
-
-
-```bash
-# Kernel modules:
-sudo modprobe br_netfilter
-sudo modprobe overlay
-
-# Persistent Kernel modules:
-echo 'br_netfilter' | sudo tee /etc/modules-load.d/k8s.conf
-echo 'overlay' | sudo tee /etc/modules-load.d/k8s.conf
-
-## Sysctl conf.
-cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
-net.ipv4.ip_forward = 1
-EOF
-sudo sysctl --system
-
-```
-
-
 ## VM Requirements:
 ```bash
 | Name       | CPU | RAM    | IP             | Disk  | OS                       | Role       | Node Type   |
@@ -80,6 +57,22 @@ sudo sysctl --system
 
 - https://docs.rke2.io/install/requirements
 - https://docs.rke2.io/architecture
+
+# Kernel modules:
+sudo modprobe br_netfilter
+sudo modprobe overlay
+
+# Persistent Kernel modules:
+echo 'br_netfilter' | sudo tee /etc/modules-load.d/k8s.conf
+echo 'overlay' | sudo tee /etc/modules-load.d/k8s.conf
+
+# Sysctl conf.
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOF
+sudo sysctl --system
 
 # Hostname configuration:
 Master Node: sudo hostnamectl set-hostname master-01
