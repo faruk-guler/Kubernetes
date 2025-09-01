@@ -225,7 +225,7 @@ sudo systemctl status rke2-server
 kubectl get pods -A
 
 # Network connectivity test
-curl -k https://192.168.1.120:6443/version
+curl -k https://192.168.1.120:9345/version
 
 # CNI control:
 kubectl get daemonset -n kube-system | grep -i cni
