@@ -38,10 +38,13 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 
 
 ```bash
-## Bu kritik adımlar eksik:
-Kernel modülleri
+# Kernel modules:
 sudo modprobe br_netfilter
 sudo modprobe overlay
+
+# Persistent Kernel modules:
+echo 'br_netfilter' | sudo tee /etc/modules-load.d/k8s.conf
+echo 'overlay' | sudo tee /etc/modules-load.d/k8s.conf
 
 ## Sysctl conf.
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
