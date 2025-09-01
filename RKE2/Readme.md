@@ -43,7 +43,7 @@ Kernel modülleri
 sudo modprobe br_netfilter
 sudo modprobe overlay
 
-## Sysctl ayarları
+## Sysctl conf.
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
@@ -119,6 +119,7 @@ sudo netstat -tuln | grep -E '6443|9345'
 sudo apt install ntp -y
 sudo systemctl enable ntp
 sudo systemctl start ntp
+sudo timedatectl status
 ```
 
 ## Install Server/Master Node
