@@ -33,6 +33,7 @@ RKE2 is the enterprise ready,stable and secure kubernetes distribution which is 
 - Air-Gapped Support
 - FIPS 140-2 compliance
 - Tip: For HA, use an odd number of server nodes (3 or 5) and a stable VIP/DNS with tls-san.
+- 
 
 ## VM Requirements:
 ```bash
