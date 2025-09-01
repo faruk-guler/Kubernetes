@@ -111,7 +111,7 @@ sudo systemctl status chrony
 
 ## Install Control-Plane/Master Node
 ``` bash
-# Before running the install script, create the config file:
+# Create config file
 sudo mkdir -p /etc/rancher/rke2
 sudo nano /etc/rancher/rke2/config.yaml
 
@@ -124,12 +124,10 @@ cluster-init: true  # required for HA, only on the first master
 curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_VERSION="v1.28.6+rke2r1" sudo sh - [specific version]
 curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_CHANNEL="stable" sudo sh -         [specific channel]
 
-# Starting service:
+# Starting Service and logs:
 sudo systemctl enable rke2-server.service
 sudo systemctl start rke2-server.service
-
-# logs:
-journalctl -u rke2-server -f
+sudo journalctl -u rke2-server -f
 
 # Kubeconfig for kubectl:
 mkdir -p $HOME/.kube
@@ -161,32 +159,25 @@ sudo netstat -tuln | grep -E '6443|9345'
 # install:
 curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="agent" sh -
 
-# Preparing config file: Creating file
+# Create config file:
 sudo mkdir -p /etc/rancher/rke2
 sudo nano /etc/rancher/rke2/config.yaml
 
-# config file: [Master server ip or Hostname]
-server: https://<server>:9345
-token: <token from master server node>
-
-# ?????:
->> Edit file >> /etc/rancher/rke2/config.yaml
-server: https://192.168.1.120:9345
+# >> config.yaml file:
 node-name: worker-01
+server: https://192.168.1.120:9345
 token-file: /etc/rancher/rke2/token
 
-# ???:
+# ??????:
 sudo chmod 600 /etc/rancher/rke2/config.yaml
 sudo chmod 600 /etc/rancher/rke2/token
 sudo chown root:root /etc/rancher/rke2/config.yaml
 sudo chown root:root /etc/rancher/rke2/token
 
-# Starting Service:
+# Starting Service and logs:
 sudo systemctl enable rke2-agent.service
 sudo systemctl start rke2-agent.service
-
-# logs:
-journalctl -u rke2-agent -f
+sudo journalctl -u rke2-agent -f
 
 # Disable Firewall or Allow Requirements Ports:
 
