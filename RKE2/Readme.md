@@ -116,8 +116,9 @@ Open Ports: https://docs.rke2.io/install/requirements
 sudo netstat -tuln | grep -E '6443|9345'
 
 # NTP Synchronization:
-1111111111
-
+sudo apt install ntp -y
+sudo systemctl enable ntp
+sudo systemctl start ntp
 ```
 
 ## Install Server/Master Node
