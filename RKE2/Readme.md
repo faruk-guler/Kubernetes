@@ -199,8 +199,8 @@ sudo netstat -tuln | grep -E '6443|9345'
 
 ```
 
-``` bash
 ## RKE2 certificates(365):
+``` bash
 sudo rke2 certificate rotate
 sudo systemctl restart rke2-server # on server nodes
 sudo systemctl restart rke2-agent  # on agent nodes
