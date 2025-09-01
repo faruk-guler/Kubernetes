@@ -168,7 +168,7 @@ node-name: worker-01
 server: https://192.168.1.120:9345
 token-file: /etc/rancher/rke2/token
 
-# ??????:
+# Setting File Permissions:
 sudo chmod 600 /etc/rancher/rke2/config.yaml
 sudo chmod 600 /etc/rancher/rke2/token
 sudo chown root:root /etc/rancher/rke2/config.yaml
