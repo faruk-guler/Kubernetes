@@ -103,10 +103,9 @@ sudo apt upgrade
 sudo apt install -y curl wget gnupg lsb-release apt-transport-https ca-certificates
 
 # NTP Synchronization:
-sudo apt install -y chrony
-sudo systemctl enable chronyd
-sudo systemctl start chronyd
-sudo systemctl status chrony
+sudo systemctl enable --now systemd-timesyncd
+sudo systemctl status systemd-timesyncd
+timedatectl
 ```
 
 ## Install Control-Plane/Master Node
