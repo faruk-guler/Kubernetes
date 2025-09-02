@@ -179,10 +179,8 @@ echo "MASTER_NODEDAN_ALINAN_TOKEN_DEGERI" | sudo tee /etc/rancher/rke2/token ???
 token-file: /etc/rancher/rke2/token
 
 # Setting File Permissions:
-sudo chmod 600 /etc/rancher/rke2/config.yaml
-sudo chmod 600 /etc/rancher/rke2/token
-sudo chown root:root /etc/rancher/rke2/config.yaml
-sudo chown root:root /etc/rancher/rke2/token
+sudo chmod 600 /etc/rancher/rke2/config.yaml /etc/rancher/rke2/token
+sudo chown root:root /etc/rancher/rke2/config.yaml /etc/rancher/rke2/token
 
 # Starting Service and logs:
 sudo systemctl enable rke2-agent.service
