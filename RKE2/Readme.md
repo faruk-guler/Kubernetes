@@ -82,6 +82,9 @@ Master Node: sudo hostnamectl set-hostname master-01
 Worker Node: sudo hostnamectl set-hostname worker-01
 -------
 
+# SELinux/AppArmor:
+---------
+
 # Simple DNS Integration: "/etc/hosts" file:
 cat <<EOF | sudo tee /etc/hosts
 192.168.1.120 master-01
