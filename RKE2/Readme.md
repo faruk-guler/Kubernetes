@@ -104,6 +104,7 @@ sudo apt install -y curl wget gnupg lsb-release apt-transport-https ca-certifica
 
 # NTP Synchronization:
 sudo systemctl enable --now systemd-timesyncd
+sudo systemctl restart systemd-timesyncd
 sudo systemctl status systemd-timesyncd
 timedatectl
 ```
