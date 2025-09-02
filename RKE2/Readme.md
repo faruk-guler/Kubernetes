@@ -23,6 +23,7 @@ Name: RKE2 (Rancher Kubernetes Engine 2) Cluster Installation Script.
 POC: Debian 12 "Bookworm"
 Author: faruk guler
 Date: 2025
+Cluster Type: Single / HA-ready
 ```
 ## Introduction:
 RKE2 is the enterprise ready,stable and secure kubernetes distribution which is easy to install configure and manage. It is a fully conformant Kubernetes distribution that focuses on security and compliance within the U.S. Federal Government sector. Most of the enterprise configurations comes out of the boxy from the installation like:
