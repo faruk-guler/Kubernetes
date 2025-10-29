@@ -1,0 +1,6 @@
+#!/bin/bash
+ctr=$(buildah from fedora)
+buildah run $ctr -- dnf install -y nginx
+buildah config --cmd='["nginx", "-g", "daemon off;"]' --port=80 $ctr
+buildah commit $ctr my-nginx
+buildah rm $ctr
