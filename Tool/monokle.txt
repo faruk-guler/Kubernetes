@@ -1,0 +1,5 @@
+Monokle, genellikle Kubernetes ve Open Policy Agent (OPA) ile ilgili YAML/JSON yapılarını analiz etmek,
+düzenlemek ve doğrulamak için kullanılan bir açık kaynaklı araçtır.
+Kısaca, Kubernetes konfigürasyonlarınızı daha güvenli, tutarlı ve hatasız hâle getirmeyi amaçlar.
+
+https://github.com/kubeshop/monokle
