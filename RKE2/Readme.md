@@ -251,5 +251,5 @@ https://docs.rke2.io/install/requirements/
 https://docs.rke2.io/architecture/
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
-
+https://medium.com/devops-thunder/modern-kubernetes-rke2-ile-g%C3%BCvenli-bir-cluster-nas%C4%B1l-kurulur-40856f02614a
 ```
