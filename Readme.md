@@ -11,7 +11,7 @@
      |  _| .'|  _| | | '_| . | | | | -_|  _|
 WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
 
-Name: Classic (Vanilla) Kubernetes Cluster Installation Script.
+Name: (Vanilla) Kubernetes Cluster Installation Script.
 POC: Debian 12 "Bookworm"
 Author: faruk guler
 Date: 2025
