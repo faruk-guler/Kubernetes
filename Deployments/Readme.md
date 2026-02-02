@@ -1248,6 +1248,6 @@ spec:
 ---
 
 ```yaml
-**Author:** [github/faruk-guler](https://github.com/faruk-guler)
-**Page:** [www.farukguler.com](https://www.farukguler.com)
+**Author: https://github.com/faruk-guler
+**WebPage: https://www.farukguler.com
 ```
