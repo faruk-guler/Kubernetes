@@ -1,4 +1,4 @@
-# Kubernetes Master Cheat Sheet - Eksiksiz YAML Referansı
+# Kubernetes Master Cheat Sheet -YAML Referansı
 
 ## 📋 İçindekiler
 
