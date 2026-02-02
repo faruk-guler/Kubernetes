@@ -1295,6 +1295,3 @@ metadata:
     
     istio-injection: enabled          # ---> [OPSİYONEL] Service Mesh (Istio) sidecar otomatik enjekte et
 ```
-
----
-
