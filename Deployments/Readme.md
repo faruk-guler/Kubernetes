@@ -1113,6 +1113,31 @@ spec:
 
 ## 16. Resource Management
 
+### PriorityClass
+
+```yaml
+apiVersion: scheduling.k8s.io/v1      # ---> PriorityClass API
+kind: PriorityClass                   # ---> PriorityClass objesi
+metadata:
+  name: high-priority                 # ---> PriorityClass adı (Pod'da referans edilir)
+value: 1000000                        # ---> Öncelik değeri (yüksek = daha öncelikli)
+                                      # ---> Varsayılan sistem pod'ları: 2000000000
+                                      # ---> Kullanıcı pod'ları için önerilen: 0 - 1000000
+globalDefault: false                  # ---> [OPSİYONEL] Varsayılan PriorityClass mi?
+preemptionPolicy: PreemptLowerPriority  # ---> [OPSİYONEL] Düşük öncelikli pod'ları çıkarabilir mi
+                                      # ---> PreemptLowerPriority (varsayılan) veya Never
+description: "Kritik iş yükleri için yüksek öncelik"  # ---> [OPSİYONEL] Açıklama
+---
+# [ÖRNEK 2] Düşük öncelikli batch job'lar için
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: low-priority
+value: 100
+preemptionPolicy: Never               # ---> Başka pod'ları çıkartma
+description: "Batch işler için düşük öncelik"
+```
+
 ### ResourceQuota
 
 ```yaml
