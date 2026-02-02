@@ -31,17 +31,17 @@ metadata:
   labels:                             # ---> Pod'ları organize etmek ve seçmek için etiketler
     app: techops                      # ---> Uygulama etiketi (Service/Deployment seçicileri için)
     tier: backend                     # ---> Uygulama katmanını tanımlamak için
-  annotations:                        # ---> [EK] İzleme araçları veya notlar için veri
+  annotations:                        # ---> [OPSİYONEL] İzleme araçları veya notlar için veri
     "prometheus.io/scrape": "true"    # ---> Prometheus bu podu izlesin
 
 spec:
   # --- 1. GENEL AYARLAR ---
   restartPolicy: Always               # ---> Pod yeniden başlatma ilkesi (Always, OnFailure, Never)
-  serviceAccountName: backend-sa      # ---> [EK] API yetkileri için kimlik (RBAC)
-  automountServiceAccountToken: false # ---> [EK] Güvenlik için token mount etme (API erişimi yoksa)
-  terminationGracePeriodSeconds: 30   # ---> [EK] Kapanırken (SIGTERM) uygulamanın bitirmesi için tanınan süre
-  priorityClassName: high-priority    # ---> [EK] Önemli Pod (Yer yoksa diğerlerini siler)
-  imagePullSecrets:                   # ---> [EK] Özel (Private) Registry şifresi
+  serviceAccountName: backend-sa      # ---> [OPSİYONEL] API yetkileri için kimlik (RBAC)
+  automountServiceAccountToken: false # ---> [OPSİYONEL] Güvenlik için token mount etme (API erişimi yoksa)
+  terminationGracePeriodSeconds: 30   # ---> [OPSİYONEL] Kapanırken (SIGTERM) uygulamanın bitirmesi için tanınan süre
+  priorityClassName: high-priority    # ---> [OPSİYONEL] Önemli Pod (Yer yoksa diğerlerini siler)
+  imagePullSecrets:                   # ---> [OPSİYONEL] Özel (Private) Registry şifresi
   - name: my-registry-key
 
   # --- 2. ZAMANLAMA VE YERLEŞİM (SCHEDULING) ---
@@ -54,8 +54,8 @@ spec:
     value: "true"                     # ---> Değer
     effect: "NoExecute"               # ---> Etki
 
-  affinity:                           # ---> [EK] Gelişmiş Yerleşim Kuralları
-    podAntiAffinity:                  # ---> [EK] Yedeklilik: Aynı uygulamanın yanına gitme
+  affinity:                           # ---> [OPSİYONEL] Gelişmiş Yerleşim Kuralları
+    podAntiAffinity:                  # ---> [OPSİYONEL] Yedeklilik: Aynı uygulamanın yanına gitme
       preferredDuringSchedulingIgnoredDuringExecution:
       - weight: 100
         podAffinityTerm:
@@ -63,7 +63,7 @@ spec:
             matchExpressions: [{key: app, operator: In, values: ["techops"]}]
           topologyKey: kubernetes.io/hostname
 
-  topologySpreadConstraints:          # ---> [EK] Zone'lara (Veri Merkezlerine) eşit dağıt
+  topologySpreadConstraints:          # ---> [OPSİYONEL] Zone'lara (Veri Merkezlerine) eşit dağıt
   - maxSkew: 1
     topologyKey: topology.kubernetes.io/zone
     whenUnsatisfiable: DoNotSchedule
@@ -71,16 +71,16 @@ spec:
       matchLabels: { app: techops }
 
   # --- 3. AĞ VE DNS ---
-  hostNetwork: false                  # ---> [EK] Host ağını kullanma (Varsayılan false, güvenlik için önemli)
-  enableServiceLinks: false           # ---> [EK] Gereksiz env variable'ları devre dışı bırak (Performans)
-  shareProcessNamespace: false        # ---> [EK] Container'lar arası process görünürlüğü (Sidecar için true yapılabilir)
-  dnsPolicy: ClusterFirst             # ---> [EK] DNS politikası (ClusterFirst, Default, None)
-  dnsConfig:                          # ---> [EK] Özel DNS ayarları
+  hostNetwork: false                  # ---> [OPSİYONEL] Host ağını kullanma (Varsayılan false, güvenlik için önemli)
+  enableServiceLinks: false           # ---> [OPSİYONEL] Gereksiz env variable'ları devre dışı bırak (Performans)
+  shareProcessNamespace: false        # ---> [OPSİYONEL] Container'lar arası process görünürlüğü (Sidecar için true yapılabilir)
+  dnsPolicy: ClusterFirst             # ---> [OPSİYONEL] DNS politikası (ClusterFirst, Default, None)
+  dnsConfig:                          # ---> [OPSİYONEL] Özel DNS ayarları
     options:
     - name: ndots                     # ---> DNS çözümleme hassasiyeti
       value: "2"
 
-  hostAliases:                        # ---> [EK] /etc/hosts dosyasına ekleme
+  hostAliases:                        # ---> [OPSİYONEL] /etc/hosts dosyasına ekleme
   - ip: "10.0.0.5"
     hostnames: ["db.local"]
 
@@ -89,7 +89,7 @@ spec:
     runAsUser: 1000                   # ---> User ID 1000 (Root Değil)
     runAsGroup: 3000                  # ---> Group ID 3000
     fsGroup: 2000                     # ---> Disklerin grup sahipliği
-    seccompProfile:                   # ---> [EK] Kernel system call filtreleme
+    seccompProfile:                   # ---> [OPSİYONEL] Kernel system call filtreleme
       type: RuntimeDefault            # ---> RuntimeDefault, Localhost, veya Unconfined
 
   # --- 5. KONTEYNERLER ---
@@ -98,33 +98,33 @@ spec:
   # A) Ana Konteyner
   - name: techops-container           # ---> Konteynerin adı
     image: nginx:1.23                 # ---> Konteyner için kullanılacak Docker imajı
-    imagePullPolicy: IfNotPresent     # ---> [EK] İmajı ne zaman çekecek (Always, IfNotPresent, Never)
+    imagePullPolicy: IfNotPresent     # ---> [OPSİYONEL] İmajı ne zaman çekecek (Always, IfNotPresent, Never)
     ports:
-    - name: http                      # ---> [EK] Port ismi (Service selector için)
+    - name: http                      # ---> [OPSİYONEL] Port ismi (Service selector için)
       containerPort: 80               # ---> Konteynerin dışarı açtığı port
-      protocol: TCP                   # ---> [EK] Protokol (TCP/UDP/SCTP)
+      protocol: TCP                   # ---> [OPSİYONEL] Protokol (TCP/UDP/SCTP)
     
     env:                              # ---> Konteyner içine aktarılacak ortam değişkenleri
     - name: ENV
       value: production
 
-    # [EK] Kaynak Limitleri (Canlı Ortam Şartı)
+    # [OPSİYONEL] Kaynak Limitleri (Canlı Ortam Şartı)
     resources:                        # ---> CPU/RAM/Disk Kullanımı
       requests:                       # ---> Garanti edilen kaynak
         cpu: "500m"                   # ---> Yarım çekirdek
         memory: "128Mi"               # ---> 128 MB RAM
-        ephemeral-storage: "1Gi"      # ---> [EK] Log/geçici dosyalar için disk
+        ephemeral-storage: "1Gi"      # ---> [OPSİYONEL] Log/geçici dosyalar için disk
       limits:                         # ---> Tavan limit
         cpu: "1"                      # ---> 1 çekirdek
         memory: "256Mi"               # ---> 256 MB RAM
-        ephemeral-storage: "2Gi"      # ---> [EK] Disk dolarsa Pod evict edilir
+        ephemeral-storage: "2Gi"      # ---> [OPSİYONEL] Disk dolarsa Pod evict edilir
 
-    # [EK] Sağlık Kontrolleri
-    startupProbe:                     # ---> [EK] Yavaş açılan uygulamalar için ilk kontrol
+    # [OPSİYONEL] Sağlık Kontrolleri
+    startupProbe:                     # ---> [OPSİYONEL] Yavaş açılan uygulamalar için ilk kontrol
       httpGet: { path: /healthz, port: 80 }
       failureThreshold: 30            # ---> 30 deneme hakkı
-      periodSeconds: 10               # ---> [EK] Kontrol sıklığı
-      timeoutSeconds: 3               # ---> [EK] Cevap bekleme süresi
+      periodSeconds: 10               # ---> [OPSİYONEL] Kontrol sıklığı
+      timeoutSeconds: 3               # ---> [OPSİYONEL] Cevap bekleme süresi
     
     livenessProbe:                    # ---> "Uygulama yaşıyor mu?" (Çökerse Restart)
       httpGet: { path: /healthz, port: 80 }
@@ -137,15 +137,15 @@ spec:
       periodSeconds: 5
       timeoutSeconds: 2
 
-    # [EK] Yaşam Döngüsü (Graceful Shutdown)
+    # [OPSİYONEL] Yaşam Döngüsü (Graceful Shutdown)
     lifecycle:
       preStop:                        # ---> Kapanmadan hemen önce çalışacak komut
         exec: { command: ["/usr/sbin/nginx", "-s", "quit"] }
 
-    # [EK] Güvenlik (Container Seviyesi)
+    # [OPSİYONEL] Güvenlik (Container Seviyesi)
     securityContext:
       readOnlyRootFilesystem: true    # ---> Dosya sistemini yazmaya kapat
-      runAsNonRoot: true              # ---> [EK] Root kullanıcı ile çalışmayı engelle
+      runAsNonRoot: true              # ---> [OPSİYONEL] Root kullanıcı ile çalışmayı engelle
       capabilities:                   # ---> Linux Kernel yetkilerini kısıtla
         drop: ["ALL"]
         add: ["NET_BIND_SERVICE"]     # ---> Sadece port açmaya izin ver
@@ -158,10 +158,10 @@ spec:
       mountPath: /var/cache/nginx
     - name: tmp-pid                   # ---> Nginx'in PID dosyası yazabilmesi için
       mountPath: /var/run
-    - name: shared-logs               # ---> [EK] Logları buraya yaz ki Sidecar okusun
+    - name: shared-logs               # ---> [OPSİYONEL] Logları buraya yaz ki Sidecar okusun
       mountPath: /var/log/nginx
 
-  # B) [EK] Sidecar Konteyner (Log Shipper)
+  # B) [OPSİYONEL] Sidecar Konteyner (Log Shipper)
   - name: log-shipper                 # ---> Ana uygulamanın yanında çalışan yardımcı
     image: busybox
     args: ["/bin/sh", "-c", "tail -n0 -F /shared/access.log 2>/dev/null || sleep infinity"] # ---> Paylaşılan logu oku
@@ -181,7 +181,7 @@ spec:
     emptyDir: {}
   - name: tmp-pid                     # ---> Geçici Disk (PID)
     emptyDir: {}
-  - name: shared-logs                 # ---> [EK] Sidecar ile paylaşılan disk
+  - name: shared-logs                 # ---> [OPSİYONEL] Sidecar ile paylaşılan disk
     emptyDir: {}
 
   # --- 7. BAŞLANGIÇ (INIT) ---
@@ -211,7 +211,7 @@ metadata:
     app: nginx                        # ---> Deployment etiketleri
 spec:
   replicas: 3                         # ---> Kaç Pod çalışacak
-  revisionHistoryLimit: 10            # ---> [EK] Kaç eski versiyon saklanacak (Rollback için)
+  revisionHistoryLimit: 10            # ---> [OPSİYONEL] Kaç eski versiyon saklanacak (Rollback için)
   
   selector:                           # ---> Hangi Pod'ları yöneteceğini belirler
     matchLabels:                      # ---> Pod template'teki labels ile AYNI OLMALI
@@ -227,8 +227,8 @@ spec:
     metadata:
       labels:                         # ---> Pod etiketleri (selector ile eşleşmeli)
         app: nginx
-        tier: frontend                # ---> [EK] NetworkPolicy için katman etiketi (Frontend)
-        version: "1.23"               # ---> [EK] Versiyon takibi için
+        tier: frontend                # ---> [OPSİYONEL] NetworkPolicy için katman etiketi (Frontend)
+        version: "1.23"               # ---> [OPSİYONEL] Versiyon takibi için
     spec:
       containers:
       - name: nginx
@@ -271,7 +271,7 @@ spec:
   serviceName: postgres-headless      # ---> [ZORUNLU] Headless Service adı (DNS için)
   replicas: 3                         # ---> Kaç replica (postgres-sts-0, -1, -2)
   
-  updateStrategy:                     # ---> [EK] Güncelleme stratejisi
+  updateStrategy:                     # ---> [OPSİYONEL] Güncelleme stratejisi
     type: RollingUpdate               # ---> RollingUpdate veya OnDelete
     rollingUpdate:
       partition: 0                    # ---> İlk N pod güncellenmez (0 = hepsi güncellensin)
@@ -284,7 +284,7 @@ spec:
     metadata:
       labels:
         app: postgres
-        tier: database                # ---> [EK] NetworkPolicy için katman etiketi (DB)
+        tier: database                # ---> [OPSİYONEL] NetworkPolicy için katman etiketi (DB)
     spec:
       containers:
       - name: postgres
@@ -294,19 +294,19 @@ spec:
           containerPort: 5432
           protocol: TCP
         
-        startupProbe:                 # ---> [EK] DB'nin açılması zaman alabilir
+        startupProbe:                 # ---> [OPSİYONEL] DB'nin açılması zaman alabilir
           exec:
             command: ["pg_isready", "-U", "postgres"]
           failureThreshold: 30
           periodSeconds: 10
         
-        livenessProbe:                # ---> [EK] DB yaşıyor mu?
+        livenessProbe:                # ---> [OPSİYONEL] DB yaşıyor mu?
           exec:
             command: ["pg_isready", "-U", "postgres"]
           initialDelaySeconds: 30
           periodSeconds: 10
         
-        readinessProbe:               # ---> [EK] DB sorgu kabul ediyor mu?
+        readinessProbe:               # ---> [OPSİYONEL] DB sorgu kabul ediyor mu?
           exec:
             command: ["pg_isready", "-U", "postgres"]
           initialDelaySeconds: 5
@@ -382,14 +382,14 @@ spec:
       labels:
         app: node-exporter
     spec:
-      hostNetwork: true               # ---> [EK] Host network kullan (Metrics toplama için)
-      hostPID: true                   # ---> [EK] Host process'leri gör
+      hostNetwork: true               # ---> [OPSİYONEL] Host network kullan (Metrics toplama için)
+      hostPID: true                   # ---> [OPSİYONEL] Host process'leri gör
       
       tolerations:                    # ---> Master node'da da çalışabilsin
       - key: node-role.kubernetes.io/control-plane  # ---> Modern Kubernetes (1.20+)
         operator: Exists
         effect: NoSchedule
-      - key: node-role.kubernetes.io/master         # ---> [EK] Eski cluster'lar için
+      - key: node-role.kubernetes.io/master         # ---> [OPSİYONEL] Eski cluster'lar için
         operator: Exists
         effect: NoSchedule
       
@@ -437,7 +437,7 @@ kind: Job                             # ---> Job objesi
 metadata:
   name: database-backup               # ---> Job adı
 spec:
-  ttlSecondsAfterFinished: 3600       # ---> [EK] Job tamamlandıktan 1 saat sonra sil
+  ttlSecondsAfterFinished: 3600       # ---> [OPSİYONEL] Job tamamlandıktan 1 saat sonra sil
   backoffLimit: 3                     # ---> Kaç kez hata sonrası yeniden dener
   completions: 1                      # ---> Kaç başarılı pod gerekli
   parallelism: 1                      # ---> Aynı anda kaç pod çalışabilir
@@ -540,8 +540,8 @@ metadata:
   name: nginx-clusterip             # ---> Service adı
 spec:
   type: ClusterIP                     # ---> Cluster içi IP (Dışardan erişim yok)
-  sessionAffinity: ClientIP           # ---> [EK] Sticky sessions (aynı client = aynı pod)
-  sessionAffinityConfig:              # ---> [EK] Session ayarları
+  sessionAffinity: ClientIP           # ---> [OPSİYONEL] Sticky sessions (aynı client = aynı pod)
+  sessionAffinityConfig:              # ---> [OPSİYONEL] Session ayarları
     clientIP:
       timeoutSeconds: 10800           # ---> 3 saat
   selector:                           # ---> Hangi Pod'lara trafik gidecek
@@ -550,8 +550,8 @@ spec:
   - name: http                        # ---> Port adı
     protocol: TCP                     # ---> Protokol
     port: 80                          # ---> Service'in dinlediği port
-    targetPort: http                  # ---> [EK] Named port kullanımı (Pod'daki port ismi)
-  - name: https                       # ---> [EK] Multiple port
+    targetPort: http                  # ---> [OPSİYONEL] Named port kullanımı (Pod'daki port ismi)
+  - name: https                       # ---> [OPSİYONEL] Multiple port
     protocol: TCP
     port: 443
     targetPort: 443
@@ -569,27 +569,27 @@ spec:
   - name: http
     protocol: TCP
     port: 80                          # ---> Service port (Cluster içi)
-    targetPort: http                  # ---> [EK] Named port kullanımı (Pod'daki port ismi)
-    nodePort: 30080                   # ---> [EK] Node üzerindeki port (30000-32767), boş bırakılırsa otomatik
+    targetPort: http                  # ---> [OPSİYONEL] Named port kullanımı (Pod'daki port ismi)
+    nodePort: 30080                   # ---> [OPSİYONEL] Node üzerindeki port (30000-32767), boş bırakılırsa otomatik
 ---
 # [TİP 3] LoadBalancer - Cloud provider load balancer (AWS ELB, GCP LB)
 apiVersion: v1
 kind: Service
 metadata:
   name: nginx-lb
-  annotations:                        # ---> [EK] Cloud-specific annotations
+  annotations:                        # ---> [OPSİYONEL] Cloud-specific annotations
     service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
 spec:
   type: LoadBalancer                  # ---> Cloud LB oluşturur
-  externalTrafficPolicy: Local        # ---> [EK] Local (kaynak IP korunur) veya Cluster
+  externalTrafficPolicy: Local        # ---> [OPSİYONEL] Local (kaynak IP korunur) veya Cluster
   selector:
     app: nginx
   ports:
   - name: http
     protocol: TCP
     port: 80
-    targetPort: http                  # ---> [EK] Named port kullanımı (Pod'daki port ismi)
-  loadBalancerSourceRanges:           # ---> [EK] Hangi IP'ler erişebilir
+    targetPort: http                  # ---> [OPSİYONEL] Named port kullanımı (Pod'daki port ismi)
+  loadBalancerSourceRanges:           # ---> [OPSİYONEL] Hangi IP'ler erişebilir
   - "203.0.113.0/24"
 ---
 # [TİP 4] Headless Service - StatefulSet için (IP yok, sadece DNS)
@@ -615,12 +615,12 @@ apiVersion: networking.k8s.io/v1      # ---> Ingress API
 kind: Ingress                         # ---> Ingress objesi
 metadata:
   name: multi-domain-ingress          # ---> Ingress adı
-  annotations:                        # ---> [EK] Ingress controller'a özel ayarlar
+  annotations:                        # ---> [OPSİYONEL] Ingress controller'a özel ayarlar
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"  # ---> [EK] Otomatik SSL (cert-manager)
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"  # ---> [OPSİYONEL] Otomatik SSL (cert-manager)
 spec:
-  ingressClassName: nginx             # ---> [EK] Hangi Ingress controller (nginx, traefik, haproxy)
+  ingressClassName: nginx             # ---> [OPSİYONEL] Hangi Ingress controller (nginx, traefik, haproxy)
   
   tls:                                # ---> HTTPS / TLS yapılandırması
   - hosts:
@@ -773,7 +773,7 @@ spec:
         configMapKeyRef:
           name: nginx-config          # ---> ConfigMap adı
           key: LOG_LEVEL              # ---> ConfigMap'teki key
-    envFrom:                          # ---> [EK] Tüm key'leri env variable yap
+    envFrom:                          # ---> [OPSİYONEL] Tüm key'leri env variable yap
     - configMapRef:
         name: nginx-config
 ---
@@ -868,7 +868,7 @@ spec:
   - name: secret-volume
     secret:
       secretName: postgres-secret     # ---> Secret adı
-      defaultMode: 0400               # ---> [EK] File permissions (read-only owner)
+      defaultMode: 0400               # ---> [OPSİYONEL] File permissions (read-only owner)
 ---
 # [KULLANIM 3] ImagePullSecrets
 apiVersion: v1
@@ -907,7 +907,7 @@ spec:
                                       # ---> Delete: PV otomatik silinir
                                       # ---> Recycle: Data silinir, PV yeniden kullanılır (deprecated)
   
-  storageClassName: nfs-storage       # ---> [EK] StorageClass adı (PVC ile eşleşmeli)
+  storageClassName: nfs-storage       # ---> [OPSİYONEL] StorageClass adı (PVC ile eşleşmeli)
   
   nfs:                                # ---> NFS backend
     server: 192.168.1.100             # ---> NFS server IP
@@ -928,7 +928,7 @@ spec:
   
   storageClassName: nfs-storage       # ---> PV ile aynı StorageClass
   
-  # [EK] Selector - Spesifik PV seçimi
+  # [OPSİYONEL] Selector - Spesifik PV seçimi
   selector:
     matchLabels:
       environment: production
@@ -961,7 +961,7 @@ kind: StorageClass                    # ---> StorageClass objesi
 metadata:
   name: fast-ssd                      # ---> StorageClass adı
   annotations:
-    storageclass.kubernetes.io/is-default-class: "false"  # ---> [EK] Varsayılan SC mi?
+    storageclass.kubernetes.io/is-default-class: "false"  # ---> [OPSİYONEL] Varsayılan SC mi?
 provisioner: kubernetes.io/aws-ebs    # ---> Depolama sağlayıcı
                                       # ---> AWS: kubernetes.io/aws-ebs
                                       # ---> GCP: kubernetes.io/gce-pd
@@ -976,7 +976,7 @@ reclaimPolicy: Delete                 # ---> PVC silinince PV ne olacak (Delete,
 volumeBindingMode: WaitForFirstConsumer  # ---> Ne zaman PV oluşturulacak
                                       # ---> Immediate: PVC oluşturulunca hemen
                                       # ---> WaitForFirstConsumer: Pod oluşturulunca (zone awareness için)
-allowVolumeExpansion: true            # ---> [EK] PVC boyutu artırılabilir mi
+allowVolumeExpansion: true            # ---> [OPSİYONEL] PVC boyutu artırılabilir mi
 ---
 # [KULLANIM] PVC oluştururken StorageClass kullan
 apiVersion: v1
@@ -1003,7 +1003,7 @@ kind: ServiceAccount                  # ---> ServiceAccount objesi
 metadata:
   name: backend-sa                    # ---> ServiceAccount adı
   namespace: production
-automountServiceAccountToken: false   # ---> [EK] Token otomatik mount edilmesin (güvenlik)
+automountServiceAccountToken: false   # ---> [OPSİYONEL] Token otomatik mount edilmesin (güvenlik)
 ---
 # [ADIM 2] Role - Namespace-scoped izinler
 apiVersion: rbac.authorization.k8s.io/v1
@@ -1200,7 +1200,7 @@ spec:
         type: Utilization
         averageUtilization: 80        # ---> %80 RAM kullanımında ölçeklendir
   
-  behavior:                           # ---> [EK] Ölçeklendirme davranışı
+  behavior:                           # ---> [OPSİYONEL] Ölçeklendirme davranışı
     scaleDown:
       stabilizationWindowSeconds: 300  # ---> Scale down için 5 dk bekle
       policies:
@@ -1240,13 +1240,14 @@ spec:
       maxAllowed:                     # ---> Maksimum değerler
         cpu: "2"
         memory: "2Gi"
-      controlledResources:            # ---> [EK] Hangi kaynaklar kontrol edilsin
+      controlledResources:            # ---> [OPSİYONEL] Hangi kaynaklar kontrol edilsin
       - cpu
       - memory
 ```
 
 ---
 
-**Author:** [github/faruk-guler](https://github.com/faruk-guler) 
-
-**Page:** [www.farukguler.com](https://www.farukguler.com) 
+```yaml
+**Author:** [github/faruk-guler](https://github.com/faruk-guler)
+**Page:** [www.farukguler.com](https://www.farukguler.com)
+```
