@@ -1,5 +1,4 @@
 # Kubernetes Master Cheat Sheet -YAML Referansı
-**Yazar:** [github/faruk-guler](https://github.com/faruk-guler) [www.farukguler.com](https://www.farukguler.com)
 
 ## 📋 İçindekiler
 
@@ -1247,3 +1246,7 @@ spec:
 ```
 
 ---
+
+**Author:** [github/faruk-guler](https://github.com/faruk-guler) 
+
+**Page:** [www.farukguler.com](https://www.farukguler.com) 
