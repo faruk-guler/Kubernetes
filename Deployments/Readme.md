@@ -23,6 +23,7 @@
 14. [RBAC](#14-rbac-serviceaccount-role-rolebinding) - Kimlik & Yetkilendirme
 15. [PodDisruptionBudget](#15-poddisruptionbudget) - High-availability koruması
 16. [Resource Management](#16-resource-management) - Quota, LimitRange, HPA, VPA
+17. [Namespace](#17-namespace) - İzolasyon & Güvenlik (PSA)
 
 ---
 
@@ -1273,6 +1274,26 @@ spec:
       controlledResources:            # ---> [OPSİYONEL] Hangi kaynaklar kontrol edilsin
       - cpu
       - memory
+```
+## 17. Namespace
+
+```yaml
+apiVersion: v1
+kind: Namespace                       # ---> Namespace objesi
+metadata:
+  name: production                    # ---> Namespace adı
+  labels:                             # ---> [ÖNEMLİ] Pod Security Admission (PSA) Etiketleri
+    # Modern Güvenlik (v1.25+) - PodSecurityPolicy yerine geçer
+    pod-security.kubernetes.io/enforce: restricted  # ---> [KURAL] Sıkı güvenlik (Root yasak, Volume kısıtlı)
+                                                  # ---> baseline: Standart güvenlik
+                                                  # ---> privileged: Kısıtlama yok (Riskli)
+    pod-security.kubernetes.io/enforce-version: "latest"
+    
+    # Uyarı Modu (Audit için)
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: "latest"
+    
+    istio-injection: enabled          # ---> [OPSİYONEL] Service Mesh (Istio) sidecar otomatik enjekte et
 ```
 
 ---
