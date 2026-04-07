@@ -1,0 +1,27 @@
+# 📏 LimitRange Örneği
+
+```yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-limits
+  namespace: production
+spec:
+  limits:
+  - type: Container
+    # VARSAYILAN DEĞERLER (Pod'da tanimlanmazsa atanir)
+    default:
+      cpu: "500m"
+      memory: "512Mi"
+    # VARSAYILAN REQUESTS
+    defaultRequest:
+      cpu: "200m"
+      memory: "256Mi"
+    # İZİN VERİLEN ARALIK
+    max:
+      cpu: "2"
+      memory: "2Gi"
+    min:
+      cpu: "100m"
+      memory: "128Mi"
+```

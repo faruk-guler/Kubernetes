@@ -1,0 +1,167 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zabbix-postgresql-pv
+  namespace: zabbix
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual  # Manuel storage class kullanılacaksa bu geçerli
+  nfs:
+    path: /nfs/kubedata/postgresql
+    server: 192.168.44.145
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zabbix-postgresql-pvc
+  namespace: zabbix
+spec:
+  storageClassName: manual  # StorageClassName seçimini kontrol edin
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: zabbix
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+      - name: postgresql
+        image: postgres:13
+        env:
+        - name: POSTGRES_DB
+          value: "zabbix"
+        - name: POSTGRES_USER
+          value: "zabbix"
+        - name: POSTGRES_PASSWORD
+          value: "zabbix_password"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgresql-storage
+      volumes:
+      - name: postgresql-storage
+        persistentVolumeClaim:
+          claimName: zabbix-postgresql-pvc
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zabbix-server
+  namespace: zabbix
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zabbix-server
+  template:
+    metadata:
+      labels:
+        app: zabbix-server
+    spec:
+      containers:
+      - name: zabbix-server
+        image: zabbix/zabbix-server-pgsql:latest
+        env:
+        - name: DB_SERVER_HOST
+          value: "postgresql"
+        - name: POSTGRES_USER
+          value: "zabbix"
+        - name: POSTGRES_PASSWORD
+          value: "zabbix_password"
+        ports:
+        - containerPort: 10051
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zabbix-web
+  namespace: zabbix
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zabbix-web
+  template:
+    metadata:
+      labels:
+        app: zabbix-web
+    spec:
+      containers:
+      - name: zabbix-web
+        image: zabbix/zabbix-web-nginx-pgsql:latest
+        env:
+        - name: DB_SERVER_HOST
+          value: "postgresql"
+        - name: POSTGRES_USER
+          value: "zabbix"
+        - name: POSTGRES_PASSWORD
+          value: "zabbix_password"
+        ports:
+        - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-server
+  namespace: zabbix
+spec:
+  selector:
+    app: zabbix-server
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-web
+  namespace: zabbix
+spec:
+  selector:
+    app: zabbix-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql
+  namespace: zabbix
+spec:
+  selector:
+    app: postgresql
+  ports:
+    - protocol: TCP
+      port: 5432
+  clusterIP: None   # PostgreSQL için headless service

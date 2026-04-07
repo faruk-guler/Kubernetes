@@ -1,0 +1,37 @@
+# 🛡️ Namespace RBAC Örneği
+
+```yaml
+# [ADIM 1] ServiceAccount - Pod'un kimliği
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-reader-sa
+  namespace: production
+automountServiceAccountToken: false   # 🔥 Güvenlik için token'ı her pod'a mount etme
+---
+# [ADIM 2] Role - Namespace içi izinler
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+  namespace: production
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["get", "list", "watch"]
+---
+# [ADIM 3] RoleBinding - Role'u ServiceAccount'a bağla
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: app-reader-binding
+  namespace: production
+subjects:
+- kind: ServiceAccount
+  name: app-reader-sa
+  namespace: production
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+```

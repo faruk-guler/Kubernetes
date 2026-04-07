@@ -1,0 +1,17 @@
+# 🛡️ PodDisruptionBudget (PDB) Örneği
+
+```yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web-app-pdb
+  namespace: production
+spec:
+  # BAKIM SIRASINDA (Node Drain) EN AZ KAÇ POD AYAKTA KALMALI?
+  minAvailable: 2                     # Veya yüzde: "50%"
+  
+  # HANGİ POD'LARI KORUYACAK?
+  selector:
+    matchLabels:
+      app: web-app
+```
