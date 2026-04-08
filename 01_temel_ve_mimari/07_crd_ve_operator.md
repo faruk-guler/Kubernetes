@@ -70,11 +70,11 @@ spec:
 **Operator**, bir insanın yapacağı manuel operasyonel işlemleri (kurulum, yedekleme, failover, upgrade) kodla otomatize eden bir reconciliation loop'tur.
 
 ```
-┌──────────┐     observe     ┌─────────────────┐
-│  CRD     │───────────────→ │  Operator        │
-│ (desired │                 │  Controller      │
-│  state)  │                 │  (reconcile loop)│
-└──────────┘ â†─────────────  └─────────────────┘
+┌──────────┐     observe      ┌─────────────────┐
+│  CRD     │───────────────→  │ Operator        │
+│ (desired │                  │ Controller      │
+│  state)  │                  │ (reconcile loop)│
+└──────────┘ â†───────────── └─────────────────┘
                act (kubectl)        │
                                     ▼
                              Kubernetes API
