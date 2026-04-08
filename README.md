@@ -1,5 +1,19 @@
 # 📚 Kubernetes 2026
 
+```console
+      __  __           __                                            __                       
+     /\ \/\ \         /\ \                                          /\ \__                 
+     \ \ \/'/'  __  __\ \ \____     __   _ __    ___      __    ____\ \ ,_\    __    ____  
+      \ \ , <  /\ \/\ \\ \ '__`\  /'__`\/\`'__\/' _ `\  /'__`\ /',__\\ \ \/  /'__`\ /',__\ 
+       \ \ \\`\\ \ \_\ \\ \ \L\ \/\  __/\ \ \/ /\ \/\ \/\  __//\__, `\\ \ \_/\  __//\__, `\
+        \ \_\ \_\ \____/ \ \_,__/\ \____\\ \_\ \ \_\ \_\ \____\/\____/ \ \__\ \____\/\____/
+         \/_/\/_/\/___/   \/___/  \/____/ \/_/  \/_/\/_/\/____/\/___/   \/__/\/____/\/___/
+      ___             _           _                         
+     |  _|___ ___ _ _| |_ ___ _ _| |___ ___  
+     |  _| .'|  _| | | '_| . | | | | -_|  _|
+WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
+```
+
 Kurumsal kütüphaneye hoş geldiniz! Kubernetes'i bir veri arşivi olarak saklamak yerine **"Dibine Kadar" pratik yapmak ve öğrenmek istiyorsanız**, lütfen aşağıdaki ana eğitim rotasını takip edin:
 
 **👉 [🎓 TIKLAYIN: "00_MASTERY_SYLLABUS.md" (5 Seviyeli Mutlak Çekirdek Pratik Haritası)](00_MASTERY_SYLLABUS.md)**
