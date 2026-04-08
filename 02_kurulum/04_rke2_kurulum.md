@@ -20,7 +20,7 @@ WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
 Name: RKE2 (Rancher Kubernetes Engine 2) Cluster Installation Script
 POC: Debian 12 "Bookworm"
 Author: faruk guler
-Date: 2025
+Date: 2026
 Cluster Type: Single / HA-ready
 ```
 
