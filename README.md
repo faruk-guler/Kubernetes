@@ -1,4 +1,4 @@
-# 📚 Kubernetes 2026
+# ☸ Kubernetes 2026
 
 ```console
       __  __           __                                            __                       
