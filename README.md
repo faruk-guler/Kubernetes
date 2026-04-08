@@ -19,7 +19,7 @@ Author: faruk guler
 Date: 2026
 ```
 
-Kurumsal kütüphaneye hoş geldiniz! Kubernetes'i bir veri arşivi olarak saklamak yerine **"Dibine Kadar" pratik yapmak ve öğrenmek istiyorsanız**, lütfen aşağıdaki ana eğitim rotasını takip edin:
+Kurumsal kütüphaneye hoş geldiniz! Kubernetes'i bir veri arşivi olarak saklamak yerine **"Derin" pratik yapmak ve öğrenmek istiyorsanız**, lütfen aşağıdaki ana eğitim rotasını takip edin:
 
 **👉 [🎓 TIKLAYIN: "00_MASTERY_SYLLABUS.md" (5 Seviyeli Mutlak Çekirdek Pratik Haritası)](00_MASTERY_SYLLABUS.md)**
 
