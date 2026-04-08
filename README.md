@@ -53,3 +53,4 @@ Bu dizin, kütüphanenin içerisinde yer alan 12 ana kategoriyi ve 60+ alt dokü
 | cka_cks_sertifikasyon.md | CKA / CKS sınav hazırlık: lab örnekleri, hız komutları, taktikler |
 
 ---
+*← [Ana Sayfa](README.md)*
