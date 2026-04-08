@@ -68,7 +68,7 @@ spec:
       - setWeight: 100           # Tam geçiş
 ```
 
-## 1.4 Analiz Åablonu (Otomatik Rollback)
+## 1.4 Analiz Şablonu (Otomatik Rollback)
 
 Prometheus metriklerine göre otomatik karar verme:
 
