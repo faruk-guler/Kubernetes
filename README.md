@@ -12,6 +12,11 @@
      |  _|___ ___ _ _| |_ ___ _ _| |___ ___  
      |  _| .'|  _| | | '_| . | | | | -_|  _|
 WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
+
+Name: Kubernetes
+POC: Debian 12 "Bookworm"
+Author: faruk guler
+Date: 2026
 ```
 
 Kurumsal kütüphaneye hoş geldiniz! Kubernetes'i bir veri arşivi olarak saklamak yerine **"Dibine Kadar" pratik yapmak ve öğrenmek istiyorsanız**, lütfen aşağıdaki ana eğitim rotasını takip edin:
