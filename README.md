@@ -11,8 +11,6 @@
      |  _| .'|  _| | | '_| . | | | | -_|  _|
 WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
 
-Name: (Vanilla) Kubernetes Cluster Installation Script
-POC: Debian 12 "Bookworm"
 Author: faruk guler
 Date: 2026
 ```
@@ -137,10 +135,9 @@ Ve bir şey bozulduğunda paniklemeden önce şunu sorun: *"Kubernetes şu an ne
 ---
 
 > *"The ships hung in the sky in much the same way that bricks don't."*
-> — Douglas Adams
 >
-> Kubernetes de tam böyle çalışır. Nasıl çalıştığını anladığınızda, çalışmaması mümkün görünmez.
-
+> "Gemiler gökyüzünde tıpkı tuğlaların havada asılı kalmaması gibi asılı duruyordu."
+ — Douglas Adams
 ---
 
 **Faruk Güler** · 2026
