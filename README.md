@@ -139,5 +139,3 @@ Ve bir şey bozulduğunda paniklemeden önce şunu sorun: *"Kubernetes şu an ne
 > "Gemiler gökyüzünde tıpkı tuğlaların havada asılı kalmaması gibi asılı duruyordu."
  — Douglas Adams
 ---
-
-**Faruk Güler** · 2026
