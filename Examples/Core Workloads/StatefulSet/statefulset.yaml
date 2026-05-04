@@ -1,0 +1,93 @@
+# 💾 StatefulSet Örneği (Modern & Güvenli)
+
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-sts
+  labels:
+    app: postgres
+    tier: database
+spec:
+  serviceName: postgres-headless      # DNS için stabil network ID
+  replicas: 3
+  
+  # GÜNCELLEME STRATEJİSİ
+  updateStrategy:
+    type: RollingUpdate
+  
+  selector:
+    matchLabels:
+      app: postgres
+  
+  # POD ŞABLONU
+  template:
+    metadata:
+      labels:
+        app: postgres
+        tier: database
+    spec:
+      # --- GÜVENLİK (POD SEVİYESİ) ---
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+
+      containers:
+      - name: postgres
+        image: postgres:16.3-alpine    # 🔥 Hafif ve güvenli imaj
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false # Postgres yazma gerektirir, kısıtlı mount kullanın
+          capabilities:
+            drop: ["ALL"]
+        
+        ports:
+        - name: postgres
+          containerPort: 5432
+          protocol: TCP
+        
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+
+        # KAYNAK YÖNETİMİ
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "2"
+            memory: "2Gi"
+
+        # SAĞLIK KONTROLLERİ (Modern pg_isready kullanımı)
+        livenessProbe:
+          exec:
+            command: ["pg_isready", "-U", "postgres"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command: ["pg_isready", "-U", "postgres"]
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+        mountPath: /var/lib/postgresql/data
+        name: postgres-storage
+
+  # --- DİNAMİK PVC OLUŞTURMA (VOLUME CLAIM TEMPLATES) ---
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: longhorn-replicated # 🔥 Dinamik depolama
+      resources:
+        requests:
+          storage: 10Gi
+```

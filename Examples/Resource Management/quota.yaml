@@ -1,0 +1,23 @@
+# 📊 ResourceQuota Örneği
+
+```yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: team-production-quota
+  namespace: production
+spec:
+  hard:
+    # CPU ve RAM LİMİTLERİ (Toplam)
+    requests.cpu: "10"
+    requests.memory: "20Gi"
+    limits.cpu: "20"
+    limits.memory: "40Gi"
+    
+    # OBJE SAYISI LİMİTLERİ
+    pods: "50"
+    services: "20"
+    persistentvolumeclaims: "10"
+    configmaps: "30"
+    secrets: "50"
+```

@@ -1,0 +1,49 @@
+# ⏰ CronJob Örneği (Zamanlanmış Görev)
+
+```yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nightly-cleanup
+  labels:
+    job-group: maintenance
+spec:
+  # --- ZAMANLAMA ---
+  schedule: "0 2 * * *"               # Her gece 02:00 (dakika saat gün ay haftanınGünü)
+  
+  # --- POLİTİKALAR ---
+  concurrencyPolicy: Forbid           # 🔥 Bir önceki bitmeden yenisini başlatma
+  successfulJobsHistoryLimit: 3       # Son 3 basarili kaydi tut
+  failedJobsHistoryLimit: 1           # Son 1 basarisiz kaydi tut
+  
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          
+          # --- GÜVENLİK (POD SEVİYESİ) ---
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+
+          containers:
+          - name: cleanup-worker
+            image: busybox:1.36
+            command: ["sh", "-c", "echo 'Temizlik Basladi...'; sleep 2; echo 'Bitti.'"]
+            
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+
+            # KAYNAK YÖNETİMİ
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "64Mi"
+              limits:
+                cpu: "200m"
+                memory: "128Mi"
+```

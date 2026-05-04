@@ -1,0 +1,15 @@
+# 💾 StorageClass Örnekleri (Dinamik Provisioning)
+
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-ssd
+provisioner: kubernetes.io/aws-ebs    # Bulut sağlayıcı (EBS, AzureDisk, GCE-PD)
+parameters:
+  type: gp3
+  fsType: ext4
+reclaimPolicy: Delete                 # PVC silinince disk de silinsin (veya Retain)
+allowVolumeExpansion: true            # 🔥 Boyut artırımına izin ver
+volumeBindingMode: WaitForFirstConsumer # 🔥 Pod olusana kadar bekle (Zone awareness)
+```

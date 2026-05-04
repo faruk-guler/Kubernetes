@@ -1,0 +1,84 @@
+# 🚀 Deployment Örneği (Modern & Güvenli)
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+    tier: frontend
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  
+  # HANGİ POD'LARI YÖNETECEĞİMİZİ BELİRLER
+  selector:
+    matchLabels:
+      app: nginx
+  
+  # GÜNCELLEME STRATEJİSİ (ROLLING UPDATE)
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1                     # Update sırasında fazladan 1 pod olabilir
+      maxUnavailable: 0               # Update sırasında 0 pod kapanabilir (Sıfır Downtime)
+  
+  # POD ŞABLONU
+  template:
+    metadata:
+      labels:
+        app: nginx
+        tier: frontend
+    spec:
+      # --- GÜVENLİK (POD SEVİYESİ) ---
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        fsGroup: 101
+
+      containers:
+      - name: nginx
+        image: nginxinc/nginx-unprivileged:1.27-alpine # 🔥 Root gerektirmeyen imaj
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        
+        ports:
+        - name: http
+          containerPort: 8080         # Unprivileged 8080 kullanır
+          protocol: TCP
+
+        # KAYNAK YÖNETİMİ
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+
+        # SAĞLIK KONTROLLERİ
+        livenessProbe:
+          httpGet: { path: /healthz, port: 8080 }
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet: { path: /healthz, port: 8080 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+
+        volumeMounts:
+        - name: tmp-vol
+          mountPath: /tmp
+        - name: pid-vol
+          mountPath: /var/run
+
+      volumes:
+      - name: tmp-vol
+        emptyDir: {}
+      - name: pid-vol
+        emptyDir: {}
+```

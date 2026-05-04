@@ -1,0 +1,74 @@
+# ⚙️ ConfigMap Örneği
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: production
+data:
+  # BASİT KEY-VALUE
+  LOG_LEVEL: "info"
+  DB_HOST: "postgres-service"
+  
+  # DOSYA İÇERİĞİ
+  nginx.conf: |
+    server {
+      listen 8080;
+      location / {
+        root /usr/share/nginx/html;
+      }
+    }
+---
+# KULLANIM ÖRNEĞİ (POD)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: config-test-pod
+spec:
+  # GÜVENLİK
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 101
+  
+  containers:
+  - name: app
+    image: nginxinc/nginx-unprivileged:alpine
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop: ["ALL"]
+    
+    # KAYNAKLAR
+    resources:
+      requests: { cpu: "100m", memory: "128Mi" }
+      limits: { cpu: "200m", memory: "256Mi" }
+    
+    # SAĞLIK KONTROLLERİ
+    livenessProbe:
+      httpGet: { path: /, port: 8080 }
+      initialDelaySeconds: 10
+    
+    env:
+    - name: APP_LOG_LEVEL
+      valueFrom:
+        configMapKeyRef:
+          name: app-config
+          key: LOG_LEVEL
+    volumeMounts:
+    - name: config-vol
+      mountPath: /etc/nginx/conf.d
+    - name: tmp-vol
+      mountPath: /tmp
+  
+  volumes:
+  - name: config-vol
+    configMap:
+      name: app-config
+      items:
+      - key: nginx.conf
+        path: default.conf
+  - name: tmp-vol
+    emptyDir: {}
+```
