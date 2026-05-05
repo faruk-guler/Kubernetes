@@ -21,7 +21,7 @@ Date: 2026
 
 ---
 
-## Kubernetes'e Başlamadan Önce
+## Kubernetes'e Başlarken...
 
 Bu bir "komut kılavuzu" değildir. İnternette binlerce `kubectl get pods` örneği var. Bu kitabı yazmamın sebebi, Kubernetes'i *gerçekten* anlamak; yani bir şey bozulduğunda nereye bakacağını bilmek, bir mimari kararı neden aldığını savunabilmek, ve bir sistemi sıfırdan inşa edip ayakta tutabilmek için gereken zihinsel modeli kurmak.
 
