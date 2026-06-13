@@ -13,8 +13,6 @@
      |  _| .'|  _| | | '_| . | | | | -_|  _|
 WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
 
-Author: faruk guler
-Date: 2026
 ```
 
 ![Kubernetes Logo](Images/kubernetes.png)
