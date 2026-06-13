@@ -17,11 +17,9 @@
      |  _| .'|  _| | | '_| . | | | | -_|  _|
 WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
 
-Name: RKE2 (Rancher Kubernetes Engine 2) Cluster Installation Script
-POC: Debian 12 "Bookworm"
+Name: RKE2 (Rancher Kubernetes Engine 2)
 Author: faruk guler
 Date: 2026
-Cluster Type: Single / HA-ready
 ```
 
 # RKE2 — Güvenlik Odaklı Kurulum
