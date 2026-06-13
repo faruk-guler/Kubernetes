@@ -7,29 +7,29 @@ https://www.youtube.com/watch?v=HXtLTxo30SY
 
 ## apparmor
 
-AppArmor (Application Armor) bir Linux güvenlik modülüdür. İ�Yte AppArmor hakkında liste �Yeklinde temel bilgiler:
+AppArmor (Application Armor) bir Linux güvenlik modülüdür. İşte AppArmor hakkında liste şeklinde temel bilgiler:
 
 ### 1. **Nedir?**
    - Linux sistemlerinde uygulamaları güvence altına almak için kullanılır.
-   - Uygulamaların eri�Yim ve yeteneklerini sınırlamak için güvenlik politikaları uygular.
+   - Uygulamaların erişim ve yeteneklerini sınırlamak için güvenlik politikaları uygular.
    
-   - Uygulamalara atanmı�Y profillerle çalı�Yır.
-   - Her profil, belirli bir uygulamanın veya i�Ylemin ne tür i�Ylemler gerçekle�Ytirebilece�Yini belirler.
-   - �?ekirdek düzeyinde çalı�Yır ve gerçek zamanlı güvenlik sa�Ylar.
+   - Uygulamalara atanmış profillerle çalışır.
+   - Her profil, belirli bir uygulamanın veya işlemin ne tür işlemler gerçekleştirebileceşini belirler.
+   - Çekirdek düzeyinde çalışır ve gerçek zamanlı güvenlik saşlar.
 
 ### 3. **Profiller:**
    - **Zorlayıcı (Enforcing) Mod:** Profilde belirtilen politikalara uygulamaların uymasını zorlar.
-   - **�-�Yrenme (Complain) Mod:** Uygulama eylemlerini günlü�Ye kaydeder ama engellemez. Profil olu�Yturma sürecinde kullanılır.
-   - **Kapatma (Disabled) Mod:** Profil devre dı�Yı bırakılır.
+   - **Öşrenme (Complain) Mod:** Uygulama eylemlerini günlüşe kaydeder ama engellemez. Profil oluşturma sürecinde kullanılır.
+   - **Kapatma (Disabled) Mod:** Profil devre dışı bırakılır.
 
-   - Uygulamaların çalı�Yma zamanı davranı�Ylarına göre profiller olu�Yturabilir ve güncelleyebilirsiniz.
+   - Uygulamaların çalışma zamanı davranışlarına göre profiller oluşturabilir ve güncelleyebilirsiniz.
    - Uygulamaları daha güvenli hale getirmek için sistem genelinde veya konteyner ortamlarında kullanılır.
    - Kubernetes ve Docker gibi teknolojilerle entegrasyonu vardır.
-   - Güçlü güvenlik politikaları sa�Ylar.
-   - Esnek ve özelle�Ytirilebilir profiller.
-   - Performans üzerinde dü�Yük etkisi vardır.
-   - Web sunucuları, veritabanları ve di�Yer uygulamaların güvenli�Yini artırmak için kullanılır.
-   - Dikkatlice olu�Yturulan profiller uygulama i�Ylevselli�Yini etkilemezken güvenli�Yi artırabilir.
+   - Güçlü güvenlik politikaları saşlar.
+   - Esnek ve özelleştirilebilir profiller.
+   - Performans üzerinde düşük etkisi vardır.
+   - Web sunucuları, veritabanları ve dişer uygulamaların güvenlişini artırmak için kullanılır.
+   - Dikkatlice oluşturulan profiller uygulama işlevsellişini etkilemezken güvenlişi artırabilir.
 
 
 * filesystem
@@ -119,12 +119,12 @@ RUN usermod -s /usr/sbin/nologin your-user
 ## seccomp
 
 https://www.geeksforgeeks.org/linux-system-call-in-detail/
-- Linux kernel'inde sistem ça�Yrılarını (system calls) filtrelemek için kullanılır. `seccomp` ve `AppArmor` arasında birkaç fark vardır, ve her biri farklı güvenlik gereksinimlerine hizmet eder.
-`seccomp` bir Linux kernel özelli�Yidir.
-- Uygulamaların yapabilece�Yi sistem ça�Yrılarını sınırlar ve böylece güvenli�Yi artırır.
-- Uygulamaların kullanabilece�Yi sistem ça�Yrılarını beyaz liste veya kara liste ile sınırlar.
-- JSON formatında profiller olu�Yturulur.
-- Her profil, izin verilen veya engellenen sistem ça�Yrılarını belirtir.
+- Linux kernel'inde sistem çaşrılarını (system calls) filtrelemek için kullanılır. `seccomp` ve `AppArmor` arasında birkaç fark vardır, ve her biri farklı güvenlik gereksinimlerine hizmet eder.
+`seccomp` bir Linux kernel özellişidir.
+- Uygulamaların yapabileceşi sistem çaşrılarını sınırlar ve böylece güvenlişi artırır.
+- Uygulamaların kullanabileceşi sistem çaşrılarını beyaz liste veya kara liste ile sınırlar.
+- JSON formatında profiller oluşturulur.
+- Her profil, izin verilen veya engellenen sistem çaşrılarını belirtir.
 
 ```json
   {
@@ -152,7 +152,7 @@ https://www.geeksforgeeks.org/linux-system-call-in-detail/
   }
 
 ```
-Dosyayı tüm Kubernetes dü�Yümlerinde uygun bir yere kopyalayın, örne�Yin /var/lib/kubelet/seccomp/my-seccomp-profile.json.
+Dosyayı tüm Kubernetes düşümlerinde uygun bir yere kopyalayın, örneşin /var/lib/kubelet/seccomp/my-seccomp-profile.json.
 
 ```yaml
 ## pod için
@@ -165,7 +165,7 @@ metadata:
 spec:
   containers:
   - name: mycontainer
-    image: myimage
+    image: nginx:1.27.0
 
 ```
 
@@ -178,7 +178,7 @@ metadata:
 spec:
   containers:
   - name: mycontainer
-    image: myimage
+    image: nginx:1.27.0
     securityContext:
       seccompProfile:
         type: Localhost
@@ -190,11 +190,11 @@ https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 https://kubernetes.io/docs/tutorials/security/seccomp/
 
 
-  - `seccomp` daha çok sistem ça�Yrılarını sınırlamak üzerine odaklanır.
-  - `AppArmor` ise dosya eri�Yimi, kapasiteler ve di�Yer kaynaklara eri�Yimi kontrol eder.
-  - `seccomp` daha ince taneli kontrol sa�Ylar, ancak kullanımı daha karma�Yık olabilir.
-  - `AppArmor` genellikle daha kullanıcı dostudur ve hızlı profil olu�Yturma imkanı sunar.
-  - İki teknoloji birlikte kullanılabilir; her biri farklı güvenlik katmanları sa�Ylar.
+  - `seccomp` daha çok sistem çaşrılarını sınırlamak üzerine odaklanır.
+  - `AppArmor` ise dosya erişimi, kapasiteler ve dişer kaynaklara erişimi kontrol eder.
+  - `seccomp` daha ince taneli kontrol saşlar, ancak kullanımı daha karmaşık olabilir.
+  - `AppArmor` genellikle daha kullanıcı dostudur ve hızlı profil oluşturma imkanı sunar.
+  - İki teknoloji birlikte kullanılabilir; her biri farklı güvenlik katmanları saşlar.
 
 
 ## kubespray hardening
@@ -204,9 +204,9 @@ https://kubernetes.io/docs/tutorials/security/seccomp/
 * https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/hardening.md
 
 
-# di�Yerleri (atak yüzeyini azaltma)
+# dişerleri (atak yüzeyini azaltma)
 
-* i�Ye yaramayan servisleri kaldırma. örn. snapd
+* işe yaramayan servisleri kaldırma. örn. snapd
 * ss -tlpn
 * sistem userları ve yetkileri
 
@@ -243,7 +243,7 @@ spec:
         effect: "NoSchedule"
       containers:
       - name: my-container
-        image: my-image
+        image: nginx:1.27.0
 
 
 ```

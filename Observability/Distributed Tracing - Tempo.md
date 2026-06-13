@@ -111,7 +111,7 @@ spec:
 
   # Java
   java:
-    image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:latest
+    image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.x
     env:
     - name: OTEL_TRACES_SAMPLER
       value: "parentbased_traceidratio"
@@ -120,11 +120,11 @@ spec:
 
   # Python
   python:
-    image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-python:latest
+    image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-python:0.48b0
 
   # Node.js
   nodejs:
-    image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-nodejs:latest
+    image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-nodejs:0.52.x
 ```
 
 ```yaml

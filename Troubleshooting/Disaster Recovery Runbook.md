@@ -35,24 +35,24 @@ kubectl get pods -A | grep -v Running
 
 ```bash
 # Teşhis
-kubectl get pod <pod> -n <ns>
-kubectl describe pod <pod> -n <ns> | tail -20
-kubectl logs <pod> -n <ns> --previous
+kubectl get pod nginx-pod -n <ns>
+kubectl describe pod nginx-pod -n <ns> | tail -20
+kubectl logs nginx-pod -n <ns> --previous
 
 # Olası nedenler ve çözümler:
 # a) OOMKill → memory limit çok düşük
-kubectl top pod <pod> -n <ns>
-kubectl set resources deployment/<dep> -c=<container> \
+kubectl top pod nginx-pod -n <ns>
+kubectl set resources deployment/frontend-deploy -c=nginx-container \
   --limits=memory=512Mi -n <ns>
 
 # b) Config hatası → env/secret yanlış
-kubectl get secret <secret> -n <ns> -o jsonpath='{.data}' | base64 -d
+kubectl get secret db-credentials -n <ns> -o jsonpath='{.data}' | base64 -d
 
 # c) Readiness probe başarısız → endpoint yanlış
-kubectl describe pod <pod> -n <ns> | grep -A10 "Readiness"
+kubectl describe pod nginx-pod -n <ns> | grep -A10 "Readiness"
 
 # d) Image pull hatası
-kubectl describe pod <pod> -n <ns> | grep "image"
+kubectl describe pod nginx-pod -n <ns> | grep "image"
 kubectl create secret docker-registry regcred \
   --docker-server=ghcr.io \
   --docker-username=<user> \
@@ -66,8 +66,8 @@ kubectl create secret docker-registry regcred \
 ```bash
 # Teşhis
 kubectl get nodes
-kubectl describe node <node> | grep -A20 "Conditions:"
-kubectl describe node <node> | grep -A10 "Events:"
+kubectl describe node worker-node-1 | grep -A20 "Conditions:"
+kubectl describe node worker-node-1 | grep -A10 "Events:"
 
 # Node'a SSH gir
 ssh user@<node-ip>
@@ -85,13 +85,13 @@ du -sh /var/lib/containerd/ /var/log/
 # Bellek baskısı mı?
 free -h
 # Çözüm: Pod'ları tahliye et
-kubectl drain <node> --ignore-daemonsets --delete-emptydir-data
+kubectl drain worker-node-1 --ignore-daemonsets --delete-emptydir-data
 
 # Kubelet yeniden başlat
 systemctl restart kubelet
 
 # Node geri döndüğünde
-kubectl uncordon <node>
+kubectl uncordon worker-node-1
 ```
 
 ---

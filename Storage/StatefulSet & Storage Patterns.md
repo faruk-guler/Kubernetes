@@ -252,7 +252,7 @@ spec:
 
 ```bash
 # PDB ile drain
-kubectl drain <node> --ignore-daemonsets
+kubectl drain worker-node-1 --ignore-daemonsets
 # PDB ihlal edilecekse drain durur ve uyarı verir
 ```
 

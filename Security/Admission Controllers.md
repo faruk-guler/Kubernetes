@@ -34,7 +34,7 @@ webhooks:
       namespace: webhook-system
       name: webhook-service
       path: "/validate-pod"
-    caBundle: <BASE64_CA_CERT>
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCg==
   admissionReviewVersions: ["v1"]
   sideEffects: None
   failurePolicy: Fail              # Webhook'a ulaşılamazsa reddet
@@ -62,7 +62,7 @@ webhooks:
       namespace: sidecar-system
       name: sidecar-injector
       path: "/inject"
-    caBundle: <BASE64_CA_CERT>
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCg==
   admissionReviewVersions: ["v1"]
   sideEffects: None
   namespaceSelector:

@@ -1,3 +1,5 @@
+# Kubernetes Mastery
+
 ```console
       __  __           __                                            __                       
      /\ \/\ \         /\ \                                          /\ \__                 
@@ -15,13 +17,11 @@ Author: faruk guler
 Date: 2026
 ```
 
-<p align="center">
-  <img src="kubernetes.png" alt="Kubernetes Logo" width="200"/>
-</p>
+![Kubernetes Logo](Images/kubernetes.png)
 
 ---
 
-## Kubernetes'e Başlarken...
+## Kubernetes'e Başlarken
 
 Bu bir "komut kılavuzu" değildir. İnternette binlerce `kubectl get pods` örneği var. Bu kitabı yazmamın sebebi, Kubernetes'i *gerçekten* anlamak; yani bir şey bozulduğunda nereye bakacağını bilmek, bir mimari kararı neden aldığını savunabilmek, ve bir sistemi sıfırdan inşa edip ayakta tutabilmek için gereken zihinsel modeli kurmak.
 
@@ -84,7 +84,7 @@ Kubernetes'in kalbinde bir mekanizma vardır: **Reconciliation Loop** (Uzlaşma 
 
 Her controller şunu sürekli yapar:
 
-```
+```text
 İstenen Durum (Desired State)  ←→  Mevcut Durum (Actual State)
          ↑                                    ↑
     "3 replica olsun"              "Şu an 2 replica çalışıyor"

@@ -1,7 +1,7 @@
 # SLO & SLA Management
 
 > [!NOTE]
-> Bu dosya SLO/SLI kavramları, Pyrra ile uygulama, burn rate alerting ve error budget kültürünü kapsar. Ayrıca bkz: `Prometheus Deep Dive.md` (recording rules detayları) ve `Grafana Dashboards.md` (görselleştirme).
+> Bu dosya SLO/SLI kavramları, Pyrra ile uygulama, burn rate alerting ve error budget kültürünü kapsar.
 
 Kubernetes cluster'ınız metrik üretiyor — ama "iyi mi kötü mü?" sorusuna cevap veremiyorsa, gözlemlenebilirlik tamamlanmamış demektir. SLO (Service Level Objective), bu soruyu nicelleştirir.
 

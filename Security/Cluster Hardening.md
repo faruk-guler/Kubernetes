@@ -1,31 +1,31 @@
 # Cluster Hardening ve Security Audit
 
-Bu bÃ¶lÃ¼mde cluster'Ä±nÄ±zÄ± gerÃ§ek dÃ¼nya saldÄ±rÄ±larÄ±na karÅŸÄ± nasÄ±l sertleÅŸtireceÄŸinizi (hardening) Ã¶ÄŸreneceÄŸiz.
+Bu bölümde cluster'ınızı gerçek dünya saldırılarına karşı nasıl sertleştireceğinizi (hardening) öğreneceğiz.
 
 ## CIS Benchmark ile Denetim
 
-Center for Internet Security (CIS), Kubernetes iÃ§in yÃ¼zlerce maddelik bir gÃ¼venlik kontrol listesi sunar.
+Center for Internet Security (CIS), Kubernetes için yüzlerce maddelik bir güvenlik kontrol listesi sunar.
 
 ```bash
 # kube-bench ile CIS denetimi
 kubectl apply -f https://raw.githubusercontent.com/aquasecurity/kube-bench/main/job.yaml
 
-# SonuÃ§larÄ± gÃ¶r
+# Sonuçları gör
 kubectl logs job.batch/kube-bench
 
-# Sadece baÅŸarÄ±sÄ±z testler
+# Sadece başarısız testler
 kubectl logs job.batch/kube-bench | grep -E 'FAIL|WARN'
 ```
 
 ## API Server Hardening
 
 ```yaml
-# kubeadm yapÄ±landÄ±rmasÄ±
+# kubeadm yapılandırması
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 apiServer:
   extraArgs:
-    anonymous-auth: "false"                    # Anonim eriÅŸim kapat
+    anonymous-auth: "false"                    # Anonim erişim kapat
     audit-log-path: "/var/log/kubernetes/audit.log"
     audit-log-maxage: "30"
     audit-log-maxbackup: "10"
@@ -34,7 +34,7 @@ apiServer:
     encryption-provider-config: "/etc/kubernetes/encryption-config.yaml"
 ```
 
-### etcd Ã…Âifreleme
+### etcd Şifreleme
 
 ```yaml
 # /etc/kubernetes/encryption-config.yaml
@@ -47,13 +47,13 @@ resources:
   - aescbc:
       keys:
       - name: key1
-        secret: <BASE64_32_BYTE_KEY>
-  - identity: {}   # Fallback (ÅŸifresiz okuma iÃ§in)
+        secret: c3VwZXJzZWNyZXRrZXkxMjM0NTY3ODkwMTIzNDU2Nzg=
+  - identity: {}   # Fallback (şifresiz okuma için)
 ```
 
 ## Node ve Konteyner Hardening
 
-Her pod iÃ§in zorunlu hale getirilmesi gereken `securityContext`:
+Her pod için zorunlu hale getirilmesi gereken `securityContext`:
 
 ```yaml
 apiVersion: apps/v1
@@ -64,36 +64,36 @@ spec:
   template:
     spec:
       securityContext:
-        runAsNonRoot: true               # Root dÄ±ÅŸÄ± kullanÄ±cÄ±
+        runAsNonRoot: true               # Root dışı kullanıcı
         seccompProfile:
-          type: RuntimeDefault           # Sistem Ã§aÄŸrÄ±sÄ± filtresi
+          type: RuntimeDefault           # Sistem çağrısı filtresi
       containers:
       - name: app
         image: my-app:v1.0.0
         securityContext:
-          runAsUser: 1000                # Belirli kullanÄ±cÄ± ID
+          runAsUser: 1000                # Belirli kullanıcı ID
           runAsGroup: 3000
           readOnlyRootFilesystem: true   # Dosya sistemi sadece okunabilir
           allowPrivilegeEscalation: false
           capabilities:
             drop:
-            - ALL                        # TÃ¼m Linux yeteneklerini kaldÄ±r
+            - ALL                        # Tüm Linux yeteneklerini kaldır
             add:
-            - NET_BIND_SERVICE           # Sadece gerekli olanÄ± ekle
+            - NET_BIND_SERVICE           # Sadece gerekli olanı ekle
 ```
 
-## Temel Hardening AdÄ±mlarÄ±
+## Temel Hardening Adımları
 
-### Node GÃ¼venliÄŸi
+### Node Güvenliği
 ```bash
-# SSH sadece jump-host Ã¼zerinden
+# SSH sadece jump-host üzerinden
 # /etc/ssh/sshd_config
 PasswordAuthentication no
 AllowUsers admin
 AllowGroups sre-team
 ```
 
-### etcd GÃ¼venliÄŸi
+### etcd Güvenliği
 
 ```bash
 # etcd sadece localhost ve TLS ile dinlemelidir
@@ -109,29 +109,29 @@ AllowGroups sre-team
 ### Kontrol Listesi
 
 ```bash
-# 1. Anonymous auth kapalÄ± mÄ±?
+# 1. Anonymous auth kapalı mı?
 curl -k https://<API_SERVER>:6443/api --header "Authorization: Bearer bad-token"
-# 401 dÃ¶nmeli
+# 401 dönmeli
 
-# 2. etcd dÄ±ÅŸarÄ±ya aÃ§Ä±k mÄ±? (boÅŸ dÃ¶nmeli)
+# 2. etcd dışarıya açık mı? (boş dönmeli)
 nmap -p 2379 <NODE_IP>
 
-# 3. Pod'lar root mu Ã§alÄ±ÅŸÄ±yor?
+# 3. Pod'lar root mu çalışıyor?
 kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.spec.containers[*].securityContext.runAsUser}{"\n"}{end}'
 
-# 4. Privileged pod var mÄ±?
+# 4. Privileged pod var mı?
 kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.spec.containers[*].securityContext.privileged}{"\n"}{end}'
 ```
 
 ## Trivy ile Cluster Denetimi
 
 ```bash
-# Tam cluster gÃ¼venlik raporu
+# Tam cluster güvenlik raporu
 trivy k8s --report summary cluster
 
-# Sadece yÃ¼ksek/kritik aÃ§Ä±klar
+# Sadece yüksek/kritik açıklar
 trivy k8s --severity HIGH,CRITICAL --report all cluster
 ```
 
 > [!CAUTION]
-> Cluster hardening adÄ±mlarÄ±nÄ± production'a uygulamadan Ã¶nce mutlaka test ortamÄ±nda deneyin. `--anonymous-auth=false` veya yanlÄ±ÅŸ audit policy bazÄ± sistem bileÅŸenlerini kÄ±rabilir.
+> Cluster hardening adımlarını production'a uygulamadan önce mutlaka test ortamında deneyin. `--anonymous-auth=false` veya yanlış audit policy bazı sistem bileşenlerini kırabilir.

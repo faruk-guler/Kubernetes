@@ -122,8 +122,8 @@ kubectl get secret postgres-prod-app -n production -o jsonpath='{.data.uri}' | b
 | Kontrol | Sınırlı | Tam |
 | Yedekleme | Otomatik | Otomatik (S3/GCS/Az) |
 | Failover | Otomatik | Otomatik (daha hızlı) |
-| GitOps | âŒ | ✅ |
-| Multi-cloud | âŒ | ✅ |
+| GitOps | ❌ | ✅ |
+| Multi-cloud | ❌ | ✅ |
 
 > [!TIP]
 > Redis için **Redis Operator**, MongoDB için **Percona Operator**, MySQL için **Vitess** 2026'nın önerilen operator'larıdır.

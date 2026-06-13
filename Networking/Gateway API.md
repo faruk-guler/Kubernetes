@@ -5,13 +5,13 @@
 ## Ingress vs Gateway API
 
 | Özellik | Ingress | Gateway API |
-|:---|:---:|:---:|
+| :--- | :---: | :---: |
 | Standart | v1 (Stable) | v1 (Stable, 2023+) |
-| Role Ayrımı | âŒ | ✅ (Infra/Uygulama/Route) |
+| Role Ayrımı | ❌ | ✅ (Infra/Uygulama/Route) |
 | Traffic splitting | Anotasyon | Native |
 | Header manipulation | Anotasyon | Native |
 | gRPC desteği | Kısıtlı | Native (GRPCRoute) |
-| TCP/UDP | âŒ | ✅ |
+| TCP/UDP | ❌ | ✅ |
 | Multi-namespace | Kısıtlı | ✅ |
 
 ## Gateway API CRD Kurulumu
@@ -175,3 +175,58 @@ spec:
 
 > [!TIP]
 > BGP modunda MetalLB, gerçek üretim ağlarında çok daha güçlü bir yük dengeleme sağlar. Router'larınız BGP destekliyorsa `BGPAdvertisement` kullanın.
+
+---
+
+## Gateway API for Service Mesh (GAMMA Spesifikasyonu)
+
+Gateway API, ilk aşamalarda sadece dış dünyadan cluster içine gelen (North-South / Ingress) trafiği yönetmek amacıyla geliştirilmiştir. Ancak cluster içindeki servislerin kendi aralarındaki iletişimini (East-West / Service-to-Service) standart hale getirmek ve Service Mesh yapılandırmalarını basitleştirmek için **GAMMA (Gateway API for Mesh Management and Administration)** spesifikasyonu hayata geçirilmiştir.
+
+### Nasıl Çalışır?
+
+North-South trafiğinde bir `HTTPRoute` nesnesinin `parentRefs` alanı dışarıyı dinleyen bir `Gateway` nesnesini işaret ederken, **GAMMA spesifikasyonunda `parentRefs` doğrudan bir `Service` nesnesine bağlanır.**
+
+```text
+   [ İstemci Pod ] ──► (İstek: reviews-service)
+                             │
+                             ▼ (Intercept & Route)
+                 ┌───────────────────────┐
+                 │  Cilium / Istio mesh  │
+                 └───────────┬───────────┘
+                             │
+                 ┌───────────┴───────────┐
+                 ▼ (90%)                 ▼ (10%)
+           [ reviews-v1 ]          [ reviews-v2 ]
+```
+
+### Örnek: Cluster İçi Trafik Bölme (Internal Traffic Splitting)
+
+Aşağıdaki örnekte, cluster içi servislerin `reviews-service` servisine gönderdiği HTTP isteklerinin %90'ını `reviews-v1` servisine, %10'unu ise test sürümü olan `reviews-v2` servisine yönlendiren bir GAMMA uyumlu `HTTPRoute` tanımı yer almaktadır:
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: reviews-gamma-route
+  namespace: production
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: reviews-service    # İstemcilerin çağırdığı sanal/ana hedef servis
+    port: 80
+  rules:
+  - backendRefs:
+    - name: reviews-v1       # Trafiğin yönlendirileceği gerçek servis 1
+      port: 80
+      weight: 90
+    - name: reviews-v2       # Trafiğin yönlendirileceği gerçek servis 2
+      port: 80
+      weight: 10
+```
+
+Bu model sayesinde:
+
+* İstemci pod'lar sadece standart `reviews-service` adresiyle konuşmaya devam eder.
+* Ağ katmanındaki mesh veri düzlemi (Cilium veya Istio Ambient), bu isteği havada yakalar (intercept eder) ve `HTTPRoute` üzerindeki ağırlıklara göre trafiği gerçek backend pod'larına paylaştırır.
+* Herhangi bir `Gateway` (Ingress proxy) kaynağı oluşturmaya gerek kalmadan cluster içi L7 yönlendirmeler tamamen standartlaştırılmış olur.

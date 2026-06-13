@@ -253,5 +253,5 @@ kubectl describe pvc my-pvc | grep -A5 "Conditions"
 # "FileSystemResizePending" → Pod yeniden başlatılmalı
 
 # Pod yeniden başlatılırsa otomatik resize olur
-kubectl rollout restart deployment/<dep>
+kubectl rollout restart deployment/frontend-deploy
 ```

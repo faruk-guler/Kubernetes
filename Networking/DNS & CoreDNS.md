@@ -32,27 +32,27 @@ options ndots:5
 
 ```
 # ClusterIP Service
-<servis>.<namespace>.svc.cluster.local → ClusterIP
+<servis>.production.svc.cluster.local → ClusterIP
 
 # Headless Service (clusterIP: None)
-<servis>.<namespace>.svc.cluster.local → Tüm pod IP'leri (A kayıtları)
+<servis>.production.svc.cluster.local → Tüm pod IP'leri (A kayıtları)
 
 # Headless Service pod DNS — StatefulSet için kritik
-<pod-adı>.<servis>.<namespace>.svc.cluster.local → Tek pod IP'si
+nginx-pod.<servis>.production.svc.cluster.local → Tek pod IP'si
 
 # ExternalName Service
-<servis>.<namespace>.svc.cluster.local → CNAME → external-host.com
+<servis>.production.svc.cluster.local → CNAME → external-host.com
 ```
 
 ### Pod DNS Kayıtları
 
 ```
 # Pod hostname (varsayılan — IP'nin tire versiyonu)
-<pod-ip-tire-ile>.<namespace>.pod.cluster.local
+<pod-ip-tire-ile>.production.pod.cluster.local
 # Örnek: 10-244-1-15.default.pod.cluster.local → 10.244.1.15
 
 # Özel hostname (pod spec'te hostname + subdomain tanımlanmışsa)
-<hostname>.<subdomain>.<namespace>.svc.cluster.local
+<hostname>.<subdomain>.production.svc.cluster.local
 ```
 
 ---

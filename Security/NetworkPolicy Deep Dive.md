@@ -1,15 +1,17 @@
+# NetworkPolicy Derinlemesine İnceleme
+
 ![Default Deny](../references/default-deny.png)
 
-Pod A'nın Pod B'ye eri�Ymesini istiyorsanız:
+Pod A'nın Pod B'ye erişmesini istiyorsanız:
 
-    Pod A için egress (çıkı�Y) izinleri belirtmelisiniz.
-    Pod B için ingress (giri�Y) izinleri belirtmelisiniz.
+    Pod A için egress (çıkış) izinleri belirtmelisiniz.
+    Pod B için ingress (giriş) izinleri belirtmelisiniz.
 
 
 ![Frontend to backend](../references/frontend-to-backend.png)
 
 ```bash
-minikube start --network-plugin=cni --cni=calico
+minikube start --network-plugin=cni --cni=cilium
 
 kubectl create namespace network-policy-tutorial
 
@@ -36,7 +38,7 @@ kubectl exec -it frontend --namespace=network-policy-tutorial -- curl <DATABASE-
 
 ```
 
-## Restricting Traffic in a Namespace
+## Bir Namespace İçindeki Trafiği Sınırlandırma
 
 
 ```yaml
@@ -65,7 +67,7 @@ kubectl exec -it frontend --namespace=network-policy-tutorial -- curl <DATABASE-
 
 ```
 
-### Allowing Traffic from Specific Pods
+### Belirli Pod'lardan Gelen Trafiğe İzin Verme
 
 Frontend -> Backend -> Database
 
@@ -165,8 +167,7 @@ kubectl exec -it database --namespace=network-policy-tutorial -- curl <BACKEND-C
 ```
 
 
-* namespaced 
-### deny all (first policy)
+### Hepsini Reddet (İlk Politika)
 
 ```bash
 echo "
@@ -195,7 +196,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx:latest
+    image: nginx:1.27.0
 ```
 
 2. A Pod with the label `role: frontend`:
@@ -209,7 +210,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx:latest
+    image: nginx:1.27.0
 ```
 
 3. A Pod with the label `role: backend`:
@@ -223,7 +224,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx:latest
+    image: nginx:1.27.0
 ```
 
 ** network policy **
@@ -301,7 +302,7 @@ spec:
 ```
 
 
-### �-rnek 3
+### Örnek 3
 
 ```yaml
 
@@ -367,7 +368,7 @@ spec:
 ```
 
 
-## namespace selector
+## Namespace Seçici (Namespace Selector)
 
 ```yaml
 apiVersion: networking.k8s.io/v1

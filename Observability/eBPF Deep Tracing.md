@@ -130,7 +130,7 @@ spec:
 ```bash
 # eBPF araçlı ephemeral debug container
 kubectl debug -it <POD_ADI> \
-  --image=quay.io/iovisor/bcc:latest \
+  --image=quay.io/iovisor/bcc:1.27.0 \
   --target=<CONTAINER_ADI>
 ```
 

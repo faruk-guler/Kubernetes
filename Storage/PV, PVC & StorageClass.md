@@ -168,7 +168,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     path: /nfs/kubedata/projeler
-    server: <NFS_SUNUCU_IP>
+    server: 192.168.1.50
 ```
 
 ### 4. Kubernetes PersistentVolumeClaim (PVC) Tanımı

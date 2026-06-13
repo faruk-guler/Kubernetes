@@ -9,8 +9,8 @@ Pod sorunları Kubernetes'te karşılaşılan hataların büyük çoğunluğunu 
 Bir pod sorun yaşadığında ilk bakılacak iki komut:
 
 ```bash
-kubectl get pod <pod-adı> -n <namespace>
-kubectl describe pod <pod-adı> -n <namespace>
+kubectl get pod nginx-pod -n production
+kubectl describe pod nginx-pod -n production
 ```
 
 `describe` çıktısında dikkat edilecek alanlar:
@@ -28,13 +28,13 @@ Container sürekli çöküp yeniden başlatılıyor. Kubernetes her yeniden baş
 ### Tanı
 ```bash
 # Container'ın son çıkış kodunu gör
-kubectl describe pod <pod> | grep -A5 "Last State"
+kubectl describe pod nginx-pod | grep -A5 "Last State"
 
 # Çöken container'ın loglarını oku (önceki çalışmadan)
-kubectl logs <pod> --previous
+kubectl logs nginx-pod --previous
 
 # Tüm container'ların logları (multi-container pod)
-kubectl logs <pod> -c <container-adı> --previous
+kubectl logs nginx-pod -c nginx-container --previous
 ```
 
 ### Olası Nedenler ve Çözümleri
@@ -67,13 +67,13 @@ Container'ın belirlenen bellek limitini aştı ve Linux kernel tarafından öld
 
 ### Tanı
 ```bash
-kubectl describe pod <pod> | grep -A10 "OOMKilled\|OOM\|memory"
+kubectl describe pod nginx-pod | grep -A10 "OOMKilled\|OOM\|memory"
 
 # Node düzeyinde OOM eventleri
-kubectl describe node <node-adı> | grep -A5 "OOM\|MemoryPressure"
+kubectl describe node worker-node-1 | grep -A5 "OOM\|MemoryPressure"
 
 # Gerçek bellek kullanımını izle
-kubectl top pod <pod> --containers
+kubectl top pod nginx-pod --containers
 ```
 
 ### Çözüm
@@ -103,7 +103,7 @@ Kubernetes container image'ı pull edemedi.
 
 ### Tanı
 ```bash
-kubectl describe pod <pod> | grep -A10 "Failed\|ImagePull\|registry"
+kubectl describe pod nginx-pod | grep -A10 "Failed\|ImagePull\|registry"
 ```
 
 ### Olası Nedenler
@@ -111,7 +111,7 @@ kubectl describe pod <pod> | grep -A10 "Failed\|ImagePull\|registry"
 ```bash
 # 1. Image adı/tag yanlış
 # Hata: "repository does not exist"
-kubectl set image deployment/<dep> <container>=nginx:1.27.99  # Yanlış tag
+kubectl set image deployment/frontend-deploy nginx-container=nginx:1.27.99  # Yanlış tag
 
 # 2. Private registry — imagePullSecret eksik
 kubectl create secret docker-registry regcred \
@@ -129,7 +129,7 @@ spec:
 # Çözüm: Authenticated pull veya private mirror kullan
 
 # 4. Network sorunu (node internete erişemiyor)
-kubectl debug node/<node> -it --image=busybox -- curl https://registry-1.docker.io
+kubectl debug node/worker-node-1 -it --image=busybox -- curl https://registry-1.docker.io
 ```
 
 ---
@@ -141,7 +141,7 @@ Pod oluşturuldu ama henüz hiçbir node'a atanmadı. Scheduler bir node bulamı
 
 ### Tanı
 ```bash
-kubectl describe pod <pod> | grep -A20 "Events:"
+kubectl describe pod nginx-pod | grep -A20 "Events:"
 # "0/3 nodes are available" mesajını ara
 ```
 
@@ -165,7 +165,7 @@ kubectl describe nodes | grep Taints
 
 # 4. PVC bağlanamıyor (storage sorunu)
 # Hata: "pod has unbound immediate PersistentVolumeClaims"
-kubectl get pvc -n <namespace>
+kubectl get pvc -n production
 # PVC'nin Bound değil Pending durumunda olup olmadığını kontrol et
 ```
 
@@ -178,14 +178,14 @@ kubectl get pvc -n <namespace>
 
 ```bash
 # Init container durumunu gör
-kubectl get pod <pod>
+kubectl get pod nginx-pod
 # STATUS: Init:0/2 → 2 init container'dan 0'ı tamamlandı
 
 # Init container logları
-kubectl logs <pod> -c <init-container-adı>
+kubectl logs nginx-pod -c init-myservice
 
 # Tüm init container'ları listele
-kubectl describe pod <pod> | grep -A5 "Init Containers:"
+kubectl describe pod nginx-pod | grep -A5 "Init Containers:"
 ```
 
 ---
@@ -197,10 +197,10 @@ Pod `kubectl delete` ile silindi ama `Terminating` durumunda takılı kaldı.
 
 ```bash
 # Graceful shutdown süresi dolmadan force sil
-kubectl delete pod <pod> --grace-period=0 --force
+kubectl delete pod nginx-pod --grace-period=0 --force
 
 # Finalizer varsa temizle
-kubectl patch pod <pod> -p '{"metadata":{"finalizers":null}}'
+kubectl patch pod nginx-pod -p '{"metadata":{"finalizers":null}}'
 ```
 
 > [!NOTE]
@@ -225,7 +225,7 @@ Pod sorunlu
      ├── Terminating → Force delete veya finalizer
      │
      └── Running ama çalışmıyor → kubectl exec ile container içine gir
-               kubectl exec -it <pod> -- /bin/sh
+               kubectl exec -it nginx-pod -- /bin/sh
 ```
 
 ---
@@ -234,14 +234,14 @@ Pod sorunlu
 
 ```bash
 # Çalışan container'a shell aç
-kubectl exec -it <pod> -- /bin/bash
-kubectl exec -it <pod> -c <container> -- /bin/sh
+kubectl exec -it nginx-pod -- /bin/bash
+kubectl exec -it nginx-pod -c nginx-container -- /bin/sh
 
 # Distroless/minimal image (shell yok) → Ephemeral container kullan
-kubectl debug -it <pod> --image=busybox --target=<container>
+kubectl debug -it nginx-pod --image=busybox --target=nginx-container
 
 # Container'ın dosya sistemini incele
-kubectl exec <pod> -- ls -la /app
-kubectl exec <pod> -- cat /etc/config/app.conf
-kubectl exec <pod> -- env | grep DATABASE
+kubectl exec nginx-pod -- ls -la /app
+kubectl exec nginx-pod -- cat /etc/config/app.conf
+kubectl exec nginx-pod -- env | grep DATABASE
 ```

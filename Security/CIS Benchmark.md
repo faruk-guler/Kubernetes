@@ -5,7 +5,7 @@ CIS (Center for Internet Security) Benchmark, Kubernetes cluster'larının güve
 ## Benchmark Hakkında
 
 | Bilgi | Detay |
-|:---|:---|
+| :--- | :--- |
 | **Geçerli sürüm** | CIS Kubernetes Benchmark v1.8 (2024) |
 | **Hedef platform** | Self-managed Kubernetes (kubeadm / RKE2) |
 | **Toplam kontrol** | 90+ güvenlik kontrolü |
@@ -15,7 +15,6 @@ CIS (Center for Internet Security) Benchmark, Kubernetes cluster'larının güve
 
 - [CIS Kubernetes Benchmark (Resmi)](https://www.cisecurity.org/benchmark/kubernetes)
 - [Azure AKS CIS Kılavuzu](https://learn.microsoft.com/en-us/azure/aks/cis-kubernetes)
-- [Benchmark PDF (v1.24)](../references/CIS%20Kubernetes%201.24%20Benchmark%20v1.0.0%20PDF.pdf)
 
 ---
 
@@ -24,7 +23,7 @@ CIS (Center for Internet Security) Benchmark, Kubernetes cluster'larının güve
 ### 1. Control Plane — API Server
 
 | Kontrol | Açıklama | Seviye |
-|:---|:---|:---:|
+| :--- | :--- | :---: |
 | 1.2.1 | `--anonymous-auth=false` — anonim erişim kapalı | Kritik |
 | 1.2.7 | `--authorization-mode=Node,RBAC` — RBAC zorunlu | Kritik |
 | 1.2.22 | `--audit-log-path` yapılandırılmış | Yüksek |
@@ -34,7 +33,7 @@ CIS (Center for Internet Security) Benchmark, Kubernetes cluster'larının güve
 ### 2. etcd Güvenliği
 
 | Kontrol | Açıklama |
-|:---|:---|
+| :--- | :--- |
 | 2.1 | etcd erişimi TLS ile şifrelenmiş mi? |
 | 2.2 | `--client-cert-auth=true` ayarlı mı? |
 | 2.3 | etcd peer iletişimi şifreli mi? |
@@ -42,7 +41,7 @@ CIS (Center for Internet Security) Benchmark, Kubernetes cluster'larının güve
 ### 3. Worker Node — kubelet
 
 | Kontrol | Açıklama |
-|:---|:---|
+| :--- | :--- |
 | 4.2.1 | `--anonymous-auth=false` |
 | 4.2.2 | `--authorization-mode=Webhook` |
 | 4.2.6 | Read-only port (10255) kapalı |
@@ -69,7 +68,7 @@ kubectl logs job/kube-bench
 
 ### Örnek Çıktı Yorumlama
 
-```
+```text
 [PASS] 1.1.1 API server pod spec dosya izinleri 644 veya daha kısıtlayıcı
 [FAIL] 1.2.1 --anonymous-auth parametresi false olarak ayarlanmamış
 [WARN] 1.2.16 Audit log boyut sınırı ayarlanmamış

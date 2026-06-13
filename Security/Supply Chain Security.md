@@ -3,7 +3,7 @@
 Modern Kubernetes güvenliği sadece cluster içiyle bitmez — koddan üretim image'ına kadar her adımın güvenilir ve doğrulanabilir olması gerekir. Bu zincire "software supply chain" denir.
 
 > [!NOTE]
-> **Kapsam:** Bu dosya supply chain politikası, imzalama ve SLSA çerçevesini kapsar. Araç bazlı CVE tarama ve SBOM üretimi için `Image & Container Management/Image Scanning & SBOM.md` dosyasına bakın.
+> **Kapsam:** Bu dosya supply chain politikası, imzalama ve SLSA çerçevesini kapsar. Araç bazlı CVE tarama ve SBOM üretimi süreçleri için imaj tarama ve SBOM yönetimi ile ilgili bölüme bakın.
 
 ---
 
@@ -221,7 +221,7 @@ spec:
       pattern:
         spec:
           containers:
-          - image: "!*:latest"
+          - image: "!*:1.27.0"
 ```
 
 ---

@@ -12,7 +12,7 @@ kubectl get nodes
 kubectl get nodes -o wide    # IP ve OS bilgisi dahil
 
 # Belirli node'un detayı
-kubectl describe node <node-adı>
+kubectl describe node worker-node-1
 ```
 
 `describe` çıktısında dikkat edin:
@@ -32,7 +32,7 @@ kubectl describe node <node-adı>
 kubectl get nodes | grep NotReady
 
 # Önce node'un eventlerine bak
-kubectl describe node <node> | grep -A20 "Conditions\|Events"
+kubectl describe node worker-node-1 | grep -A20 "Conditions\|Events"
 ```
 
 ### Olası Nedenler
@@ -149,7 +149,7 @@ dmesg | grep -i "oom\|killed process"
 journalctl -k | grep -i oom
 
 # kubelet eviction ile pod'lar çıkarılıyor
-kubectl describe node <node> | grep "Evicted\|eviction"
+kubectl describe node worker-node-1 | grep "Evicted\|eviction"
 ```
 
 ### Eviction Politikası Ayarı
@@ -171,7 +171,7 @@ evictionSoftGracePeriod:
 
 ```bash
 # Çok fazla process çalışıyor
-kubectl describe node <node> | grep PIDPressure
+kubectl describe node worker-node-1 | grep PIDPressure
 
 # Process sayısı
 ps aux | wc -l
@@ -189,16 +189,16 @@ Node'u bakıma almak için pod'ları güvenle taşı:
 
 ```bash
 # Node'u cordon et (yeni pod atanmasını engelle)
-kubectl cordon <node>
+kubectl cordon worker-node-1
 
 # Mevcut pod'ları taşı
-kubectl drain <node> \
+kubectl drain worker-node-1 \
   --ignore-daemonsets \    # DaemonSet pod'larını atla
   --delete-emptydir-data \ # emptyDir volume olan pod'ları da taşı
   --grace-period=60        # Graceful shutdown süresi
 
 # Bakım bitti, node'u geri al
-kubectl uncordon <node>
+kubectl uncordon worker-node-1
 ```
 
 > [!WARNING]
@@ -210,7 +210,7 @@ kubectl uncordon <node>
 
 ```bash
 # kubectl node debug (v1.23+)
-kubectl debug node/<node> -it --image=ubuntu
+kubectl debug node/worker-node-1 -it --image=ubuntu
 
 # Node'un dosya sistemine /host altından erişilir
 ls /host/var/log/

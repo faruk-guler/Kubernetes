@@ -154,18 +154,81 @@ kubectl port-forward svc/jaeger-query -n istio-system 16686:16686
 # http://localhost:16686
 ```
 
+## 6. Istio Ambient Mesh (Sidecar-less Mimarisi)
+
+**Istio Ambient Mesh**, pod'ların içine herhangi bir Envoy proxy (sidecar) enjekte etmeden çalışan yeni nesil bir Service Mesh veri düzlemi (data plane) modudur. Bu mimari, mesh yeteneklerini iki farklı katmana ayırarak kaynak israfını ve operasyonel karmaşıklığı en aza indirir:
+
+1. **L4 Güvenli Taşıma Katmanı (Secure Transport Layer):** Her node üzerinde çalışan **ztunnel** (Zero-Trust Tunnel) adı verilen Rust tabanlı hafif bir daemon ile yönetilir. Servisler arası mTLS şifrelemeyi, kimlik doğrulamayı (authentication) ve L4 yetkilendirme kurallarını üstlenir. Uygulama pod'larında hiçbir değişiklik gerektirmez.
+2. **L7 Uygulama İlkesi Katmanı (Application Policy Layer):** Gelişmiş yönlendirme, header manipülasyonu veya rate limiting gibi L7 yetenekleri gerektiğinde, her namespace için isteğe bağlı olarak çalışan bir **Waypoint proxy** (Envoy tabanlı) devreye girer.
+
+```
+       [ Uygulama Pod A ]              [ Uygulama Pod B ]
+              │                               ▲
+              ▼ (L4 Trafiği)                  │ (L4 Trafiği)
+       [ Node ztunnel ] ────────mTLS────────► [ Node ztunnel ]
+              │                               ▲
+              └──────────► [ Waypoint ] ──────┘
+                         (İsteğe Bağlı L7)
+```
+
+### Ambient Mesh Kurulumu ve Kullanımı
+
+#### 1. Ambient Profili ile Istio Kurulumu
+
+Ambient modu için kurulum profilini belirterek Istio'yu kuruyoruz:
+
+```bash
+istioctl install --set profile=ambient -y
+```
+
+#### 2. Namespace'i Ambient Moduna Dahil Etme
+
+Otomatik enjeksiyon (sidecar) etiketleri yerine, namespace'i doğrudan Ambient veri düzlemine dahil ediyoruz:
+
+```bash
+kubectl label namespace production istio.io/dataplane-mode=ambient
+```
+
+Bu etiketleme sonrasında, namespace içindeki pod'ların trafiği otomatik olarak `ztunnel` üzerinden geçmeye başlar ve mTLS ile şifrelenir.
+
+#### 3. L7 Kuralları İçin Waypoint Proxy Tanımlama
+
+Eğer L7 düzeyinde kurallar (örneğin trafik bölme veya HTTP header manipülasyonu) uygulamak istiyorsak, o namespace için bir Waypoint proxy tanımlamalıyız:
+
+```bash
+istioctl x waypoint apply --namespace production --name production-waypoint
+```
+
+Bu komut arka planda bir Kubernetes Gateway kaynağı oluşturur. Gateway API standartlarına uygun olan bu tanımı deklaratif olarak da uygulayabilirsiniz:
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: production-waypoint
+  namespace: production
+  labels:
+    istio.io/waypoint: "true"
+spec:
+  gatewayClassName: istio-waypoint
+  listeners:
+  - name: mesh
+    port: 15008
+    protocol: HBONE
+```
+
 ---
 
-## 6. Cilium vs Istio (2026 Değerlendirmesi)
+## 7. Service Mesh Karşılaştırması (2026)
 
-| Özellik | Istio (Sidecar) | Cilium Ambient Mesh |
-|:--------|:---------------:|:-------------------:|
-| Overhead (CPU/RAM) | Yüksek (~%30) | Çok Düşük (~%5) |
-| mTLS | ✅ | ✅ |
-| L7 Policy | ✅ | ✅ |
-| Kurulum karmaşıklığı | Yüksek | Düşük |
-| Sidecar gereksinimi | ✅ Zorunlu | ❌ |
-| Olgunluk | Yüksek | Orta (gelişiyor) |
+| Özellik | Istio (Sidecar) | Istio Ambient Mesh | Cilium Service Mesh |
+|:---|:---:|:---:|:---:|
+| **Sidecar Gereksinimi** | ✅ Evet | ❌ Hayır | ❌ Hayır |
+| **Overhead (CPU/RAM)** | Yüksek (~%30) | Düşük (~%5) | Çok Düşük (~%3) |
+| **mTLS Desteği** | ✅ Cryptographic (mTLS) | ✅ Cryptographic (mTLS) | ✅ IPsec / WireGuard |
+| **L7 Analiz Noktası** | Pod düzeyinde | Namespace düzeyinde (Waypoint) | Node düzeyinde (Envoy) |
+| **Kurulum/Yönetim** | Karmaşık | Orta | Basit (Cilium CLI) |
 
 > [!IMPORTANT]
-> Istio, gerçek dünyada hâlâ yaygın kullanımdadır. Ancak Cilium Ambient Mesh'in olgunlaşmasıyla birlikte 2027-2028'de standart değişecektir. Yeni greenfield projeler için Ambient Mesh'i değerlendirin.
+> 2026 yılı itibarıyla Kubernetes ekosisteminde sidecar modellerinden sidecar-less mimarilere (Istio Ambient ve Cilium) geçiş hızlanmıştır. Yeni projelerde kaynak verimliliği ve operasyon kolaylığı nedeniyle öncelikle sidecar-less modelleri tercih edin.
+

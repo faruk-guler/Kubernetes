@@ -35,20 +35,20 @@ kubectl get pods -n production -o wide
 
 ```bash
 # Detaylı pod incelemesi
-kubectl describe pod <pod-adi> -n <namespace>
+kubectl describe pod <pod-adi> -n production
 # "Events" bölümü — en son hata mesajı buradadır
 
 # Log (çalışıyorsa)
-kubectl logs <pod-adi> -n <namespace> --tail=50 -f
+kubectl logs <pod-adi> -n production --tail=50 -f
 
 # Önceki container'ın logu (CrashLoop için kritik)
-kubectl logs <pod-adi> -n <namespace> --previous
+kubectl logs <pod-adi> -n production --previous
 
 # Çok container varsa
-kubectl logs <pod-adi> -n <namespace> -c <container-adi>
+kubectl logs <pod-adi> -n production -c <container-adi>
 
 # Pod içine gir
-kubectl exec -it <pod-adi> -n <namespace> -- /bin/sh
+kubectl exec -it <pod-adi> -n production -- /bin/sh
 ```
 
 ---
@@ -68,7 +68,7 @@ kubectl get pods -n production --show-labels | grep <label>
 
 # 3. Servis porta erişim testi
 kubectl run test --image=busybox:1.36 --rm -it --restart=Never -- \
-  wget -qO- http://<servis>.<namespace>.svc.cluster.local:<port>/health
+  wget -qO- http://<servis>.production.svc.cluster.local:<port>/health
 
 # 4. Port forward ile doğrudan pod testi
 kubectl port-forward pod/<pod-adi> 8080:8080 -n production
@@ -136,17 +136,17 @@ kubectl uncordon <node-adi>
 kubectl get pods -n kube-system | grep -E "apiserver|controller|scheduler|etcd"
 
 # API Server logları
-kubectl logs -n kube-system kube-apiserver-<node> --tail=50
+kubectl logs -n kube-system kube-apiserver-worker-node-1 --tail=50
 
 # etcd sağlığı
-kubectl exec -n kube-system etcd-<node> -- \
+kubectl exec -n kube-system etcd-worker-node-1 -- \
   etcdctl endpoint health \
   --cacert=/etc/kubernetes/pki/etcd/ca.crt \
   --cert=/etc/kubernetes/pki/etcd/server.crt \
   --key=/etc/kubernetes/pki/etcd/server.key
 
 # etcd üye listesi
-kubectl exec -n kube-system etcd-<node> -- \
+kubectl exec -n kube-system etcd-worker-node-1 -- \
   etcdctl member list \
   --cacert=/etc/kubernetes/pki/etcd/ca.crt \
   --cert=/etc/kubernetes/pki/etcd/peer.crt \

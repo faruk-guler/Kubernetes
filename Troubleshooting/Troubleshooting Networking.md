@@ -17,7 +17,7 @@ Kubernetes ağ sorunları sinsi olabilir — pod çalışıyor ama bağlanamıyo
      │
 [Pod → Container]
      │
-[CNI Plugin (Cilium/Flannel/Calico)]
+[CNI Plugin (Cilium/Calico)]
      │
 [Linux Kernel (iptables / eBPF)]
 ```
@@ -40,8 +40,8 @@ kubectl get pods -n kube-system -l k8s-app=kube-dns
 kubectl logs -n kube-system -l k8s-app=kube-dns --tail=50
 
 # Pod içinden servis adını çöz
-kubectl exec -it <pod> -- nslookup <servis-adı>.<namespace>.svc.cluster.local
-kubectl exec -it <pod> -- cat /etc/resolv.conf
+kubectl exec -it nginx-pod -- nslookup frontend-svc.production.svc.cluster.local
+kubectl exec -it nginx-pod -- cat /etc/resolv.conf
 ```
 
 ### Yaygın DNS Sorunları
@@ -75,25 +75,25 @@ spec:
 
 ```bash
 # 1. Service mevcut mu?
-kubectl get svc -n <namespace>
+kubectl get svc -n production
 
 # 2. Service'in endpoint'leri var mı? (Pod seçiliyor mu?)
-kubectl get endpoints <servis-adı> -n <namespace>
+kubectl get endpoints frontend-svc -n production
 # Boşsa: selector etiketleri pod etiketleriyle eşleşmiyor
 
 # 3. Label selector kontrolü
 kubectl get svc <servis> -o jsonpath='{.spec.selector}'
-kubectl get pods -n <namespace> --show-labels
+kubectl get pods -n production --show-labels
 # Yukarıdaki etiketler eşleşmeli
 
 # 4. Port numaraları doğru mu?
 kubectl describe svc <servis>
 # Port: 80/TCP → targetPort: 8080/TCP
 # Container gerçekten 8080'de mi dinliyor?
-kubectl exec <pod> -- netstat -tlnp   # veya ss -tlnp
+kubectl exec nginx-pod -- netstat -tlnp   # veya ss -tlnp
 
 # 5. Doğrudan pod IP'ye eriş (service bypass)
-POD_IP=$(kubectl get pod <pod> -o jsonpath='{.status.podIP}')
+POD_IP=$(kubectl get pod nginx-pod -o jsonpath='{.status.podIP}')
 kubectl run test --image=busybox --rm -it --restart=Never -- wget -O- http://$POD_IP:8080
 ```
 
@@ -102,7 +102,7 @@ kubectl run test --image=busybox --rm -it --restart=Never -- wget -O- http://$PO
 ```bash
 # ClusterIP testi (cluster içinden)
 kubectl run curl-test --image=curlimages/curl --rm -it --restart=Never -- \
-  curl http://<servis-adı>.<namespace>.svc.cluster.local:<port>
+  curl http://frontend-svc.production.svc.cluster.local:<port>
 
 # NodePort testi (dışarıdan)
 NODE_IP=$(kubectl get node -o jsonpath='{.items[0].status.addresses[0].address}')
@@ -125,7 +125,7 @@ kubectl get pods -n ingress-nginx
 kubectl logs -n ingress-nginx <ingress-controller-pod>
 
 # 2. Ingress kuralları doğru mu?
-kubectl describe ingress <ingress-adı> -n <namespace>
+kubectl describe ingress <ingress-adı> -n production
 
 # 3. Ingress class kontrolü
 kubectl get ingressclass
@@ -134,9 +134,9 @@ kubectl get ingressclass
 # veya spec.ingressClassName: nginx
 
 # 4. TLS/SSL sorunları
-kubectl get certificate -n <namespace>      # cert-manager
+kubectl get certificate -n production      # cert-manager
 kubectl describe certificate <cert>
-kubectl get secret <tls-secret> -n <namespace>
+kubectl get secret <tls-secret> -n production
 
 # 5. Path eşleşme testi
 curl -v http://<host>/api/v1/users
@@ -153,7 +153,7 @@ kubectl run sender --image=busybox --rm -it --restart=Never -- \
   ping <hedef-pod-IP>
 
 # Pod IP'leri öğren
-kubectl get pods -o wide -n <namespace>
+kubectl get pods -o wide -n production
 
 # Node'lar arası iletişim (CNI tüneli)
 # Cilium kullanıyorsanız:
@@ -163,8 +163,8 @@ cilium connectivity test
 kubectl get pods -n kube-system -l k8s-app=cilium
 kubectl exec -n kube-system <cilium-pod> -- cilium status
 
-# Flannel / Calico
-kubectl get pods -n kube-system | grep -E "flannel|calico"
+# Calico CNI
+kubectl get pods -n kube-system | grep calico
 ```
 
 ---
@@ -175,13 +175,13 @@ kubectl get pods -n kube-system | grep -E "flannel|calico"
 
 ```bash
 # Namespace'te NetworkPolicy var mı?
-kubectl get networkpolicy -n <namespace>
+kubectl get networkpolicy -n production
 
 # Hangi policy'ler uygulanıyor?
-kubectl describe networkpolicy -n <namespace>
+kubectl describe networkpolicy -n production
 
 # Policy bypass testi — geçici olarak sil (TEST ortamında!)
-kubectl delete networkpolicy <policy> -n <namespace>
+kubectl delete networkpolicy <policy> -n production
 # Bağlantı düzeldiyse policy çok kısıtlayıcı demektir
 ```
 
@@ -213,7 +213,7 @@ kubectl logs -n kube-system <kube-proxy-pod>
 
 # iptables kuralları oluşturulmuş mu?
 # Node üzerinde:
-iptables -t nat -L KUBE-SERVICES | grep <servis-adı>
+iptables -t nat -L KUBE-SERVICES | grep frontend-svc
 
 # Cilium'da eBPF ile kube-proxy değiştirilmişse:
 kubectl exec -n kube-system <cilium-pod> -- cilium service list

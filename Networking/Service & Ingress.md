@@ -142,39 +142,40 @@ kubectl get pods -n production -l app=api       # label eşleşiyor mu?
 ## Ingress (Klasik — Gateway API'ye Geçiş Sürecinde)
 
 ```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: web-ingress
-  namespace: production
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-spec:
-  ingressClassName: nginx
-  tls:
-  - hosts:
-    - app.company.com
-    secretName: app-tls-cert
-  rules:
-  - host: app.company.com
-    http:
-      paths:
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: api-service
-            port:
-              number: 80
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: web-service
-            port:
-              number: 80
+# ÖRNEK: Klasik Ingress Tanımı (Tarihsel Referans - Yeni Kurulumlarda Kullanmayın)
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: web-ingress
+#   namespace: production
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /
+#     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+#     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+# spec:
+#   ingressClassName: nginx
+#   tls:
+#   - hosts:
+#     - app.company.com
+#     secretName: app-tls-cert
+#   rules:
+#   - host: app.company.com
+#     http:
+#       paths:
+#       - path: /api
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: api-service
+#             port:
+#               number: 80
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: web-service
+#             port:
+#               number: 80
 ```
 
 ---
@@ -268,7 +269,7 @@ spec:
 
 ```bash
 # Kubernetes DNS otomatik kayıt oluşturur
-# Format: <service>.<namespace>.svc.cluster.local
+# Format: <service>.production.svc.cluster.local
 
 # Aynı namespace'deki servis
 curl http://api-service

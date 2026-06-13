@@ -10,11 +10,11 @@ Bu en yaygın storage sorunudur. PVC oluşturuldu ama Bound olmadı.
 
 ```bash
 # PVC durumunu kontrol et
-kubectl get pvc -n <namespace>
+kubectl get pvc -n production
 # STATUS: Pending → Bound olmadı
 
 # Detaylı tanı
-kubectl describe pvc <pvc-adı> -n <namespace>
+kubectl describe pvc data-pvc-0 -n production
 # Events bölümüne bak
 ```
 
@@ -26,7 +26,7 @@ kubectl describe pvc <pvc-adı> -n <namespace>
 kubectl get storageclass
 
 # PVC'de belirtilen storageClassName doğru mu?
-kubectl get pvc <pvc> -o jsonpath='{.spec.storageClassName}'
+kubectl get pvc data-pvc-0 -o jsonpath='{.spec.storageClassName}'
 
 # Default StorageClass var mı? (PVC'de storageClassName boşsa)
 kubectl get sc | grep "(default)"
@@ -58,7 +58,7 @@ kubectl get sc <sc-adı> -o jsonpath='{.provisioner}'
 kubectl get pods -A | grep -i "longhorn\|csi\|ebs\|nfs"
 
 # CSI driver event'leri
-kubectl describe pvc <pvc> | grep -A20 "Events"
+kubectl describe pvc data-pvc-0 | grep -A20 "Events"
 # "waiting for a volume to be created" → provisioner çalışmıyor
 ```
 
@@ -77,7 +77,7 @@ kubectl get sc <sc-adı> -o jsonpath='{.volumeBindingMode}'
 ### Pod "ContainerCreating" durumunda takılı kaldı
 
 ```bash
-kubectl describe pod <pod> -n <namespace>
+kubectl describe pod nginx-pod -n production
 # Şuna benzer event aranır:
 # "Unable to attach or mount volumes"
 # "Timeout expired waiting for volumes"
@@ -101,7 +101,7 @@ kubectl delete pod <eski-pod> --grace-period=0 --force
 #### Node'da Mount Başarısız
 ```bash
 # Node üzerinde kontrol (SSH ile)
-mount | grep <pvc-adı>
+mount | grep data-pvc-0
 dmesg | grep -i "mount\|nfs\|ext4\|xfs" | tail -20
 
 # NFS mount sorunu
@@ -118,14 +118,14 @@ kubectl get volumes.longhorn.io -n longhorn-system
 
 ```bash
 # StatefulSet PVC'leri kontrol et
-kubectl get pvc -n <namespace> | grep <statefulset-adı>
+kubectl get pvc -n production | grep web-sts
 # Her pod için ayrı PVC olmalı: data-<sts-adı>-0, data-<sts-adı>-1 ...
 
 # StatefulSet scale down sonrası PVC'ler silinmez (bu beklenen davranış)
 # Yeniden scale up olduğunda aynı PVC yeniden bağlanır
 
 # PVC'yi silmek istiyorsanız manuel:
-kubectl delete pvc data-<sts>-0 -n <namespace>
+kubectl delete pvc data-web-sts-0 -n production
 ```
 
 ---
@@ -136,16 +136,16 @@ kubectl delete pvc data-<sts>-0 -n <namespace>
 # Pod logları "no space left on device" hatasını gösteriyorsa
 
 # PVC'nin ne kadar dolduğunu gör
-kubectl exec <pod> -- df -h /data
+kubectl exec nginx-pod -- df -h /data
 
 # PV kapasitesi gerçekte ne kadar?
-kubectl get pvc <pvc> -o jsonpath='{.status.capacity.storage}'
+kubectl get pvc data-pvc-0 -o jsonpath='{.status.capacity.storage}'
 
 # Volume genişletme (StorageClass allowVolumeExpansion: true olmalı)
-kubectl patch pvc <pvc> -p '{"spec":{"resources":{"requests":{"storage":"20Gi"}}}}'
+kubectl patch pvc data-pvc-0 -p '{"spec":{"resources":{"requests":{"storage":"20Gi"}}}}'
 
 # Genişleme durumu
-kubectl describe pvc <pvc> | grep -A5 "Conditions\|Events"
+kubectl describe pvc data-pvc-0 | grep -A5 "Conditions\|Events"
 # FileSystemResizePending → Pod yeniden başlatılmalı
 ```
 
@@ -181,7 +181,7 @@ ETCDCTL_API=3 etcdctl \
   endpoint health
 
 # Secret şifrelenmiş mi? (encryption at rest)
-kubectl get secret <secret> -o yaml
+kubectl get secret db-credentials -o yaml
 # data alanındaki değerler base64 encoded — açık metin DEĞİL
 # etcd'de şifreliyse: EncryptionConfiguration tanımlanmış demektir
 ```
@@ -199,11 +199,11 @@ kubectl get volumes.longhorn.io -n longhorn-system
 kubectl get replicas.longhorn.io -n longhorn-system | grep -v Running
 
 # Replica rebuild sorunu
-kubectl describe volume.longhorn.io <vol> -n longhorn-system
+kubectl describe volume.longhorn.io pvc-abc123def456 -n longhorn-system
 # "replica rebuild failed" → Storage disk dolu mu? Node sağlıklı mı?
 
 # Longhorn disk ekle
-kubectl label nodes <node> node.longhorn.io/create-default-disk=true
+kubectl label nodes worker-node-1 node.longhorn.io/create-default-disk=true
 ```
 
 ---

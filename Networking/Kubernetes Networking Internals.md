@@ -139,7 +139,7 @@ Her pod kendi Linux network namespace'inde çalışır:
 
 ```bash
 # Pod'un network namespace'ini bul
-POD_ID=$(kubectl get pod <pod> -o jsonpath='{.metadata.uid}')
+POD_ID=$(kubectl get pod nginx-pod -o jsonpath='{.metadata.uid}')
 crictl inspect <container-id> | grep pid
 
 # O process'in network namespace'ini gör (node'da)
@@ -192,7 +192,7 @@ spec:
 
 ```bash
 # Pod içinden debug
-kubectl exec -it <pod> -n <ns> -- bash
+kubectl exec -it nginx-pod -n <ns> -- bash
 
 # Bağlantı testi
 curl -v http://web-app.production.svc.cluster.local

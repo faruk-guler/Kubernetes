@@ -103,7 +103,7 @@ Birçok pod'un aynı veriyi okuduğu, ancak sadece bir pod'un o veriyi güncelle
 spec:
   containers:
   - name: writer
-    image: alpine
+    image: alpine:3.19
     command: ["/bin/sh", "-c", "while true; do date >> /html/index.html; sleep 5; done"]
     volumeMounts:
     - name: shared-data
@@ -132,6 +132,6 @@ spec:
 2.  **Reclaim Policy:**
     - `Delete:` PVC silinince fiziksel disk de gider.
     - `Retain:` PVC silinse de veri nodes/cloud üzerinde kalır (Admin manuel siler).
-3.  **CSI (Container Storage Interface):** Modern Kubernetes'te tüm depolama işlemleri CSI plugin'leri üzerinden yürütülür. Detaylar için `CSI Drivers & Dynamic Provisioning.md` dosyasına bakın.
+3.  **CSI (Container Storage Interface):** Modern Kubernetes'te tüm depolama işlemleri CSI plugin'leri üzerinden yürütülür. Detaylar için CSI sürücüleri ve dinamik provizyonlama konusuna bakın.
 
 ---

@@ -3,7 +3,7 @@
 Kubernetes'te en sık karşılaşılan ağ sorunlarının büyük bölümü DNS kaynaklıdır. Pod'lar servis isimlerini çözümleyemez, dış alan adlarına ulaşamaz veya beklenmedik sürelerle timeout alır.
 
 > [!NOTE]
-> Bu dosya yalnızca sorun giderme odaklıdır. CoreDNS mimarisi, ConfigMap yapılandırması, stub zone ve ölçeklendirme için `Networking/DNS & CoreDNS.md` dosyasına bakın.
+> Bu dosya yalnızca sorun giderme odaklıdır. CoreDNS mimarisi, ConfigMap yapılandırması, stub zone ve ölçeklendirme için CoreDNS ana bölümüne bakın.
 
 ---
 
@@ -101,7 +101,7 @@ kubectl get configmap coredns -n kube-system -o jsonpath='{.data.Corefile}'
 # forward . 8.8.8.8 8.8.4.4  ← Google DNS
 
 # Node'un upstream DNS'i kontrol et
-kubectl debug node/<node-adı> -it --image=ubuntu -- cat /etc/resolv.conf
+kubectl debug node/worker-node-1 -it --image=ubuntu -- cat /etc/resolv.conf
 ```
 
 **Özel upstream DNS yapılandırması:**

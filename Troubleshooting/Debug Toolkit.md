@@ -10,12 +10,12 @@ Distroless veya minimal image kullanan container'larda shell yoktur. Ephemeral c
 
 ```bash
 # Çalışan pod'a debug container ekle
-kubectl debug -it <pod-adı> \
+kubectl debug -it nginx-pod \
   --image=nicolaka/netshoot \
-  --target=<container-adı>
+  --target=nginx-container
 
 # Kendi kopyasını oluştur (pod değiştirilmez, kopya açılır)
-kubectl debug <pod-adı> -it \
+kubectl debug nginx-pod -it \
   --image=ubuntu \
   --copy-to=debug-pod \
   --share-processes
@@ -42,7 +42,7 @@ Node üzerinde doğrudan çalışan araçları SSH gerektirmeden kullanmak için
 
 ```bash
 # Node'a privileged container aç
-kubectl debug node/<node-adı> -it --image=ubuntu
+kubectl debug node/worker-node-1 -it --image=ubuntu
 
 # Container içinde node'un dosya sistemi /host altında
 chroot /host   # Node'un root dosya sistemine geç
@@ -88,7 +88,7 @@ crictl inspect <container-id> | jq '.info.runtimeSpec.linux.namespaces'
 
 ```bash
 # Önce netshoot container'ı pod'a ekle
-kubectl debug -it <pod> --image=nicolaka/netshoot --target=<container>
+kubectl debug -it nginx-pod --image=nicolaka/netshoot --target=nginx-container
 
 # Pod içinde tcpdump çalıştır
 tcpdump -i eth0 -nn                          # Tüm trafik
@@ -97,7 +97,7 @@ tcpdump -i eth0 host 10.0.0.5 -nn           # Belirli IP
 tcpdump -i eth0 -w /tmp/capture.pcap         # Dosyaya kaydet
 
 # Yakalanan dosyayı dışarı çek
-kubectl cp <pod>:/tmp/capture.pcap ./capture.pcap
+kubectl cp nginx-pod:/tmp/capture.pcap ./capture.pcap
 # Wireshark ile analiz et
 ```
 
@@ -107,19 +107,19 @@ kubectl cp <pod>:/tmp/capture.pcap ./capture.pcap
 
 ```bash
 # Namespace olayları (zaman sırası)
-kubectl get events -n <namespace> --sort-by='.lastTimestamp'
+kubectl get events -n production --sort-by='.lastTimestamp'
 
 # Sadece Warning olayları
-kubectl get events -n <namespace> --field-selector type=Warning
+kubectl get events -n production --field-selector type=Warning
 
 # Belirli objeye ait olaylar
-kubectl get events --field-selector involvedObject.name=<pod-adı>
+kubectl get events --field-selector involvedObject.name=nginx-pod
 
 # Tüm cluster olayları (dikkatli — çok fazla çıktı)
 kubectl get events -A --sort-by='.lastTimestamp' | tail -30
 
 # Gerçek zamanlı olayları izle
-kubectl get events -n <namespace> -w
+kubectl get events -n production -w
 ```
 
 ---
@@ -133,9 +133,9 @@ kubectl top nodes --sort-by=cpu
 kubectl top nodes --sort-by=memory
 
 # Pod kaynak kullanımı
-kubectl top pods -n <namespace>
+kubectl top pods -n production
 kubectl top pods -A --sort-by=memory | head -20
-kubectl top pods --containers -n <namespace>    # Container bazında
+kubectl top pods --containers -n production    # Container bazında
 
 # metrics-server kurulu değilse:
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
@@ -147,13 +147,13 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/late
 
 ```bash
 # Pod'a doğrudan bağlan
-kubectl port-forward pod/<pod> 8080:80
+kubectl port-forward pod/nginx-pod 8080:80
 
 # Service üzerinden
-kubectl port-forward svc/<servis> 8080:80 -n <namespace>
+kubectl port-forward svc/<servis> 8080:80 -n production
 
 # Deployment üzerinden (herhangi bir pod'a)
-kubectl port-forward deployment/<dep> 8080:80
+kubectl port-forward deployment/frontend-deploy 8080:80
 
 # Arka planda çalıştır
 kubectl port-forward svc/grafana 3000:80 -n monitoring &
@@ -168,12 +168,12 @@ kubectl port-forward svc/grafana 3000:80 -n monitoring &
 kubectl logs -l app=web-app -n production --tail=100 -f
 
 # Önceki container'ın logları
-kubectl logs <pod> --previous
-kubectl logs <pod> -c <container> --previous
+kubectl logs nginx-pod --previous
+kubectl logs nginx-pod -c nginx-container --previous
 
 # Zaman bazlı log
-kubectl logs <pod> --since=1h
-kubectl logs <pod> --since-time="2026-04-25T18:00:00Z"
+kubectl logs nginx-pod --since=1h
+kubectl logs nginx-pod --since-time="2026-04-25T18:00:00Z"
 
 # stern (gelişmiş multi-pod log)
 # https://github.com/stern/stern

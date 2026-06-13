@@ -1,382 +1,232 @@
-```bash
+# Admission Policy Derinlemesine İnceleme
 
-kubectl create -f https://github.com/kyverno/kyverno/releases/download/v1.10.3/install.yaml
+Kubernetes admission controller'lar (kabul denetleyicileri), API sunucusuna gelen isteklerin kimlik doğrulama (authentication) ve yetkilendirme (authorization) adımlarını geçtikten sonra, ancak nesne etki alanına (etcd) kaydedilmeden önce araya giren mekanizmalardır.
 
-```
-# Validation
+Geleneksel olarak, özel doğrulama kuralları uygulamak isteyen ekiplerin Go, Python veya Node.js ile Admission Webhook'ları yazması, bunları cluster içinde devreye alması, TLS sertifikalarını yönetmesi ve ağ gecikmelerini/güvenilirlik risklerini üstlenmesi gerekiyordu. 
 
-Do�Yrulama politikaları, Kubernetes kaynaklarını yaratma veya güncelleme sırasında uygulanır. Bu politikalar, kaynakların belirli kurallara ve standartlara uygun olup olmadı�Yını kontrol eder. E�Yer bir kaynak, belirli bir do�Yrulama politikasına uymazsa, bu kayna�Yın olu�Yturulması veya güncellenmesi reddedilir.
+Kubernetes 1.30 ile birlikte GA (General Availability) aşamasına ulaşan **ValidatingAdmissionPolicy** (Doğrulama Kabul Politikası), herhangi bir webhook sunucusuna ihtiyaç duymadan, doğrudan API sunucusu içinde **CEL (Common Expression Language)** ifadeleri kullanarak deklaratif kurallar tanımlamanızı sağlar. Bu mekanizma, dışarıya ağ çağrısı yapmadığı için son derece hızlı, güvenli ve düşük maliyetlidir.
 
-�-rnek: Pod'ların sadece belirli imaj depolarından imaj çekmesini zorunlu kılmak için bir do�Yrulama politikası olu�Yturabilirsiniz.
+---
 
-```yaml
-apiVersion: kyverno.io/v1
-kind: Policy
-metadata:
-  name: restrict-image-sources
-spec:
-  validationFailureAction: Enforce
-  rules:
-  - name: check-image-source
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "Images must be pulled from your-allowed-registry.com"
-      pattern:
-        spec:
-          containers:
-          - image: "your-allowed-registry.com/*"
-```
+## ValidatingAdmissionPolicy Bileşenleri
 
-### Politika Açıklaması:
+CEL tabanlı doğrulama sistemi iki temel Kubernetes kaynağından oluşur:
 
-1. `kind: ClusterPolicy`: Bu politika bir `ClusterPolicy` türündedir, yani tüm cluster'da uygulanır.
-2. `name: restrict-image-sources`: Politikanın adı.
-3. `validationFailureAction: enforce`: Bu politika zorlayıcı (enforcing) modda çalı�Yır, yani kurala uymayan Pod'lar reddedilir.
-4. `match.resources.kinds: - Pod`: Bu politika sadece `Pod` türündeki kaynaklara uygulanır.
-5. `validate.message`: Kurala uymayan kaynaklar için gösterilecek hata mesajı.
-6. `pattern.spec.containers.image`: Pod tanımında bulunan her bir container'ın `image` alanı için beklenen patern. Bu örnekte, `your-allowed-registry.com/` ile ba�Ylayan imaj adlarına izin verilir.
+1. **ValidatingAdmissionPolicy**: Politikanın hangi kaynaklarla eşleşeceğini, kurallarını ve hata durumlarında hangi CEL ifadelerinin değerlendirileceğini tanımlar.
+2. **ValidatingAdmissionPolicyBinding**: Politikanın hangi Namespace'lerde veya hangi kaynaklarda aktif olacağını, hangi eylemin (`Deny`, `Warn`, `Audit`) tetikleneceğini belirler.
 
+---
 
-* �-rnek-2: her olu�Yturulan podta `team` anahtarını içeren bir etiket olmasını bekler. 
+## Örnek Senaryolar ve Uygulama
 
-```bash
-kubectl create -f- << EOF
-apiVersion: kyverno.io/v1
-kind: Policy
-metadata:
-  name: require-labels
-spec:
-  validationFailureAction: Enforce
-  rules:
-  - name: check-team
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: "label 'team' is required"
-      pattern:
-        metadata:
-          labels:
-            team: "?*"
-EOF
+Aşağıda, üretim ortamlarında kullanılabilecek, tamamen geçerli ve hazır senaryolar yer almaktadır.
 
-```
+### Senaryo 1: Üretim Ortamında Minimum Replika Sayısı Zorunluluğu
 
-* Test
-```bash
-kubectl create deployment nginx --image=nginx
+Üretim namespace'lerinde çalışan Deployment'ların yüksek kullanılabilirlik (High Availability) için en az 3 replikaya sahip olmasını zorunlu kılmak istiyoruz.
 
-
-kubectl run nginx --image nginx --labels team=backend
-
-kubectl get policyreport
-```
-
-* deny unkown repositories
+#### 1. Politika Tanımı (ValidatingAdmissionPolicy)
 
 ```yaml
-
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
 metadata:
-  name: allowed-repo
+  name: deployment-min-replicas
 spec:
-  validationFailureAction: Enforce
-  rules:
-  - name: check-registries
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "Registry not allowed"
-      pattern:
-        spec:
-          containers:
-          - image: "docker.io/* | quay.io/*"
-
-
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["deployments"]
+  validations:
+    - expression: "object.spec.replicas >= 3"
+      message: "Uretim ortamindaki Deployment'lar en az 3 replikaya sahip olmalidir."
 ```
 
-* deny privileged pods
+#### 2. Politika Bağlama (ValidatingAdmissionPolicyBinding)
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
 metadata:
-  name: disallow-privileged-containers
+  name: deployment-min-replicas-binding
 spec:
-  validationFailureAction: Enforce
-  background: false
-  rules:
-    - name: prevent-privileged-containers
-      match:
-        resources:
-          kinds:
-            - Pod
-      validate:
-        message: "Privileged containers are not allowed"
-        pattern:
-          spec:
-            containers:
-              - =(securityContext):
-                  =(privileged): false
+  policyName: deployment-min-replicas
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        environment: production
 ```
 
+Bu bağlama ile kural sadece `environment: production` etiketine sahip namespace'ler üzerinde geçerli olur.
 
-# Mutation
+---
 
-Mutasyon politikaları, kaynakların yaratılma veya güncelleme sırasında dinamik olarak de�Yi�Ytirilmesini sa�Ylar. Bu politikalar, kaynak tanımlarına otomatik olarak alanlar ekler, mevcut alanları de�Yi�Ytirir veya alanları kaldırır.
+### Senaryo 2: Zorunlu Etiket (Label) Kontrolü
 
-Kyverno'da `mutate` bölümü, Kubernetes kaynaklarını dinamik olarak de�Yi�Ytirmek için kullanılır. Bu, kaynak tanımlarına otomatik olarak alanlar eklemek, mevcut alanları de�Yi�Ytirmek veya alanları kaldırmak için kullanılır. Mutasyon için iki temel yöntem vardır: `patchStrategicMerge` ve `overlay`.
+Güvenlik ve faturalandırma takibi için kümedeki tüm Pod'ların mutlaka bir `team` etiketine sahip olmasını istiyoruz. Sistem bileşenlerini (`kube-system`) bu kuraldan muaf tutacağız.
 
-### 1. **patchStrategicMerge:**
-`patchStrategicMerge` yöntemi, bir kaynak tanımına spesifik alanları eklemek veya de�Yi�Ytirmek için kullanılır. Bu yöntemle, belirli alanlara yapılan de�Yi�Yiklikler tanımlandı�Yı gibi uygulanır.
-
-#### �-rnek:
+#### 1. Politika Tanımı (ValidatingAdmissionPolicy)
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
 metadata:
-  name: add-security-context
+  name: require-team-label
 spec:
-  rules:
-  - name: patch-security-context
-    match:
-      resources:
-        kinds:
-        - Pod
-    mutate:
-      patchStrategicMerge:
-        spec:
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 1000
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validations:
+    - expression: "has(object.metadata.labels) && 'team' in object.metadata.labels"
+      message: "Tum Pod'lar 'team' etiketine sahip olmak zorundadir."
 ```
 
-Bu örnekte, Pod'lara `securityContext` eklenir ve `runAsNonRoot: true` ve `runAsUser: 1000` olarak ayarlanır.
-
-### 2. **overlay:**
-`overlay` yöntemi, bir kaynak üzerine daha geni�Y ve kapsamlı de�Yi�Yiklikler yapmak için kullanılır. `overlay` daha kompleks ve detaylı mutasyonlar için uygundur ve `patchStrategicMerge` ile benzer �Yekilde çalı�Yır ancak daha fazla seçenek sunar.
-
-#### �-rnek:
+#### 2. Politika Bağlama (ValidatingAdmissionPolicyBinding)
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
 metadata:
-  name: add-labels-and-annotations
+  name: require-team-label-binding
 spec:
-  rules:
-  - name: patch-labels-annotations
-    match:
-      resources:
-        kinds:
-        - Pod
-    mutate:
-      overlay:
-        metadata:
-          labels:
-            my-label: my-label-value
-          annotations:
-            my-annotation: my-annotation-value
+  policyName: require-team-label
+  validationActions: [Deny]
+  matchResources:
+    excludeResourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      resources: ["pods"]
+      namespaces: ["kube-system"]
 ```
 
-Bu örnekte, Pod'lara `my-label: my-label-value` etiketi ve `my-annotation: my-annotation-value` notu eklenir.
+---
 
-### Farklar:
-- `patchStrategicMerge` daha basit ve spesifik alan de�Yi�Yiklikleri için uygundur.
-- `overlay` daha kapsamlı ve detaylı mutasyonlar yapmak için kullanılır ve daha fazla esneklik sunar.
+### Senaryo 3: Sadece Güvenli Container Image Kaynaklarına İzin Verme
 
-Her iki yöntem de benzer amaçlar için kullanılabilir, ve hangi yöntemin kullanılaca�Yı spesifik kullanım durumunuza ve ihtiyacınıza ba�Ylıdır. Genellikle, daha basit ve spesifik mutasyonlar için `patchStrategicMerge`, daha kapsamlı ve detaylı mutasyonlar için `overlay` kullanılır.
+Cluster üzerinde çalışacak container'ların imajlarının yalnızca onaylanmış registry adreslerinden (`gcr.io/` veya `quay.io/`) çekilmesini zorunlu kılmak istiyoruz.
 
-
-
-Pod tanımlarına otomatik olarak bir güvenlik politikası eklemek için kullanabilece�Yiniz bir Kyverno mutasyon politikası örne�Yi bulunmaktadır. Bu örnekte, her Pod'a otomatik olarak bir `securityContext` eklenmektedir.
+#### 1. Politika Tanımı (ValidatingAdmissionPolicy)
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: Policy
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
 metadata:
-  name: add-security-context
+  name: approved-registries
 spec:
-  rules:
-    - name: add-securityContext
-      match:
-        resources:
-          kinds:
-          - Pod
-      mutate:
-        overlay:
-          spec:
-            securityContext:
-              runAsNonRoot: true
-              runAsUser: 1000
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validations:
+    - expression: "object.spec.containers.all(c, c.image.startsWith('gcr.io/') || c.image.startsWith('quay.io/'))"
+      message: "Container imajlari sadece gcr.io/ veya quay.io/ adreslerinden cekilebilir."
 ```
 
-### Politika Açıklaması:
-
-1. `kind: ClusterPolicy`: Bu politika bir `ClusterPolicy` türündedir, yani tüm cluster'da uygulanır.
-2. `name: add-security-context`: Politikanın adı.
-3. `match.resources.kinds: - Pod`: Bu politika sadece `Pod` türündeki kaynaklara uygulanır.
-4. `mutate.overlay.spec.securityContext`: Mutasyon i�Ylemi sırasında Pod'a eklenecek `securityContext` tanımlanmı�Ytır. Bu örnekte, her Pod'un `runAsNonRoot: true` ve `runAsUser: 1000` olarak ayarlanacak bir `securityContext` alması sa�Ylanmaktadır.
-
-
-Burada `team: bravo` �Yeklinde anahtar-de�Yerli bir etiket eklenmektedir. 
-
-```bash
-kubectl create -f- << EOF
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: add-labels
-spec:
-  rules:
-  - name: add-team
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    mutate:
-      patchStrategicMerge:
-        metadata:
-          labels:
-            +(team): bravo
-EOF
-
-kubectl run redis --image redis
-
-kubectl get pod redis --show-labels
-
-kubectl run newredis --image redis -l team=alpha
-
-kubectl get pod myredis --show-labels
-
-```
-
-## Generation
-
-�oretim politikaları, di�Yer Kubernetes kaynaklarının yaratılmasına veya silinmesine yanıt olarak otomatik olarak kaynaklar üretir. Bu, belirli bir kayna�Yın yaratılmasına veya silinmesine yanıt olarak ba�Yka kaynakların da dinamik olarak yönetilmesini sa�Ylar.
-
-�-rnek: Her yeni Namespace için otomatik olarak bir Role veya RoleBinding olu�Yturmak üzere bir üretim politikası kullanabilirsiniz.
-
-�-rnek Politika:
-
-A�Ya�Yıda bir Validation politika örne�Yi bulunmaktadır:
-
-```bash
-kubectl -n default create secret docker-registry regcred \
-  --docker-server=myinternalreg.corp.com \
-  --docker-username=john.doe \
-  --docker-password=Passw0rd123! \
-  --docker-email=john.doe@corp.com
-
-kubectl create -f- << EOF
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: sync-secrets
-spec:
-  rules:
-  - name: sync-image-pull-secret
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    generate:
-      apiVersion: v1
-      kind: Secret
-      name: regcred
-      namespace: "{{request.object.metadata.name}}"
-      synchronize: true
-      clone:
-        namespace: default
-        name: regcred
-EOF
-
-
-kubectl create ns mytestns
-
-
-kubectl -n mytestns get secret
-
-kubectl delete clusterpolicy sync-secrets
-
-```
-
-* Her yeni Namespace için otomatik olarak bir Role veya RoleBinding olu�Yturmak üzere bir üretim politikası kullanabilirsiniz.
+#### 2. Politika Bağlama (ValidatingAdmissionPolicyBinding)
 
 ```yaml
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
 metadata:
-  name: generate-role-and-rolebinding
+  name: approved-registries-binding
 spec:
-  rules:
-    - name: create-default-role
-      match:
-        resources:
-          kinds:
-          - Namespace
-      generate:
-        kind: Role
-        name: default-role
-        namespace: "{{request.object.metadata.name}}"
-        data:
-          rules:
-            - apiGroups: [""]
-              resources: ["pods"]
-              verbs: ["get", "list"]
-    - name: create-rolebinding-for-default-role
-      match:
-        resources:
-          kinds:
-          - Namespace
-      generate:
-        kind: RoleBinding
-        name: default-role-binding
-        namespace: "{{request.object.metadata.name}}"
-        data:
-          subjects:
-            - kind: Group
-              name: 'system:authenticated'
-              apiGroup: 'rbac.authorization.k8s.io'
-          roleRef:
-            kind: Role
-            name: default-role
-            apiGroup: 'rbac.authorization.k8s.io'
+  policyName: approved-registries
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        security-profile: restricted
 ```
 
-### Politika Açıklaması:
+---
 
-- İki kural içeren bir `ClusterPolicy` olu�Yturulmu�Ytur: `create-default-role` ve `create-rolebinding-for-default-role`.
-- Her iki kural da `Namespace` kaynak türüyle e�Yle�Yir, yani yeni bir `Namespace` olu�Yturuldu�Yunda tetiklenirler.
-- `create-default-role` kuralı:
-  - `generate` bölümü kullanarak bir `Role` olu�Yturur.
-  - Bu `Role`, olu�Yturulan `Namespace` içinde `default-role` adını alır.
-  - Olu�Yturulan `Role`'de `pods` kayna�Yı için `get` ve `list` yetkileri verilir.
-- `create-rolebinding-for-default-role` kuralı:
-  - Benzer �Yekilde, `generate` bölümü kullanarak bir `RoleBinding` olu�Yturur.
-  - `RoleBinding`, olu�Yturulan `Namespace` içinde `default-role-binding` adını alır ve `default-role`'e ba�Ylanır.
-  - `RoleBinding`, `system:authenticated` grubunu `default-role`'e ba�Ylar.
+## Parametrik Politikalar (Parameterization)
 
-### Uygulama Adımları:
+CEL doğrulama kurallarını dinamik olarak yapılandırmak mümkündür. Sabit değerleri doğrudan kodlamak yerine, bir parametre kaynağı (örneğin bir `ConfigMap` veya özel bir CRD) üzerinden politikaya argüman aktarabilirsiniz.
 
-1. Yukarıdaki YAML kodunu bir dosyaya yapı�Ytırın, örne�Yin `generate-role-and-rolebinding.yaml` olarak adlandırabilirsiniz.
-2. `kubectl apply -f generate-role-and-rolebinding.yaml` komutunu kullanarak politikayı uygulayın.
-3. Bundan sonra, her yeni olu�Yturulan `Namespace` için otomatik olarak bir `Role` ve `RoleBinding` olu�Yturulacaktır.
+Aşağıdaki örnekte replika üst sınırını belirleyen bir parametrik politika gösterilmiştir:
 
-### Not:
-- Bu örnekteki `Role` ve `RoleBinding` tanımları örnek amaçlıdır; gerçek kullanım senaryonuza göre bu de�Yerleri de�Yi�Ytirmelisiniz.
-- `generate` kuralı, mevcut kaynaklar üzerinde herhangi bir etkiye sahip de�Yildir; sadece yeni olu�Yturulan kaynaklara uygulanır.
+#### 1. Politika Tanımı (ConfigMap Parametreli)
 
-# policy vs clusterpolicy
-Biri namespace seviyesinde çalı�Yırken di�Yeri  tüm küme için çalı�Yır.
+```yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: replica-limit-policy
+spec:
+  paramKind:
+    apiVersion: v1
+    kind: ConfigMap
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["deployments"]
+  validations:
+    - expression: "object.spec.replicas <= int(params.data.maxReplicas)"
+      message: "Deployment replika sayisi, izin verilen maksimum degeri asamaz."
+```
+
+#### 2. Parametre Kaynağı (ConfigMap)
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: replica-limit-config
+  namespace: default
+data:
+  maxReplicas: "10"
+```
+
+#### 3. Bağlama Tanımı (Parametre Referanslı)
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: replica-limit-binding
+spec:
+  policyName: replica-limit-policy
+  validationActions: [Deny]
+  paramRef:
+    name: replica-limit-config
+    namespace: default
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        environment: development
+```
+
+---
+
+## CEL Değişkenleri ve Bağlamı
+
+Doğrulama ifadelerinde kullanabileceğiniz bazı temel CEL değişkenleri şunlardır:
+
+* `object`: API sunucusuna gönderilen yeni kaynağın kendisi.
+* `oldObject`: Kaynak güncellenirken (UPDATE işlemi sırasında) kaynağın eski hali (`CREATE` işlemi sırasında `null` döner).
+* `request`: İstek hakkında meta verileri içerir (örneğin kullanıcı adı, API grubu, istek türü).
+* `params`: Bağlama dosyasında işaret edilen parametre kaynağı.
+
+---
+
+## Doğrulama Eylemleri (Validation Actions)
+
+Bir istek kurallara uymadığında verilecek tepki `validationActions` listesiyle belirlenir:
+
+* `Deny`: İsteği doğrudan reddeder ve hata mesajını istemciye (kubectl vb.) geri gönderir.
+* `Warn`: İsteği kabul eder ancak kullanıcıya bir uyarı mesajı döner.
+* `Audit`: İsteği kabul eder ancak Kubernetes audit log'larına bir kayıt ekler.
