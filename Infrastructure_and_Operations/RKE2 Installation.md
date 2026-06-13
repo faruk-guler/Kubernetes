@@ -22,7 +22,7 @@ Author: faruk guler
 Date: 2026
 ```
 
-# RKE2 — Güvenlik Odaklı Kurulum
+# RKE2 - Güvenlik Odaklı Kurulum
 
 RKE2 (Rancher Kubernetes Engine 2), 2026'da kurumsal dünyada bankacılık, savunma ve kamu sektörü için standart hale gelmiş, güvenlik öncelikli Kubernetes dağıtımıdır.
 
