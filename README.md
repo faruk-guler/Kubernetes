@@ -137,3 +137,10 @@ Ve bir şey bozulduğunda paniklemeden önce şunu sorun: *"Kubernetes şu an ne
 > "Gemiler gökyüzünde tıpkı tuğlaların havada asılı kalmaması gibi asılı duruyordu."
  — Douglas Adams
 ---
+
+```text
+Teşekkürler:
+https://mstryoda.github.io/kubernetes-kitap/
+https://k8s-tr.github.io/k8s-docs/
+https://k8s.1w2.net/
+```
