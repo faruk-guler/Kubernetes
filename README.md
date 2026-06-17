@@ -28,8 +28,6 @@ Bu bir "komut kılavuzu" değildir. İnternette binlerce `kubectl get pods` örn
 
 Bunu okuduktan sonra Kubernetes'i "kullanan" biri değil, Kubernetes üzerinde *düşünen* biri olacaksınız.
 
----
-
 ## Bir Sorunun Tarihi
 
 2000'lerin başında bir web uygulaması deploy etmek şu anlama geliyordu: bir sunucu kirala, üzerine işletim sistemi kur, bağımlılıkları elle yükle, uygulamayı çalıştır, ve dua et. Sunucu çöktüğünde sen de çökerdin. Ölçeklendirmek istediğinde yeni bir sunucu satın alırdın — haftalar sürerdi.
