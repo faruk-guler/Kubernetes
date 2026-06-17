@@ -221,6 +221,59 @@ kubectl exec -n kube-system <cilium-pod> -- cilium service list
 
 ---
 
+## nicolaka/netshoot ile Gelişmiş Ağ Tanılama
+
+Kubernetes ağ sorunlarını (bağlantı kopmaları, yavaşlıklar, paket kayıpları) standart araçlarla çözmek zordur. Bu durumlar için de-facto standart olan **nicolaka/netshoot** "İsviçre çakısı" tanı imajını kullanırız. Netshoot; `tcpdump`, `iperf3`, `nmap`, `dig`, `ss`, `curl` gibi ağ mühendisliği araçlarının tamamını barındırır.
+
+### 1. Ağ Bant Genişliği ve Gecikme Testi (iperf3)
+CNI tünelleme (VxLAN/Geneve) performans sorunlarını veya node'lar arası ağ yavaşlığını test etmek için iki pod arasında `iperf3` testi yapabilirsiniz:
+
+```bash
+# 1. Alıcı (Server) olarak bir netshoot pod'u başlatın:
+kubectl run netshoot-server --image=nicolaka/netshoot --rm -it --restart=Never -- iperf3 -s
+
+# 2. Gönderici (Client) olarak başka bir node üzerindeki pod'dan testi başlatın:
+# (Server pod IP adresini bulup parametre olarak girin)
+SERVER_IP=$(kubectl get pod netshoot-server -o jsonpath='{.status.podIP}')
+kubectl run netshoot-client --image=nicolaka/netshoot --rm -it --restart=Never -- iperf3 -c $SERVER_IP
+```
+
+---
+
+### 2. Ağ Trafiği Yakalama (tcpdump)
+Bir pod'a gelen ve giden ham paketleri yakalayıp Wireshark ile analiz etmek için:
+
+```bash
+# 1. Hedef pod'un içine netshoot'u ephemeral container olarak enjekte edin:
+kubectl debug -it target-pod --image=nicolaka/netshoot --target=target-container
+
+# 2. Container içinde HTTP (Port 80) isteklerini canlı ve ASCII formatında izleyin:
+tcpdump -i eth0 -vv -A port 80
+
+# 3. Analiz etmek üzere trafiği .pcap dosyasına kaydedin:
+tcpdump -i eth0 -w /tmp/packet-capture.pcap
+
+# 4. (Kendi lokal terminalinizde) Dosyayı pod içinden bilgisayarınıza kopyalayın:
+kubectl cp target-pod:/tmp/packet-capture.pcap ./packet-capture.pcap
+```
+
+---
+
+### 3. Port ve Ağ Taraması (nmap)
+Service veya Pod portlarının açık olup olmadığını, firewall veya NetworkPolicy tarafından engellenip engellenmediğini test etmek için:
+
+```bash
+# Hedef servisin açık olan portlarını ping atmadan tara (-Pn):
+kubectl run netshoot-scanner --image=nicolaka/netshoot --rm -it --restart=Never -- \
+  nmap -Pn -p 80,8080,3306 my-service.production.svc.cluster.local
+
+# Hedef pod'un tüm TCP portlarını hızlıca tara:
+kubectl run netshoot-scanner --image=nicolaka/netshoot --rm -it --restart=Never -- \
+  nmap -F <target-pod-IP>
+```
+
+---
+
 ## Genel Ağ Tanı Akışı
 
 ```

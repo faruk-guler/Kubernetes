@@ -30,8 +30,8 @@ Sertifika yolları kubeadm kurulumunda `/etc/kubernetes/pki/etcd/` altındadır:
 ETCDCTL_API=3 etcdctl \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/server.crt \
-  --key=/etc/kubernetes/pki/etcd/server.key \
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key \
   snapshot save /backup/etcd-$(date +%Y%m%d-%H%M%S).db
 ```
 
@@ -89,9 +89,9 @@ spec:
             - name: ETCDCTL_CACERT
               value: /etc/kubernetes/pki/etcd/ca.crt
             - name: ETCDCTL_CERT
-              value: /etc/kubernetes/pki/etcd/server.crt
+              value: /etc/kubernetes/pki/etcd/healthcheck-client.crt
             - name: ETCDCTL_KEY
-              value: /etc/kubernetes/pki/etcd/server.key
+              value: /etc/kubernetes/pki/etcd/healthcheck-client.key
             volumeMounts:
             - name: etcd-pki
               mountPath: /etc/kubernetes/pki/etcd
@@ -163,3 +163,58 @@ systemctl start rke2-server
 
 > [!WARNING]
 > RKE2 reset işlemi sonrası `/var/lib/rancher/rke2/server/db/reset-flag` dosyası oluşur. Bu dosya normal başlatmada otomatik silinir.
+
+---
+
+## etcd Küme Sağlığı ve Proaktif İzleme (Monitoring)
+
+Bir cluster'ın kararlılığı, etcd kümesinin sağlığına doğrudan bağlıdır. Yalnızca yedek almak yetmez; etcd kümesini proaktif (önleyici) olarak izlemek, felaket senaryolarını gerçekleşmeden önler.
+
+### 1. Komut Satırı ile etcd Sağlık Kontrolü (CLI Diagnostics)
+
+Kubeadm ortamında etcd pod'unun içinde veya etcdctl kurulu olan control plane düğümünde şu tanı komutlarını çalıştırın:
+
+```bash
+# etcd kümesindeki tüm üyelerin listesi ve durumları
+ETCDCTL_API=3 etcdctl \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key \
+  member list --write-out=table
+
+# Tüm küme düğümlerinin sağlık durumu (Cluster-wide Health Check)
+ETCDCTL_API=3 etcdctl \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key \
+  --cluster \
+  endpoint health --write-out=table
+
+# Veritabanı boyutları ve fragmantasyon oranları (status)
+ETCDCTL_API=3 etcdctl \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key \
+  --cluster \
+  endpoint status --write-out=table
+```
+
+> [!TIP]
+> **endpoint status** çıktısındaki **DB SIZE** alanı varsayılan olarak maksimum **2GB** (veya konfigüre edilmişse 8GB) kotayı aşmamalıdır. Eğer aşarsa etcd `alarm` durumuna geçer ve yazma işlemlerini kapatır. Bu durumda `defrag` komutu çalıştırılmalıdır.
+
+---
+
+### 2. Kritik Prometheus Metrikleri ve Uyarı Eşikleri
+
+etcd, `/metrics` endpoint'i üzerinden Prometheus formatında binlerce metrik sunar. Grafana panolarınızda ve Alertmanager kurallarınızda mutlaka izlemeniz gereken 3 altın metrik:
+
+| Metrik Adı | Önem Derecesi | Uyarı Eşiği | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `etcd_server_has_leader` | 🔴 Kritik | `0` (Lidersiz) | Kümede aktif bir lider olup olmadığını belirtir. `0` ise küme çökmüştür, yazma/okuma yapılamaz. |
+| `etcd_disk_wal_write_duration_seconds` | 🟡 Yüksek | `> 0.01` (10ms) | Diske Write-Ahead Log (WAL) yazma süresi. Yüksek değerler yavaş diskleri (I/O darboğazı) gösterir ve quorum kaybına yol açabilir. |
+| `etcd_network_peer_round_trip_time_seconds` | 🟡 Yüksek | `> 0.1` (100ms) | etcd düğümleri arasındaki ağ gecikmesi. Yüksek ağ gecikmesi lider seçimlerinin sürekli tetiklenmesine (instability) neden olur. |
+
+Bu metrikleri Prometheus üzerinde izlemek için etcd pod'larının `prometheus.io/scrape: "true"` annotation'larına ve ilgili certificate/key dosyalarıyla yetkilendirilmiş bir scrape config'e sahip olması gerekir.

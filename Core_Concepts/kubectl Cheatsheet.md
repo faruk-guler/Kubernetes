@@ -9,7 +9,7 @@
 # Cluster bilgisi
 kubectl cluster-info
 kubectl get nodes -o wide
-kubectl version --short
+kubectl version --client
 
 # Bağlam (Context) yönetimi
 kubectl config get-contexts
@@ -197,8 +197,6 @@ kubectl get secret db-secret -o jsonpath='{.data.password}' | base64 -d
 | `endpoints` | `ep` |
 | `rolebindings` | `rb` |
 | `clusterrolebindings` | `crb` |
-
----
 
 ---
 

@@ -110,3 +110,57 @@ spec:
 
 > [!TIP]
 > CEL politikaları, Go kodlu webhook'lardan çok daha hızlı çalışır çünkü ayrı bir pod gerektirmez. Basit kurallar için her zaman CEL tercih edin.
+
+---
+
+## Kyverno ve OPA Gatekeeper Webhook Entegrasyon Mekanizması
+
+Kyverno ve OPA Gatekeeper gibi gelişmiş cloud-native politika yöneticileri (policy engines), cluster içindeki tüm işlemleri denetlemek için Kubernetes API Server'ın **Mutating/Validating Admission Webhook** mekanizmasını arka planda otomatik olarak kurar ve yönetir.
+
+### 1. Webhook Kayıt (Registration) Mantığı
+Bu araçları Helm ile yüklediğinizde, otomatik olarak cluster genelinde birer `MutatingWebhookConfiguration` ve `ValidatingWebhookConfiguration` nesnesi oluşturarak kendilerini API Server'a entegre ederler.
+
+Örneğin, Kyverno kurulduğunda API Server'a kendisini şu şekilde bir webhook ile kaydeder:
+
+```yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: kyverno-resource-validating-webhook-cfg
+webhooks:
+- name: validate.kyverno.svc-fail
+  rules:
+  - apiGroups: ["*"]
+    apiVersions: ["*"]
+    operations: ["CREATE", "UPDATE", "DELETE", "CONNECT"]
+    resources: ["*/*"]             # Cluster üzerindeki tüm kaynakları ve alt kaynakları izler
+  clientConfig:
+    service:
+      namespace: kyverno
+      name: kyverno-svc
+      path: "/validate/fail"
+    caBundle: <KYVERNO_CA_BUNDLE>   # TLS el sıkışması için otomatik oluşturulan CA
+  failurePolicy: Fail              # Güvenlik önceliği: Kyverno çalışmıyorsa API isteklerini engelle
+  sideEffects: None
+  admissionReviewVersions: ["v1"]
+```
+
+### 2. failurePolicy: Fail ve Ignore Seçimi
+Politika yöneticisi webhook tanımlarında `failurePolicy` alanı hayati bir rol oynar:
+* **`failurePolicy: Fail` (Güvenli/Sıkı Mod):** Eğer Kyverno/OPA pod'u çökerse veya webhook sunucusu aşırı yükten yanıt veremezse, API Server **hiçbir yeni kaynağın oluşturulmasına veya güncellenmesine izin vermez** (istekler reddedilir). Production ortamlarında güvenlik açıklarını önlemek için bu mod tercih edilir.
+* **`failurePolicy: Ignore` (Hoşgörülü Mod):** Politika yöneticisi çalışmıyorsa veya webhook servis dışı kaldıysa, API Server doğrulamayı es geçer ve kaynağı oluşturur. Servis sürekliliğinin güvenlik kurallarından daha öncelikli olduğu acil durumlarda veya test ortamlarında tercih edilir.
+
+### 3. Kyverno/OPA API Akış Şeması
+```
+[Geliştirici / CI-CD]
+       │
+  (kubectl apply)
+       │
+       ▼
+ [kube-apiserver] ───(HTTP POST / AdmissionReview)───► [Kyverno / Gatekeeper Webhook Pod]
+       │                                                      │
+       │                                                      │ (Politikaları denetle)
+       │                                                      │
+ [İsteğe Karar Ver] ◄──(HTTP Response / AdmissionResponse)────┘
+  (Kabul veya Red)
+```

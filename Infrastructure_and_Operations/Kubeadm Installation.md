@@ -63,7 +63,7 @@ kubeadm init \
   --pod-network-cidr=10.244.0.0/16 \
   --service-cidr=10.96.0.0/12 \
   --skip-phases=addon/kube-proxy \
-  --kubernetes-version=v1.32.0
+  --kubernetes-version=v1.32.1
 ```
 
 > [!IMPORTANT]

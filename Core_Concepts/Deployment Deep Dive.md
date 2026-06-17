@@ -106,7 +106,7 @@ spec:
 * **replicas:** Cluster'da sürekli olarak kaç adet sağlıklı pod kopyasının çalışacağını belirtir.
 * **revisionHistoryLimit:** Rollback (geri alma) işlemleri için geçmişte en fazla kaç adet eski ReplicaSet saklanacağını belirtir. Bu sınırın aşılması eski ReplicaSet'lerin silinmesine yol açar.
 * **minReadySeconds:** Bir podun "Running" olduktan sonra gerçekten "Available" (erişilebilir) kabul edilmesi için en az kaç saniye sağlıklı (ready) kalması gerektiğini belirtir. Bu parametre, başlangıçta çalışıp 5-10 saniye sonra çöken (crash loop) pod'ların tespit edilip güncellemenin otomatik olarak durdurulması için hayati önem taşır.
-* **progressDeadlineSeconds:** Güncelleme işleminin en fazla kaç saniye sürmesine izin verileceğini belirtir. Belirtilen sürede güncelleme tamamlanamazsa Deployment "Failed" durumuna çekilir.
+* **progressDeadlineSeconds:** Güncelleme işleminin en fazla kaç saniye sürmesine izin verileceğini belirtir. Belirtilen sürede güncelleme tamamlanamazsa Deployment durdurulmaz veya otomatik rollback yapılmaz; sadece controller, Deployment durum koşullarını (conditions) `Progressing: False` ve `Reason: ProgressDeadlineExceeded` olarak günceller ve bir Event oluşturur.
 
 ---
 

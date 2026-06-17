@@ -151,6 +151,7 @@ Container sonlandırılmadan (SIGTERM gönderilmeden) önce çalışır. Bağlan
 
 ```yaml
 spec:
+  terminationGracePeriodSeconds: 60   # SIGTERM - SIGKILL arasındaki süre
   containers:
   - name: nginx
     image: nginx:1.27
@@ -161,7 +162,6 @@ spec:
       preStop:
         exec:
           command: ["/bin/sh", "-c", "nginx -s quit; sleep 20"]
-    terminationGracePeriodSeconds: 60   # SIGTERM - SIGKILL arasındaki süre
 ```
 
 ## Termination Grace Period

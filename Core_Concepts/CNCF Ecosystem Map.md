@@ -66,7 +66,7 @@ Service Mesh Seçimi:
 | Araç | Durum | Ne Zaman? |
 |:-----|:------|:---------|
 | **Rook** | Graduated | Ceph'i K8s üzerinde orkestre eder |
-| **Longhorn** | Graduated | Rancher'ın dağıtık block storage'ı |
+| **Longhorn** | Graduated | SUSE'un cloud-native dağıtık block storage çözümü |
 | **OpenEBS** | Graduated | Mayastor ile yüksek performans |
 | **Velero** | — | Backup & restore |
 | **external-snapshotter** | — | CSI volume snapshot standardı |
@@ -99,7 +99,7 @@ Service Mesh Seçimi:
 |:-----|:------|:---------|
 | **Falco** | Graduated | Runtime security, davranış analizi |
 | **OPA / Gatekeeper** | Graduated | Policy as code |
-| **Kyverno** | Incubating | K8s-native policy engine |
+| **Kyverno** | Graduated | K8s-native policy engine |
 | **cert-manager** | — | TLS sertifika yönetimi |
 | **SPIFFE/SPIRE** | Graduated | Workload identity, zero-trust |
 | **Notary / Notation** | Incubating | Container image imzalama |

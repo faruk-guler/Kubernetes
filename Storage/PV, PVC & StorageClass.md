@@ -61,7 +61,7 @@ spec:
     * **ReadWriteOncePod (RWOP):** Kubernetes 1.22+ ile gelen bu mod, volume'ün tüm cluster'da sadece tek bir pod tarafından bağlanabilmesini garanti eder.
 * **persistentVolumeReclaimPolicy:** Pod'un işi bittiğinde ve PVC silindiğinde arkada kalan PV verisine ne olacağını belirler:
     * **Retain:** Volume içindeki veriler ve PV korunur. Yönetici verileri manuel olarak kurtarabilir veya silebilir.
-    * **Recycle:** Volume içindeki tüm dosyalar silinir (`rm -rf`) ve PV yeniden kullanıma hazır hale getirilir (Sadece bazı protokollerde desteklenir).
+    * **Recycle (Deprecated):** Volume içindeki tüm dosyalar silinir (`rm -rf`) ve PV yeniden kullanıma hazır hale getirilir. Kubernetes 1.15+ itibarıyla kullanımdan kaldırılmıştır (deprecated/removed), yeni projelerde kullanılmamalıdır.
     * **Delete:** PV objesi ve arkasındaki gerçek bulut depolama birimi (AWS EBS vb.) tamamen silinir.
 
 ---

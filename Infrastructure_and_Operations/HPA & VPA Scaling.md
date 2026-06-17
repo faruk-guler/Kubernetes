@@ -65,17 +65,63 @@ spec:
         averageValue: 500Mi       # Ortalama 500Mi geçince scale-out
 ```
 
-### Özel Metrik ile HPA (KEDA Olmadan)
+### Custom & External Metrics ile HPA (KEDA Olmadan)
+
+Kubernetes'te CPU/Memory dışındaki metrikler (Örn: HTTP istek sayısı, kuyruktaki iş sayısı) ile ölçeklendirme yapmak için **Custom Metrics API** (`custom.metrics.k8s.io`) ve **External Metrics API** (`external.metrics.k8s.io`) kullanılır. Bu metrikleri Kubernetes HPA mekanizmasına aktarmak için genellikle **Prometheus Adapter** gibi bir köprü bileşen kurulur.
+
+#### 1. Custom Metrics (Özel Metrikler) Örneği
+Uygulama pod'larının kendisinden toplanan metriklerdir (Örn: saniyedeki HTTP istek sayısı - RPS).
 
 ```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web-app-custom-hpa
+  namespace: production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web-app
+  minReplicas: 2
+  maxReplicas: 10
   metrics:
-  - type: Pods
+  - type: Pods                           # Metriğin pod seviyesinde toplandığını belirtir
     pods:
       metric:
-        name: http_requests_per_second
+        name: http_requests_per_second   # Prometheus'tan çekilen metrik adı
       target:
         type: AverageValue
-        averageValue: "100"       # Pod başına 100 RPS
+        averageValue: "100"              # Pod başına ortalama 100 RPS'ten fazla olunca ölçekle
+```
+
+#### 2. External Metrics (Dış Metrikler) Örneği
+Kubernetes cluster'ının veya pod'larının dışındaki harici sistemlerden gelen metriklerdir (Örn: AWS SQS kuyruğu veya yerel RabbitMQ/Kafka kuyruğundaki bekleyen mesaj sayısı).
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: queue-consumer-hpa
+  namespace: production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: queue-consumer
+  minReplicas: 1
+  maxReplicas: 15
+  metrics:
+  - type: External                       # Metriğin cluster dışından geldiğini belirtir
+    external:
+      metric:
+        name: rabbitmq_queue_messages_ready # Kuyrukta bekleyen mesaj sayısı
+        selector:
+          matchLabels:
+            queue: orders-processing      # Hangi kuyruğun izleneceğini filtrele
+      target:
+        type: AverageValue
+        averageValue: "30"               # Kuyruktaki her 30 bekleyen mesaj için +1 pod ekle
 ```
 
 ### Ölçeklendirme Davranışı (Behavior)

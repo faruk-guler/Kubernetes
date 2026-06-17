@@ -171,8 +171,8 @@ k edit deployment/web
 ETCDCTL_API=3 etcdctl snapshot save /backup/etcd.db \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/server.crt \
-  --key=/etc/kubernetes/pki/etcd/server.key
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key
 
 # Sertifika yenileme
 kubeadm certs renew all
@@ -180,18 +180,18 @@ kubeadm certs check-expiration
 
 # Node upgrade (kubeadm)
 # 1. Control plane:
-apt-get install kubeadm=1.31.0-00
+apt-get install kubeadm=1.31.0-1.1
 kubeadm upgrade plan
 kubeadm upgrade apply v1.31.0
-apt-get install kubelet=1.31.0-00 kubectl=1.31.0-00
+apt-get install kubelet=1.31.0-1.1 kubectl=1.31.0-1.1
 systemctl restart kubelet
 
 # 2. Worker node:
 kubectl drain worker-node-1 --ignore-daemonsets --delete-emptydir-data
 # (Worker node'da)
-apt-get install kubeadm=1.31.0-00
+apt-get install kubeadm=1.31.0-1.1
 kubeadm upgrade node
-apt-get install kubelet=1.31.0-00
+apt-get install kubelet=1.31.0-1.1
 systemctl restart kubelet
 # (Control plane'de)
 kubectl uncordon worker-node-1

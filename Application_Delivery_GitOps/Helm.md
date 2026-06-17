@@ -18,6 +18,9 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm version
 ```
 
+> [!WARNING]
+> İnternetten doğrudan script indirip çalıştırmak (`curl | bash` yöntemi) güvenlik riskleri barındırır. Üretim (production) ortamlarında resmi binary paketlerini doğrulamayı veya sistem paket yöneticilerini (`apt`, `brew`, `dnf` vb.) kullanmayı tercih edin.
+
 ## Temel Helm Komutları
 
 ```bash

@@ -51,21 +51,32 @@ Eski Kubernetes sürümlerinde oluşturulan Service Account token'ları süresiz
 
 Modern Kubernetes mimarisinde (özellikle 2026 standartlarında) artık **Projected Service Account Token** yapısı kullanılır. Bu yöntemde token'lar etcd'ye yazılmaz; doğrudan kubelet tarafından üretilir, kısa ömürlüdür (örneğin 1 saat) ve süresi doldukça kubelet tarafından container içinde otomatik olarak yenilenir.
 
+Güvenli bir pod tasarımı için en iyi pratik (Best Practice); öncelikle `automountServiceAccountToken: false` ile varsayılan (ve kontrol dışı) token mount işlemini devre dışı bırakmak, ardından API Server ile konuşması gereken pod'larda sadece gerekli `audience` ve kısa bir `expirationSeconds` tanımlanmış bir `projected` volume kullanarak manuel token mount işlemi gerçekleştirmektir:
+
 ```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-app-pod
+  namespace: production
 spec:
+  serviceAccountName: backend-service
+  automountServiceAccountToken: false   # Varsayılan (ve güvensiz) token'ın otomatik mount edilmesini engelle
+  containers:
+  - name: app
+    image: my-app:1.0
+    volumeMounts:
+    - name: secure-token
+      mountPath: /var/run/secrets/api   # Token'ı sadece buraya güvenli mount et
+      readOnly: true
   volumes:
   - name: secure-token
     projected:
       sources:
       - serviceAccountToken:
           path: token
-          expirationSeconds: 3600        # 1 saat geçerlilik süresi
+          expirationSeconds: 3600        # 1 saat geçerlilik süresi (kubelet arka planda otomatik yeniler)
           audience: "https://api.company.com"
-  containers:
-  - name: app
-    volumeMounts:
-    - name: secure-token
-      mountPath: /var/run/secrets/api
 ```
 
 ---

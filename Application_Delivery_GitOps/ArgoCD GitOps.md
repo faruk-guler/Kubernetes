@@ -36,7 +36,7 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```
 
 > [!TIP]
-> Production'da ArgoCD UI'ya erişim için `kubectl port-forward` yerine **Gateway API** veya bir LoadBalancer servisi kullanın. Bölüm 3'teki Gateway API entegrasyonuna bakın.
+> Production'da ArgoCD UI'ya erişim için `kubectl port-forward` yerine **Gateway API** veya bir LoadBalancer servisi kullanın. [Gateway API](../Networking/Gateway%20API.md) entegrasyonuna bakın.
 
 ## App-of-Apps Paterni
 
