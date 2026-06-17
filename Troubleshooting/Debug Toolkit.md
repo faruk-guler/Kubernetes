@@ -27,7 +27,7 @@ kubectl delete pod debug-pod
 ### Popüler Debug Image'ları
 
 | Image | İçerik |
-|:------|:-------|
+| :--- | :--- |
 | `nicolaka/netshoot` | curl, dig, nmap, tcpdump, iperf, netstat |
 | `busybox` | Minimal — wget, nslookup, ping |
 | `curlimages/curl` | Sadece curl |

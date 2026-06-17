@@ -1,93 +1,79 @@
 # Jobs & CronJobs
 
-Deployment ve StatefulSet sürekli çalışan iş yükleri içindir. **Job**, belirli bir görevi tamamlayıp çıkan iş yükleri için; **CronJob** ise bu görevleri zamanlanmış biçimde tekrarlayan yapı için tasarlanmıştır.
+Şu ana kadar gördüğümüz tüm Kubernetes objeleri (Pod, Deployment, StatefulSet vb.), biz müdahale edip kapatmadığımız sürece sürekli çalışmaya devam etmesi gereken uzun ömürlü uygulamalarla ilgiliydi. Fakat her uygulama bu şekilde 7/24 çalışmak üzere tasarlanmamıştır. Sadece belirli bir işi yapmak üzere tetiklenen, işini bitirdikten sonra da düzgünce kapanması (exit 0) gereken birçok iş yükü mevcuttur.
+
+---
+
+## Neden Job ve CronJob?
+
+Bu tarz "çalış ve dur" (run-to-completion) tipi uygulamaları eğer `Deployment` veya çıplak `Pod` (single pod) gibi objelerle çalıştırmaya kalkarsak bazı sorunlarla karşılaşırız:
+
+* **Çıplak Pod Problemi:** Uygulamayı tek bir pod olarak deploy edersek, işini başarıyla tamamladığında durur ve sıkıntı olmaz. Ancak uygulama çalışırken çökerse (crash), çıplak pod bunu algılayıp kendini yeniden başlatmaz. Görev yarım kalır.
+* **Deployment Problemi:** Eğer çökme ihtimaline karşı `Deployment` kullanırsak, bu sefer de uygulama işini başarıyla bitirip kapandığı an, Deployment bunu bir "hata" veya "kesinti" olarak algılar ve container'ı durmaksızın yeniden başlatır. Uygulama sonsuz bir döngüde aynı işi tekrar tekrar yapmaya başlar.
+
+İşte bu sorunu çözmek için Kubernetes bizlere **Job** objesini sunmaktadır. Job, bir veya daha fazla pod oluşturur ve belirtilen sayıda pod başarıyla sonlanana kadar onları yönetir. Görev başarıyla tamamlandığında pod'ları durdurur ancak logları inceleyebilmemiz için pod'ları silmeden "Completed" durumunda bekletir.
 
 ---
 
 ## Job — Tek Seferlik Görev
 
+Aşağıdaki örnekte, matematiksel olarak Pi sayısının ilk 2000 basamağını hesaplayıp kapanan klasik bir Job manifestosu yer almaktadır:
+
 ```yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: db-migration
+  name: pi-calculation
   namespace: production
 spec:
-  # Kaç kez başarıyla tamamlanmalı?
-  completions: 1          # Varsayılan: 1
+  # Kaç adet başarılı pod tamamlanmalı?
+  completions: 10         # Varsayılan: 1
 
   # Aynı anda kaç pod paralel çalışabilir?
-  parallelism: 1          # Varsayılan: 1
+  parallelism: 2          # Varsayılan: 1
 
   # Toplam kaç saniyede bitmeli? (0 = sınırsız)
-  activeDeadlineSeconds: 600   # 10 dakika
+  activeDeadlineSeconds: 100
 
   # Başarısızlıkta kaç kez tekrar dene?
-  backoffLimit: 3
+  backoffLimit: 5
 
-  # Job tamamlandıktan kaç saniye sonra silinsin?
-  ttlSecondsAfterFinished: 3600   # 1 saat
+  # Job tamamlandıktan kaç saniye sonra otomatik silinsin?
+  ttlSecondsAfterFinished: 3600
 
   template:
     spec:
-      restartPolicy: OnFailure    # Job'da Never veya OnFailure kullanılır
+      # Job için restartPolicy sadece Never veya OnFailure olabilir
+      restartPolicy: Never
       containers:
-      - name: migration
-        image: ghcr.io/company/migrator:v1.2.0
-        command: ["python", "manage.py", "migrate"]
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: url
-        resources:
-          requests:
-            cpu: "500m"
-            memory: "512Mi"
-          limits:
-            cpu: "2"
-            memory: "1Gi"
+      - name: pi
+        image: perl:5.34
+        command: ["perl", "-Mbignum=bpi", "-wle", "print bpi(2000)"]
 ```
 
-```bash
-# Job durumu
-kubectl get job db-migration -n production
-# NAME           COMPLETIONS   DURATION   AGE
-# db-migration   1/1           45s        2m
+### Spec Parametrelerinin Detayları
 
-# Job pod'u
-kubectl get pods -l job-name=db-migration -n production
-
-# Logları oku
-kubectl logs job/db-migration -n production
-
-# Başarısız pod'un logları
-kubectl logs -l job-name=db-migration --previous -n production
-```
+* **completions:** Bu Job'un başarıyla tamamlanmış kabul edilmesi için toplamda kaç adet pod'un başarıyla (exit 0) sonlanması gerektiğini belirtir. Bu örnekte 10 pod'un da başarılı olması gerekir.
+* **parallelism:** İşin hızlandırılması için aynı anda en fazla kaç pod'un paralel olarak çalışabileceğini belirtir. Burada `2` pod aynı anda çalışmaya başlar, biri bittikçe toplam sayı 10 olana kadar yeni pod'lar sıraya alınır.
+* **backoffLimit:** Pod'lar hata aldığında (exit code 1 vb.) Kubernetes'in vazgeçmeden önce en fazla kaç kez yeni pod oluşturmayı deneyeceğini belirtir. Limit aşılırsa tüm Job "Failed" olarak işaretlenir.
+* **activeDeadlineSeconds:** Job'un tamamlanması için izin verilen maksimum süredir. Süre aşılırsa çalışan tüm pod'lar durdurulur ve Job başarısız kabul edilir.
+* **ttlSecondsAfterFinished:** Job tamamlandıktan sonra cluster'da gereksiz kaynak birikmesini önlemek için otomatik silinme süresidir (TTL Controller).
 
 ---
 
 ## Paralel Job Desenleri
 
-### Desen 1: Fixed Completion Count
+### Desen 1: Sabit Tamamlama Sayısı (Fixed Completion Count)
+
+Yukarıdaki Pi örneğinde olduğu gibi, belirli sayıda işin sırayla veya paralel olarak yapılması gereken senaryolardır. `completions` ve `parallelism` değerleri birlikte ayarlanır.
+
+### Desen 2: İş Kuyruğu (Work Queue)
+
+Kuyruktaki işleri tüketmek için kullanılan yapıdır. `completions` değeri belirtilmez. Pod'lar bağımsız olarak RabbitMQ veya AWS SQS gibi bir kuyruktan iş çeker. Kuyruk boşaldığında pod'lar başarıyla kapanır ve Job tamamlanır.
 
 ```yaml
-# 10 görevi 3 pod paralel işlesin
-spec:
-  completions: 10     # Toplam 10 başarılı tamamlama
-  parallelism: 3      # Aynı anda 3 pod çalışır
-  # Akış: 3 pod → bitince yeni 3 → ... → 10. tamamlandığında Job biter
-```
-
-### Desen 2: Work Queue (İş Kuyruğu)
-
-```yaml
-# completions belirtme — pod'lar kuyruktan kendi işini alır
 spec:
   parallelism: 5
-  # completions: yok → her pod kuyruğu kontrol eder,
-  #                     boşsa çıkar, bir pod başarıyla bitince Job tamamlanır
   template:
     spec:
       restartPolicy: Never
@@ -99,13 +85,15 @@ spec:
           value: "amqp://rabbitmq:5672/tasks"
 ```
 
-### Desen 3: Indexed Job (Her Pod Farklı Görev)
+### Desen 3: İndeksli Job (Indexed Job)
+
+Her pod'un birbirinden farklı bir iş parçasını (shard) işlemesi gereken durumlarda kullanılır. `completionMode: Indexed` yapıldığında her pod'a `0` ile `completions-1` arasında benzersiz bir index atanır.
 
 ```yaml
 spec:
-  completions: 100        # 100 farklı görev
-  parallelism: 10         # Aynı anda 10 pod
-  completionMode: Indexed # Her pod benzersiz index alır (0-99)
+  completions: 100
+  parallelism: 10
+  completionMode: Indexed
   template:
     spec:
       restartPolicy: Never
@@ -121,59 +109,54 @@ spec:
         - python
         - process.py
         - --shard=$(JOB_COMPLETION_INDEX)
-        - --total-shards=100
 ```
 
 ---
 
 ## CronJob — Zamanlanmış Görev
 
+**CronJob**, Linux dünyasındaki `crontab` yapısının Kubernetes halidir. Belirli bir zaman planına (schedule) göre periyodik olarak otomatik Job'lar oluşturur.
+
+> [!NOTE]
+> `CronJob` API'si Kubernetes 1.21 sürümüne kadar `batch/v1beta1` altındaydı. Ancak modern Kubernetes sürümlerinde artık tamamen kararlı (stable) olan `batch/v1` API grubu kullanılmaktadır.
+
+Aşağıda her dakika başında çalışıp ekrana tarih yazan örnek bir CronJob yer almaktadır:
+
 ```yaml
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: daily-report
+  name: hello-cron
   namespace: production
 spec:
-  # Cron sözdizimi: dakika saat gün-ay ay gün-hafta
-  schedule: "0 2 * * *"        # Her gece 02:00
-  # schedule: "*/15 * * * *"   # Her 15 dakika
-  # schedule: "0 9 * * 1-5"    # Hafta içi 09:00
+  # Standart Cron Sözdizimi: dakika saat gün-ay ay gün-hafta
+  schedule: "*/1 * * * *"
 
-  # Önceki çalışma bitmeden yeni başlamasın
-  concurrencyPolicy: Forbid     # Allow | Forbid | Replace
+  # Önceki çalışma tamamlanmadan yenisi tetiklenirse ne yapılmalı?
+  concurrencyPolicy: Forbid
 
-  # Zamanında başlatılamazsa kaç saniye tolerans?
-  startingDeadlineSeconds: 300  # 5 dakika geç kalırsa atla
+  # Zamanında tetiklenemezse kaç saniye tolerans tanınmalı?
+  startingDeadlineSeconds: 300
 
-  # Başarılı Job geçmişini kaç tane sakla?
+  # Geçmişte tutulacak başarılı ve başarısız Job limitleri
   successfulJobsHistoryLimit: 3
-
-  # Başarısız Job geçmişini kaç tane sakla?
   failedJobsHistoryLimit: 3
 
-  # CronJob'u geçici durdur
+  # CronJob'u geçici olarak devre dışı bırakma (durdurma)
   suspend: false
 
   jobTemplate:
     spec:
-      ttlSecondsAfterFinished: 3600
-      backoffLimit: 2
       template:
         spec:
           restartPolicy: OnFailure
-          serviceAccountName: report-sa
           containers:
-          - name: reporter
-            image: ghcr.io/company/reporter:v2.1
-            command: ["python", "generate_report.py"]
-            resources:
-              requests:
-                cpu: "200m"
-                memory: "256Mi"
-              limits:
-                cpu: "1"
-                memory: "512Mi"
+          - name: hello
+            image: busybox:1.36
+            command:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster
 ```
 
 ---
@@ -181,75 +164,45 @@ spec:
 ## ConcurrencyPolicy Detayı
 
 | Politika | Davranış | Kullanım |
-|:---------|:---------|:---------|
-| `Allow` | Paralel çalışmaya izin ver | Bağımsız görevler |
-| `Forbid` | Önceki bitmeden yeni başlatma | Kritik tek çalışma |
-| `Replace` | Öncekini sil, yenisini başlat | Deadline'ı olan görevler |
+| :--- | :--- | :--- |
+| `Allow` | Paralel çalışmaya izin ver | Birbirini etkilemeyen bağımsız işler |
+| `Forbid` | Önceki bitmeden yeni Job başlatma | Veritabanı yedeği, çakışma riski olan işler |
+| `Replace` | Önceki çalışan Job'u sil, yenisini başlat | Her zaman sadece en güncel veriyi isteyen işler |
 
 ---
 
-## CronJob Yönetimi
+## Job & CronJob Yönetimi
 
 ```bash
-# CronJob listesi
-kubectl get cronjob -n production
+# Job ve CronJob durumlarını sorgulama
+kubectl get jobs,cronjobs -n production
 
-# Son çalışmaları gör
-kubectl describe cronjob daily-report -n production
+# Detaylı çalışma geçmişi ve log inceleme
+kubectl describe cronjob hello-cron -n production
+kubectl logs job/pi-calculation -n production
 
-# Manuel tetikleme (test için)
-kubectl create job --from=cronjob/daily-report manual-run-$(date +%s) -n production
+# Test amacıyla bir CronJob'u hemen (manuel) tetikleme
+kubectl create job --from=cronjob/hello-cron manual-run-test -n production
 
-# CronJob'u durdur
-kubectl patch cronjob daily-report -p '{"spec":{"suspend":true}}' -n production
-
-# Devam ettir
-kubectl patch cronjob daily-report -p '{"spec":{"suspend":false}}' -n production
-
-# Job geçmişi
-kubectl get jobs -n production --sort-by='.status.startTime'
+# Bir CronJob'u geçici olarak durdurma (suspend) ve geri açma
+kubectl patch cronjob hello-cron -p '{"spec":{"suspend":true}}' -n production
+kubectl patch cronjob hello-cron -p '{"spec":{"suspend":false}}' -n production
 ```
 
 ---
 
-## İpuçları ve Anti-Pattern'ler
+## En İyi Pratikler ve İzleme
 
-```yaml
-# ✅ Her zaman resource limits tanımla
-# ✅ ttlSecondsAfterFinished kullan — eski pod'lar birikmesin
-# ✅ restartPolicy: OnFailure (crash'te yeniden dene)
-#    veya Never (debug için, pod silinmez)
+* **Resource Limits:** Job pod'ları kontrolsüz çalışıp cluster kaynaklarını tüketmesin diye her zaman `resources.limits` tanımlayın.
+* **TTL Controller:** Eski tamamlanmış Job'ların otomatik temizlenmesi için `ttlSecondsAfterFinished` özelliğini aktif edin.
+* **Idempotency (Eşgüçlülük):** Özellikle CronJob'larda pod'lar ağ kesintisi veya hata nedeniyle birden fazla kez tetiklenebilir. Uygulamanızın aynı işi mükerrer yapması durumunda hata vermeyecek şekilde tasarlanmış (idempotent) olması çok önemlidir (örneğin DB migration scriptlerinde "IF NOT EXISTS" kullanımı).
 
-# ❌ CronJob'da concurrencyPolicy: Allow + uzun çalışma
-#    → Her dakika yeni pod açılır, cluster'ı boğar
-
-# ✅ Idempotent görevler yaz
-#    Aynı Job iki kez çalışsa da sonuç aynı olmalı
-#    (DB migration'larda "already applied" kontrolü yap)
-
-# ✅ Monitoring: CronJob başarısız olduğunda alert
-```
+### Prometheus Alarm Metrikleri
 
 ```promql
-# Prometheus: Başarısız Job alarmı
+# Son 1 saatte başarısız olan Job tespiti
 increase(kube_job_failed[1h]) > 0
 
-# Son CronJob çalışması ne zaman?
-kube_cronjob_next_schedule_time - time()
-
-# CronJob hiç çalışmamış mı? (stuck detection)
+# CronJob'un uzun süredir tetiklenmediğini (stuck) tespit etme
 time() - kube_cronjob_status_last_schedule_time > 3600
 ```
-
----
-
-## Gerçek Dünya Kullanımları
-
-| Kullanım | Schedule | Notlar |
-|:---------|:---------|:-------|
-| DB backup | `0 1 * * *` | Gece 01:00 |
-| Cache temizleme | `0 */6 * * *` | 6 saatte bir |
-| Rapor üretimi | `0 8 * * 1` | Pazartesi sabahı |
-| Expired session temizlik | `*/30 * * * *` | 30 dakikada bir |
-| ML model yeniden eğitim | `0 0 * * 0` | Haftada bir, Pazar |
-| SSL sertifika kontrolü | `0 9 * * *` | Günlük kontrol |

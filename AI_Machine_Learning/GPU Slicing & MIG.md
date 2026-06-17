@@ -1,6 +1,15 @@
 # GPU Slicing & MIG — Kubernetes'te GPU Yönetimi
 
-AI/ML workload'ları için GPU pahalı bir kaynaktır. Kubernetes'te GPU'yu birden fazla pod'a paylaştırmanın iki yolu vardır: **Time-Slicing** (tüm GPU'ya sırayla erişim) ve **MIG** (Multi-Instance GPU — donanımsal bölümleme).
+AI/ML workload'ları için GPU son derece yüksek maliyetli ve kıymetli bir kaynaktır. Kubernetes üzerinde bu gücü en verimli şekilde kullanmak ve birden fazla pod arasında paylaştırmak için iki temel yaklaşımımız mevcuttur: **Time-Slicing** (Zaman Paylaşımı) ve **MIG** (Multi-Instance GPU - Donanımsal Bölümleme).
+
+### 📖 Sınıf Kitaplığı Analojisi: Time-Slicing vs MIG
+
+Bu iki yöntem arasındaki farkı anlamak için sınıftaki tek bir kalın ders kitabı (GPU) üzerinden ödev yapmak isteyen 4 öğrenciyi (Pod'lar) hayal edelim:
+
+* **Time-Slicing (Zaman Dilimleme):** Öğrenciler kitabı sırayla okur. Öğretmen her öğrenciye 15 dakika verir. 1. öğrenci okur, süresi bitince kitabı 2. öğrenciye devreder.
+    * *Sorun:* Eğer öğrencilerden biri kitabı okurken uykuyakalır veya sayfaların üzerine mürekkep dökerse (bellek taşması / CUDA Out of Memory), kitabın tamamı kullanılamaz hale gelir ve sonraki öğrenciler sırasını kullanamaz. Donanımsal bir sınır olmadığından, bir pod'un aşırı bellek tüketmesi diğer tüm pod'ları kilitler.
+* **MIG (Multi-Instance GPU):** Öğretmen kalın kitabı maket bıçağıyla 4 bağımsız fasiküle (donanımsal parçalara) ayırır ve her bir fasikülü bir öğrenciye kalıcı olarak teslim eder.
+    * *Avantaj:* Artık her öğrencinin elinde kendine ait garantili sayfaları (belleği) ve işlem kapasitesi vardır. Bir öğrencinin kendi fasikülünü yırtması (pod'un çökmesi) diğer öğrencilerin okuma sürecini asla etkilemez. Tam bir donanımsal izolasyon sağlanır.
 
 ---
 

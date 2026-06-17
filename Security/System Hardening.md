@@ -10,26 +10,28 @@ https://www.youtube.com/watch?v=HXtLTxo30SY
 AppArmor (Application Armor) bir Linux güvenlik modülüdür. İşte AppArmor hakkında liste şeklinde temel bilgiler:
 
 ### 1. **Nedir?**
+
    - Linux sistemlerinde uygulamaları güvence altına almak için kullanılır.
    - Uygulamaların erişim ve yeteneklerini sınırlamak için güvenlik politikaları uygular.
    
    - Uygulamalara atanmış profillerle çalışır.
-   - Her profil, belirli bir uygulamanın veya işlemin ne tür işlemler gerçekleştirebileceşini belirler.
-   - Çekirdek düzeyinde çalışır ve gerçek zamanlı güvenlik saşlar.
+   - Her profil, belirli bir uygulamanın veya işlemin ne tür işlemler gerçekleştirebileceğini belirler.
+   - Çekirdek düzeyinde çalışır ve gerçek zamanlı güvenlik sağlar.
 
 ### 3. **Profiller:**
+
    - **Zorlayıcı (Enforcing) Mod:** Profilde belirtilen politikalara uygulamaların uymasını zorlar.
-   - **Öşrenme (Complain) Mod:** Uygulama eylemlerini günlüşe kaydeder ama engellemez. Profil oluşturma sürecinde kullanılır.
+   - **Öğrenme (Complain) Mod:** Uygulama eylemlerini günlüğe kaydeder ama engellemez. Profil oluşturma sürecinde kullanılır.
    - **Kapatma (Disabled) Mod:** Profil devre dışı bırakılır.
 
    - Uygulamaların çalışma zamanı davranışlarına göre profiller oluşturabilir ve güncelleyebilirsiniz.
    - Uygulamaları daha güvenli hale getirmek için sistem genelinde veya konteyner ortamlarında kullanılır.
    - Kubernetes ve Docker gibi teknolojilerle entegrasyonu vardır.
-   - Güçlü güvenlik politikaları saşlar.
+   - Güçlü güvenlik politikaları sağlar.
    - Esnek ve özelleştirilebilir profiller.
    - Performans üzerinde düşük etkisi vardır.
-   - Web sunucuları, veritabanları ve dişer uygulamaların güvenlişini artırmak için kullanılır.
-   - Dikkatlice oluşturulan profiller uygulama işlevsellişini etkilemezken güvenlişi artırabilir.
+   - Web sunucuları, veritabanları ve diğer uygulamaların güvenliğini artırmak için kullanılır.
+   - Dikkatlice oluşturulan profiller uygulama işlevselliğini etkilemezken güvenliği artırabilir.
 
 
 * filesystem
@@ -65,6 +67,7 @@ profile java-spring-app /usr/bin/java flags=(attach_disconnected,mediate_deleted
 sudo apparmor_parser -r -W /path/to/springboot-app
 
 ```
+
 ## deployment
 
 
@@ -116,15 +119,16 @@ RUN usermod -s /usr/sbin/nologin your-user
 
 
 ```
+
 ## seccomp
 
 https://www.geeksforgeeks.org/linux-system-call-in-detail/
-- Linux kernel'inde sistem çaşrılarını (system calls) filtrelemek için kullanılır. `seccomp` ve `AppArmor` arasında birkaç fark vardır, ve her biri farklı güvenlik gereksinimlerine hizmet eder.
-`seccomp` bir Linux kernel özellişidir.
-- Uygulamaların yapabileceşi sistem çaşrılarını sınırlar ve böylece güvenlişi artırır.
-- Uygulamaların kullanabileceşi sistem çaşrılarını beyaz liste veya kara liste ile sınırlar.
+- Linux kernel'inde sistem çağrılarını (system calls) filtrelemek için kullanılır. `seccomp` ve `AppArmor` arasında birkaç fark vardır, ve her biri farklı güvenlik gereksinimlerine hizmet eder.
+`seccomp` bir Linux kernel özelliğidir.
+- Uygulamaların yapabileceği sistem çağrılarını sınırlar ve böylece güvenliği artırır.
+- Uygulamaların kullanabileceği sistem çağrılarını beyaz liste veya kara liste ile sınırlar.
 - JSON formatında profiller oluşturulur.
-- Her profil, izin verilen veya engellenen sistem çaşrılarını belirtir.
+- Her profil, izin verilen veya engellenen sistem çağrılarını belirtir.
 
 ```json
   {
@@ -152,7 +156,7 @@ https://www.geeksforgeeks.org/linux-system-call-in-detail/
   }
 
 ```
-Dosyayı tüm Kubernetes düşümlerinde uygun bir yere kopyalayın, örneşin /var/lib/kubelet/seccomp/my-seccomp-profile.json.
+Dosyayı tüm Kubernetes düğümlerinde uygun bir yere kopyalayın, örneğin /var/lib/kubelet/seccomp/my-seccomp-profile.json.
 
 ```yaml
 ## pod için
@@ -186,33 +190,33 @@ spec:
 
 ```
 
-https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ 
+https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 https://kubernetes.io/docs/tutorials/security/seccomp/
 
 
-  - `seccomp` daha çok sistem çaşrılarını sınırlamak üzerine odaklanır.
-  - `AppArmor` ise dosya erişimi, kapasiteler ve dişer kaynaklara erişimi kontrol eder.
-  - `seccomp` daha ince taneli kontrol saşlar, ancak kullanımı daha karmaşık olabilir.
+  - `seccomp` daha çok sistem çağrılarını sınırlamak üzerine odaklanır.
+  - `AppArmor` ise dosya erişimi, kapasiteler ve diğer kaynaklara erişimi kontrol eder.
+  - `seccomp` daha ince taneli kontrol sağlar, ancak kullanımı daha karmaşık olabilir.
   - `AppArmor` genellikle daha kullanıcı dostudur ve hızlı profil oluşturma imkanı sunar.
-  - İki teknoloji birlikte kullanılabilir; her biri farklı güvenlik katmanları saşlar.
+  - İki teknoloji birlikte kullanılabilir; her biri farklı güvenlik katmanları sağlar.
 
 
 ## kubespray hardening
+
 ### Admission Controllers
 
 * https://sysdig.com/blog/kubernetes-admission-controllers/
 * https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/hardening.md
 
 
-# dişerleri (atak yüzeyini azaltma)
+# diğerleri (atak yüzeyini azaltma)
 
 * işe yaramayan servisleri kaldırma. örn. snapd
 * ss -tlpn
 * sistem userları ve yetkileri
 
 
-# taint 
-
+# taint
 ```bash
 
 kubectl taint nodes <control-plane-node-name> key1=value1:NoSchedule
@@ -249,10 +253,9 @@ spec:
 ```
 
 
-## log 2 remote 
+## log 2 remote
 
-* filebeat 
-
+* filebeat
 ```yaml
 
 filebeat.inputs:

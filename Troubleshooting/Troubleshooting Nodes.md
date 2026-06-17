@@ -1,6 +1,6 @@
 # Troubleshooting: Nodes
 
-Node sorunları tüm üzerindeki pod'ları etkiler. Bir node çöktüğünde Kubernetes pod'ları başka node'lara taşır — ama bunu yapabilmesi için önce neyin bozulduğunu anlamak gerekir.
+Node sorunları üzerindeki tüm pod'ları etkiler. Bir node çöktüğünde Kubernetes pod'ları başka node'lara taşır — ama bunu yapabilmesi için önce neyin bozulduğunu anlamak gerekir.
 
 ---
 
@@ -16,6 +16,7 @@ kubectl describe node worker-node-1
 ```
 
 `describe` çıktısında dikkat edin:
+
 - **Conditions** — Ready, MemoryPressure, DiskPressure, PIDPressure, NetworkUnavailable
 - **Capacity / Allocatable** — Kullanılabilir CPU ve memory
 - **Allocated resources** — Ne kadar kullanılıyor
@@ -25,7 +26,7 @@ kubectl describe node worker-node-1
 
 ## NotReady
 
-### En kritik durum. Node cluster'la konuşamıyor.
+### En Kritik Durum: Node Cluster ile Konuşamıyor
 
 ```bash
 # NotReady node'u bul
@@ -38,6 +39,7 @@ kubectl describe node worker-node-1 | grep -A20 "Conditions\|Events"
 ### Olası Nedenler
 
 #### 1. kubelet çalışmıyor
+
 ```bash
 # Node'a SSH ile bağlan
 ssh <node-ip>
@@ -56,6 +58,7 @@ systemctl restart kubelet
 ```
 
 #### 2. Container runtime çalışmıyor
+
 ```bash
 # containerd durumu
 systemctl status containerd
@@ -72,6 +75,7 @@ systemctl restart containerd
 ```
 
 #### 3. API Server'a erişim yok (ağ sorunu)
+
 ```bash
 # Node'dan API server'a bağlantı testi
 curl -k https://<control-plane-ip>:6443/healthz
@@ -85,6 +89,7 @@ systemctl status kube-proxy
 ```
 
 #### 4. Sertifika sorunu
+
 ```bash
 # kubelet sertifikasını kontrol et
 ls -la /var/lib/kubelet/pki/
@@ -99,7 +104,7 @@ kubeadm certs renew all
 
 ## DiskPressure
 
-### Node diski dolmak üzere. Pod eviction başlar.
+### Node Diski Dolmak Üzere: Pod Eviction Başlar
 
 ```bash
 # Disk kullanımını gör
@@ -123,6 +128,7 @@ crictl rmp <pod-id>
 ```
 
 ### Log Şişmesi (En Yaygın Neden)
+
 ```bash
 # En büyük log dosyaları
 find /var/log/pods -name "*.log" -exec du -sh {} \; | sort -rh | head -20
@@ -153,6 +159,7 @@ kubectl describe node worker-node-1 | grep "Evicted\|eviction"
 ```
 
 ### Eviction Politikası Ayarı
+
 ```yaml
 # kubelet yapılandırması (/var/lib/kubelet/config.yaml)
 evictionHard:
@@ -222,7 +229,7 @@ journalctl --root=/host -u kubelet -n 100
 
 ## Genel Node Tanı Akışı
 
-```
+```text
 Node sorunlu
      │
      ├── NotReady

@@ -4,16 +4,16 @@
 
 Kubespray kubernetes kurulum ve bakımlarını otomatikleştiren, ansible üzerine geliştirilmiş, resmi bir araçtır.
 
-Saşladıkları:
+Sağladıkları:
 
 * Otomasyon
 * HA:  https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ha-mode.md
 * node ekleme ve çıkarma, güncelleme
 * Eklenti ekleme, çıkarma
-* farklı kurulumları destekler 
+* farklı kurulumları destekler
     1. masterlar ve etcdler birlikte
     2. etcd serverlar ayrı sunucularda ( >=3, tek haneli)
-    3. master ve etcd sayıları ayarlanabilir. 
+    3. master ve etcd sayıları ayarlanabilir.
 
 ## Kurulum
 
@@ -25,12 +25,12 @@ Kendi ortamımızda test etmek istiyorsak Vagrant dosyasındaki vagrant ve virtu
 
 
 
-* Ansible kontrol makinası WSL ya da bir linux makinası olmak zorundadır. 
+* Ansible kontrol makinası WSL ya da bir linux makinası olmak zorundadır.
 * Sunucular arasındaki erişimler için [buraya](https://kubernetes.io/docs/reference/ports-and-protocols/) uyulmak zorundadır.
 
 Kontrol makinasında pip3'ün kurulu olması gerekir.
 
-### Doşrudan sistem üzerine ansible kurulumu
+### Doğrudan sistem üzerine ansible kurulumu
 
 ```bash
 
@@ -72,9 +72,8 @@ cp -rfp inventory/sample inventory/mycluster
 
 ```
 
-* Kubernetes kuracaşınız sunucuların listesini Ansible'a veriyoruz.
-* Bu komut ip adreslerini ilk 2.si master ve etcd olacak şekilde nodelar olarak `inventory/mycluster/hosts.yaml` içerisine yazar. 
-
+* Kubernetes kuracağınız sunucuların listesini Ansible'a veriyoruz.
+* Bu komut ip adreslerini ilk 2.si master ve etcd olacak şekilde nodelar olarak `inventory/mycluster/hosts.yaml` içerisine yazar.
 ```
 
 declare -a IPS=(<server1_ip> <server2_ip> <server3_ip>)
@@ -82,8 +81,7 @@ CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inv
 
 ```
 
-* ``inventory/mycluster/group_vars`` klasörü altındaki bu dosyaları gözden geçirin, deşiştirmek istediklerinizi deşiştirin. 
-
+* ``inventory/mycluster/group_vars`` klasörü altındaki bu dosyaları gözden geçirin, değiştirmek istediklerinizi değiştirin.
 ```
 cat inventory/mycluster/group_vars/all/all.yml
 cat inventory/mycluster/group_vars/k8s_cluster/k8s-cluster.yml
@@ -91,19 +89,20 @@ cat inventory/mycluster/group_vars/k8s_cluster/k8s-cluster.yml
 ```
 
 ### ek ayarlar
-* hostnameleri deşiştirmek istemiyorsak
+
+* hostnameleri değiştirmek istemiyorsak
 
 ```
-# inventory/mycluster/group_vars/all/all.yml dosyasının içine aşaşıdakini ekliyoruz.
+# inventory/mycluster/group_vars/all/all.yml dosyasının içine aşağıdakini ekliyoruz.
 
 override_system_hostname: false
 ```
 
-* calico subnetlerini deşiştirmek istiyorsak
+* calico subnetlerini değiştirmek istiyorsak
 
 ```
 # inventory/mycluster/group_vars/k8s_cluster/k8s-cluster.yml
-# bu deşerleri uygun şekilde deşiştiriyoruz. 
+# bu değerleri uygun şekilde değiştiriyoruz.
  76 kube_service_addresses: 10.233.0.0/18
 
  81 kube_pods_subnet: 10.233.64.0/18
@@ -117,7 +116,7 @@ auto_renew_certificates_systemd_calendar: "Sat *-*-1,2,3,4,5,6,7 03:{{ groups['k
 
 ```
 
-* Ansible ile Kubespray'i çalıştırın ve Kubernetes kümenizi kurun. Burada sudo yetkisine sahip bir kullanıcı gerekmektedir. Eşer sunuculara parola ile erişiyorsanız ``-kK`` size erişim parolası ve sudo parolasını soracaktır.
+* Ansible ile Kubespray'i çalıştırın ve Kubernetes kümenizi kurun. Burada sudo yetkisine sahip bir kullanıcı gerekmektedir. Eğer sunuculara parola ile erişiyorsanız ``-kK`` size erişim parolası ve sudo parolasını soracaktır.
 
 Güvenlik için güçlendirme adımları:
 
@@ -129,7 +128,7 @@ ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root 
 # sudo yetkisi olan bir kullanıcı ile erişmek için
 ansible-playbook -i inventory/mycluster/hosts.yaml -b cluster.yml -u <kullanıcı> -kK
 
-# ek deşişkenler ve hardening eklenmiş kurulum
+# ek değişkenler ve hardening eklenmiş kurulum
 
 ansible-playbook -v cluster.yml \
         -i inventory/mycluster/hosts.yaml \
@@ -137,11 +136,11 @@ ansible-playbook -v cluster.yml \
         -e "@vars.yaml" \
         -e "@hardening.yaml"
 ```
-*  Eksik bir şey yoksa yukarıdaki IPS tanımında verilen sunuculara kubernetes kümesi kurulacaktır. 
+* Eksik bir şey yoksa yukarıdaki IPS tanımında verilen sunuculara kubernetes kümesi kurulacaktır.
 
 ## Yeni nod ekleme
 
-* worker node eklemek için. dişer tür nodlar için farklı süreçler vardır.
+* worker node eklemek için. diğer tür nodlar için farklı süreçler vardır.
   
 ```
 declare -a IPS=(<server1_ip> <server2_ip> <server3_ip> <yeni_nod_ip>)
@@ -156,16 +155,15 @@ ansible-playbook -i inventory/mycluster/hosts.yaml -b scale.yml -u <kullanıcı>
 ```
 sudo /usr/local/bin/kubeadm certs check-expiration
 
-# tüm master nodelarda aşaşıdaki komut çalıştırılır
+# tüm master nodelarda aşağıdaki komut çalıştırılır
  
 # tüm controller nodelarda bu çalıştırılır.
 sudo /usr/local/bin/k8s-certs-renew.sh
- 
+
 # tüm workerlarda kubelet restart edilir
- 
 sudo systemctl restart kubelet
 ```
+
 ## Dashboard ve yeni eklenti kurma
 
-* Kaynaklar
-[Node Ekleme, Deşiştirme](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md)
+* Kaynaklar: [Node Ekleme, Değiştirme](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md)

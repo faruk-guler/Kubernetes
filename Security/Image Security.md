@@ -1,10 +1,10 @@
-# Imaj Güvenlişi
+# İmaj Güvenliği
 
 ## Deterministik docker  imaj etiketlerini kullanın
 
 * Genel imaj takma adları yerine SHA256 hash olanları veya deterministik imaj  sürümlerini kullanın.
 * FROM maven:3.6.3-jdk-11-slim@sha256:68ce1cd457891f48d1e137c7d6a4493f60843e84c9e2634e3df1d3d5b381d36c
-* İşletim sistemlerinin bir sürümlerini aşaşıdaki gibi alarak deterministik bir sürüm alabiliriz.
+* İşletim sistemlerinin bir sürümlerini aşağıdaki gibi alarak deterministik bir sürüm alabiliriz.
 
 ## Yalnızca ihtiyacınız olanı kurun
 
@@ -13,7 +13,7 @@ Bir JDK'ya, Java koduna veya Maven ve Gradle gibi bir derleme aracına ihtiyacı
         Sadece WAR ya da Jar dosyasınızı kopyalayın.
         JRE ürününü veya imajnını kullanın.
 
-Uygulamaların koşacaşı imajı bu şekilde üretirsek sadece jre kurmuş oluyoruz. Ayrıca boyut 120MB azalıyor.
+Uygulamaların koşacağı imajı bu şekilde üretirsek sadece jre kurmuş oluyoruz. Ayrıca boyut 120MB azalıyor.
 
 
 
@@ -25,11 +25,11 @@ Uygulamaların koşacaşı imajı bu şekilde üretirsek sadece jre kurmuş oluy
 
 ```bash
 trivy image --exit-code 1 --severity HIGH,CRITICAL $IMAGE_NAME
-
 ```
+
 ## Multistage buildler kullanın
 
-Eşer build işlemlerini konteynır içinde yapıyorsanız 2 imajın ayrı olması gerekir.
+Eğer build işlemlerini konteynır içinde yapıyorsanız 2 imajın ayrı olması gerekir.
 
 ```Dockerfile
 
@@ -140,27 +140,27 @@ CMD ÇojavaÇ” Ço-jarÇ” Çoapplication.jarÇ”
 CMD Çostart-app.shÇ”
 
 
-Lite bir init desteşi kullanın. Bu sayede Java prosesine saşlıklı bir şekilde sinyal gönderebilirsiniz. Java processi signalleri handle edemedişi için öldürme isteklerine cevap vermeyebiliyor bazı durumlarda. Container ölemiyor. Ama dumb-init gibi bir araç kernelden gelen sinyalleri işleyebildişi için java processini öldürüyor ve sonra da kendisi de ölüyor.
+Lite bir init desteği kullanın. Bu sayede Java prosesine sağlıklı bir şekilde sinyal gönderebilirsiniz. Java processi signalleri handle edemediği için öldürme isteklerine cevap vermeyebiliyor bazı durumlarda. Container ölemiyor. Ama dumb-init gibi bir araç kernelden gelen sinyalleri işleyebildiği için java processini öldürüyor ve sonra da kendisi de ölüyor.
 
 
 CMD Çodumb-initÇ” ÇojavaÇ” Ço-jarÇ” Çoapplication.jarÇ”
 
 https://github.com/Yelp/dumb-init
 
-Çalışan bir Java uygulamasını ani bir şekilde sonlandırmak önlemek, aktif canlı başlantıları da durdurur.  Kapatmak için uygulama içinde kapatma mesajları gönderin. 
-
+Çalışan bir Java uygulamasını ani bir şekilde sonlandırmayı önlemek, aktif canlı bağlantıları da durdurur. Kapatmak için uygulama içinde kapatma mesajları gönderin.
 Runtime.getRuntime().addShutdownHook
 (yourShutdownThread);
 
-## Java appleri root yetkisi ile deşil standart kullanıcı ile çalıştırın.
+## Java appleri root yetkisi ile değil standart kullanıcı ile çalıştırın.
 
 
 ## .dockerignore kullanın
 
 build sırasındaki ve öncesinde oluşturulan veya oluşan dosyalar yanlışlıkla imajla beraber gitmez.
-Konteynırda olduşunu anlayan Java kullanın
+Konteynırda olduğunu anlayan Java kullanın
 
-##  Eski JVM sürümleri Docker memory and CPU ayarlarına uymaz.
+## Eski JVM sürümleri Docker memory and CPU ayarlarına uymaz.
+
 Java 10+ veya Java 8 update 191+ üzeri kullanın.
 
 
@@ -319,6 +319,6 @@ https://akobor.me/posts/heap-size-and-resource-limits-in-kubernetes-for-jvm-appl
 
 https://medium.com/marionete/managing-java-heap-size-in-kubernetes-3807159e2438
 
-https://labs.bishopfox.com/tech-blog/bad-pods-kubernetes-pod-privilege-escalation (pod güvenlişi ile ilgili geniş bir çalışma) ***
+https://labs.bishopfox.com/tech-blog/bad-pods-kubernetes-pod-privilege-escalation (pod güvenliği ile ilgili geniş bir çalışma) ***
 
 https://infosecwriteups.com/kubernetes-container-escape-with-hostpath-mounts-d1b86bd2fa3

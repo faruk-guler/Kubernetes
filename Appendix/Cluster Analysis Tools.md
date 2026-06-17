@@ -1,6 +1,10 @@
-# Cluster Analysis Tools
+# Cluster Analysis Tools (Küme Analiz Araçları)
 
-Cluster'ın sağlığını, güvenliğini ve kaynak kullanımını analiz eden araçlar. Sorun çıkmadan önce tespit etmek için kullanılır.
+## 🩺 Düğüm Hekimi: Cluster Sağlık Teşhisi
+
+Bir Kubernetes cluster'ı yönetmek, yaşayan ve nefes alan bir organizmayı sağlıklı tutmaya benzer. Cluster'ınız dışarıdan sapasağlam görünse bile arka planda kullanılmayan ve bellek yakan ConfigMap'ler birikiyor, deprecated (artık desteklenmeyen) API çağrıları yapılıyor veya fark edilmeyen güvenlik açıkları barındırılıyor olabilir. Kriz çıkmadan önce önlem almak, cluster'ın röntgenini çekebilmek hayati önem taşır.
+
+Bu ek bölümde, adeta bir hekimin stetoskopu gibi çalışan, cluster'ınızın gizli kalmış hastalıklarını teşhis edip tedavi önerileri sunan 6 harika analiz aracını inceliyoruz.
 
 ---
 

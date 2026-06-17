@@ -48,6 +48,7 @@ Kubernetes, varsayılan container çalışma zamanı (container runtime) olarak 
 ### Adım Adım Kurulum ve Yapılandırma
 
 #### 1. Shim İkililerinin (Binary) Kurulması
+
 Çalıştırmak istediğiniz WASM motorunun (WasmEdge veya Spin) containerd shim ikililerini indirip düğüm (node) üzerinde çalıştırılabilir yola yerleştirin:
 
 ```bash
@@ -62,6 +63,7 @@ chmod +x /usr/local/bin/containerd-shim-spin-v2
 ```
 
 #### 2. containerd Yapılandırma Dosyasının (`config.toml`) Düzenlenmesi
+
 `/etc/containerd/config.toml` dosyasını açarak `runtimes` bölümünün altına `wasmedge` ve `spin` shim tanımlarını ekleyin:
 
 ```toml
@@ -88,6 +90,7 @@ sudo systemctl restart containerd
 ```
 
 #### 3. Kubernetes RuntimeClass Tanımlarının Yapılması
+
 Kubernetes API sunucusuna, hangi pod'un hangi runtime handler'ını kullanacağını belirten `RuntimeClass` nesnelerini uygulayın:
 
 ```yaml

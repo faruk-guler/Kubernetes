@@ -16,6 +16,7 @@
 ---
 
 ### RBAC Mantığı: User vs Service Account
+
 Kubernetes'te iki tür "varlık" (subject) bulunur:
 1.  **Users:** Cluster dışındaki gerçek kişiler (admin, developer). Kubernetes bunları `User` olarak tanır ancak yönetmez (OIDC/Sertifika gereklidir).
 2.  **Service Accounts (SA):** Pod'lar içindeki process'lerin (Örn: Monitoring ajanı) API Server ile konuşması için kullanılır. Namespace bazlıdır.
@@ -95,6 +96,7 @@ roleRef:
 ```
 
 ### ServiceAccount Güvenliği
+
 Her pod varsayılan olarak `default` service account'u kullanır ve token'ını `/var/run/secrets/kubernetes.io/serviceaccount` dizinine mount eder. Güvenlik için:
 1.  **Token Mount Kapatma:** Eğer pod API Server ile konuşmayacaksa token'ı kapatın.
     ```yaml

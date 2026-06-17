@@ -4,6 +4,8 @@
 
 Güvenli web trafiği için TLS sertifikalarına ihtiyacımız var. 2026'da sertifikaları manuel olarak yenilemek kabul edilemez bir hatadır. **Cert-manager**, sertifika otoritesinden (Let's Encrypt, Vault, kendi CA) sertifika alıp süresi dolmadan **otomatik yenilenmesini** sağlar.
 
+---
+
 ## Kurulum
 
 ```bash

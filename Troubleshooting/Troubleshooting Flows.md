@@ -6,7 +6,7 @@ Kubernetes cluster'ında bir sorun yaşandığında kaotik denemeler yerine sist
 
 ## Hata Ayıklama Hiyerarşisi
 
-```
+```text
 1. Pod Katmanı       → Pod çalışıyor mu? Log ne diyor?
 2. Servis Katmanı    → Endpoint'ler dolu mu? Selector eşleşiyor mu?
 3. Ağ Katmanı        → DNS çözülüyor mu? NetworkPolicy engelliyor mu?
@@ -23,7 +23,7 @@ kubectl get pods -n production -o wide
 ```
 
 | Status | Anlam | İlk Bakılacak Yer |
-|:-------|:------|:------------------|
+| :--- | :--- | :--- |
 | `Pending` | Hiç başlamadı | `kubectl describe pod` → Events |
 | `ImagePullBackOff` | Image çekilemedi | Image adı, imagePullSecrets, registry erişimi |
 | `CrashLoopBackOff` | Başlıyor ama çöküyor | `kubectl logs --previous` |
@@ -216,7 +216,7 @@ kubectl get componentstatuses 2>/dev/null || \
 
 ## Acil Durum Checklist
 
-```
+```text
 □ kubectl get pods -A → Running olmayanlar var mı?
 □ kubectl get nodes   → NotReady node var mı?
 □ kubectl top nodes   → Kaynak tükenmesi var mı?

@@ -21,6 +21,7 @@ kubectl describe pvc data-pvc-0 -n production
 ### Olası Nedenler
 
 #### 1. StorageClass bulunamadı
+
 ```bash
 # Mevcut StorageClass'ları listele
 kubectl get storageclass
@@ -37,6 +38,7 @@ kubectl patch storageclass <sc-adı> \
 ```
 
 #### 2. Uygun PV yok (Static Provisioning)
+
 ```bash
 # Mevcut PV'leri listele
 kubectl get pv
@@ -50,6 +52,7 @@ kubectl get pv
 ```
 
 #### 3. CSI Driver / Provisioner çalışmıyor
+
 ```bash
 # StorageClass'ın provisioner'ı nedir?
 kubectl get sc <sc-adı> -o jsonpath='{.provisioner}'
@@ -63,10 +66,11 @@ kubectl describe pvc data-pvc-0 | grep -A20 "Events"
 ```
 
 #### 4. WaitForFirstConsumer (Bekleme Modu)
+
 ```bash
 # Bazı StorageClass'lar pod schedule edilene kadar PV oluşturmaz
 kubectl get sc <sc-adı> -o jsonpath='{.volumeBindingMode}'
-# Değer: WaitForFirstConsumer → Pod çalışmadan PVC Bound olmaz (NORMAL DAVRANISH)
+# Değer: WaitForFirstConsumer → Pod çalışmadan PVC Bound olmaz (NORMAL DAVRANIŞ)
 # Değer: Immediate         → Hemen Bound olmalı
 ```
 
@@ -85,6 +89,7 @@ kubectl describe pod nginx-pod -n production
 ```
 
 #### Multi-Attach Hatası (ReadWriteOnce)
+
 ```bash
 # Hata: "Multi-Attach error for volume ... Volume is already exclusively attached to one node"
 # Neden: RWO (ReadWriteOnce) disk zaten başka bir node'a bağlı
@@ -99,6 +104,7 @@ kubectl delete pod <eski-pod> --grace-period=0 --force
 ```
 
 #### Node'da Mount Başarısız
+
 ```bash
 # Node üzerinde kontrol (SSH ile)
 mount | grep data-pvc-0
@@ -210,7 +216,7 @@ kubectl label nodes worker-node-1 node.longhorn.io/create-default-disk=true
 
 ## Genel Storage Tanı Akışı
 
-```
+```text
 Storage sorunu
      │
      ├── PVC Pending

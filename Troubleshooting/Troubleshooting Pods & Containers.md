@@ -14,6 +14,7 @@ kubectl describe pod nginx-pod -n production
 ```
 
 `describe` çıktısında dikkat edilecek alanlar:
+
 - **Status** — Pod'un genel durumu
 - **Conditions** — Ready, PodScheduled, ContainersReady
 - **Events** — En altta, gerçek hata mesajları burada
@@ -22,10 +23,12 @@ kubectl describe pod nginx-pod -n production
 
 ## CrashLoopBackOff
 
-### Nedir?
+### CrashLoopBackOff Nedir?
+
 Container sürekli çöküp yeniden başlatılıyor. Kubernetes her yeniden başlatmada bekleme süresini ikiye katlar (10s → 20s → 40s → ... → 5m). Bu duruma **Exponential Backoff** denir.
 
-### Tanı
+### CrashLoopBackOff Tanısı
+
 ```bash
 # Container'ın son çıkış kodunu gör
 kubectl describe pod nginx-pod | grep -A5 "Last State"
@@ -40,7 +43,7 @@ kubectl logs nginx-pod -c nginx-container --previous
 ### Olası Nedenler ve Çözümleri
 
 | Neden | Belirtisi | Çözüm |
-|:------|:---------|:------|
+| :--- | :--- | :--- |
 | Uygulama hatası / exception | Exit code 1 | Uygulama loglarını incele |
 | Yanlış başlatma komutu | `exec: not found` | `command/args` alanını düzelt |
 | Eksik environment variable | Config hatası | ConfigMap/Secret bağlantısını kontrol et |
@@ -62,10 +65,12 @@ kubectl logs nginx-pod -c nginx-container --previous
 
 ## OOMKilled (Out of Memory)
 
-### Nedir?
-Container'ın belirlenen bellek limitini aştı ve Linux kernel tarafından öldürüldü. Exit code **137** görülür.
+### OOMKilled Nedir?
 
-### Tanı
+Container belirlenen bellek limitini aştı ve Linux çekirdeği (kernel) tarafından sonlandırıldı (killed). Çıkış kodu (exit code) olarak **137** görülür.
+
+### OOMKilled Tanısı
+
 ```bash
 kubectl describe pod nginx-pod | grep -A10 "OOMKilled\|OOM\|memory"
 
@@ -98,15 +103,17 @@ resources:
 
 ## ImagePullBackOff / ErrImagePull
 
-### Nedir?
-Kubernetes container image'ı pull edemedi.
+### ImagePullBackOff Nedir?
 
-### Tanı
+Kubernetes konteyner imajını (image) çekemedi (pull edemedi).
+
+### ImagePullBackOff Tanısı
+
 ```bash
 kubectl describe pod nginx-pod | grep -A10 "Failed\|ImagePull\|registry"
 ```
 
-### Olası Nedenler
+### ImagePullBackOff Olası Nedenleri
 
 ```bash
 # 1. Image adı/tag yanlış
@@ -136,16 +143,18 @@ kubectl debug node/worker-node-1 -it --image=busybox -- curl https://registry-1.
 
 ## Pending (Zamanlanamıyor)
 
-### Nedir?
-Pod oluşturuldu ama henüz hiçbir node'a atanmadı. Scheduler bir node bulamıyor.
+### Pending Nedir?
 
-### Tanı
+Pod oluşturuldu ama henüz hiçbir node'a atanmadı. Scheduler uygun bir node bulamıyor.
+
+### Pending Tanısı
+
 ```bash
 kubectl describe pod nginx-pod | grep -A20 "Events:"
 # "0/3 nodes are available" mesajını ara
 ```
 
-### Olası Nedenler
+### Pending Olası Nedenleri
 
 ```bash
 # 1. Yetersiz kaynak
@@ -173,7 +182,8 @@ kubectl get pvc -n production
 
 ## Init Container Hataları
 
-### Nedir?
+### Init Container Hataları Nedir?
+
 `initContainers` bloğundaki bir container başarısız olduğunda ana container hiç başlamaz.
 
 ```bash
@@ -192,7 +202,8 @@ kubectl describe pod nginx-pod | grep -A5 "Init Containers:"
 
 ## Terminating (Silinemiyor)
 
-### Nedir?
+### Terminating Nedir?
+
 Pod `kubectl delete` ile silindi ama `Terminating` durumunda takılı kaldı.
 
 ```bash
@@ -210,7 +221,7 @@ kubectl patch pod nginx-pod -p '{"metadata":{"finalizers":null}}'
 
 ## Genel Tanı Akışı
 
-```
+```text
 Pod sorunlu
      │
      ├── kubectl get pod → STATUS nedir?

@@ -1,6 +1,10 @@
 # ConfigMap ve Secret Yönetimi
 
-Kubernetes'te uygulama yapılandırmaları ve hassas veriler için iki temel nesne: **ConfigMap** (non-sensitive) ve **Secret** (sensitive). Her ikisi de pod'lardan bağımsız olarak yönetilir.
+## 🚗 İmaj ve Yol Koşulları: Dış Yapılandırmanın Felsefesi
+
+Bir uygulamanın derlenmiş OCI imajı (Docker Image), fabrikada üretilen hazır bir otomobil gibidir. İçindeki motor ve parçalar dondurulmuştur ve değiştirilemez. Ancak bu otomobilin hangi ülkede (development, staging, production), hangi hız limitiyle (max connections), hangi benzinlikle (DB Host) ve hangi anahtarla (Secret / API Key) çalışacağı otomobilin üretim bandından tamamen bağımsız olmalıdır.
+
+Uygulamamızı tekrar tekrar derlemek zorunda kalmadan, çalıştırıldığı ortamın dinamiklerine göre yapılandırmamızı sağlayan, Kubernetes'in dış parametre anahtarları **ConfigMap** (hassas olmayan veriler için) ve **Secret** (şifreler ve sertifikalar gibi hassas veriler için) nesneleridir.
 
 ---
 

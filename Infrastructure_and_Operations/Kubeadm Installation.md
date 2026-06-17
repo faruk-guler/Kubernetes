@@ -11,7 +11,7 @@
      |  _| .'|  _| | | '_| . | | | | -_|  _|
 WWW .|_| |__,|_| |___|_,_|  _|___|_|___|_|.COM
 
-Name: (Vanilla) Kubernetes Cluster Installation Script
+Name: (Vanilla) Kubernetes Cluster Installation
 POC: Debian 12 "Bookworm"
 Author: faruk guler
 Date: 2026
@@ -72,6 +72,7 @@ kubeadm init \
 > **kube-proxy Skip:** `--skip-phases=addon/kube-proxy` parametresi Cilium-eBPF standardı için zorunludur.
 
 ### 1. Kubeconfig Ayarı ve Yetkilendirme
+
 ```bash
 # Yönetici erişimini yapılandır (Root olmayan kullanıcı için de geçerli)
 mkdir -p $HOME/.kube
@@ -80,7 +81,9 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
 ### 2. Statik Pod Manifestlerini İnceleme (Black Belt)
+
 Cluster bileşenleri `kubelet` tarafından statik pod olarak yönetilir:
+
 ```bash
 # Manifest dosyalarının listesi
 ls /etc/kubernetes/manifests
@@ -94,7 +97,9 @@ ls /etc/kubernetes
 ```
 
 ### 3. Pod Network (CNI) Kurulumu ve Takip
+
 CNI kurulmadan önce CoreDNS podları `Pending` durumunda bekler.
+
 ```bash
 # Detaylı takibi başlat (yeni bir terminalde)
 kubectl get pods --all-namespaces --watch
@@ -115,6 +120,7 @@ kubeadm token create --print-join-command
 > [!TIP]
 > **Black Belt Tip: Manuel CA Hash Hesaplama**
 > Eğer join komutu çıktısına erişemiyorsanız, CA sertifikasının hash değerini aşağıdaki manuel yöntemle bulabilirsiniz:
+>
 > ```bash
 > openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
 > ```
@@ -184,6 +190,7 @@ ETCDCTL_API=3 etcdctl snapshot status /backup/etcd-snapshot.db
 Kubernetes cluster'ını bir üst sürüme (Örn: v1.31 -> v1.32) yükseltmek için kullanılan güvenli akış:
 
 ### 1. Master Node Yükseltme
+
 ```bash
 # kubeadm paketini güncelle (Master üzerinde)
 apt-get unhold kubeadm && apt-get update && apt-get install -y kubeadm=1.32.1-1.1 && apt-mark hold kubeadm
@@ -200,6 +207,7 @@ systemctl daemon-reload && systemctl restart kubelet
 ```
 
 ### 2. Worker Node Yükseltme (Sırayla)
+
 ```bash
 # Master üzerinde node'u boşalt
 kubectl drain <worker-node> --ignore-daemonsets

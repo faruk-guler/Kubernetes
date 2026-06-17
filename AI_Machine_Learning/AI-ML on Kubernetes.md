@@ -1,5 +1,18 @@
 # AI/ML ve Kubernetes — GPU İş Yükleri
 
+## Yapay Zekanın Orkestra Lideri: Neden Kubernetes?
+
+Yapay zeka modellerinin (özellikle Büyük Dil Modelleri - LLM) boyutu ve karmaşıklığı katlanarak arttıkça, bu modelleri tek bir sunucuda eğitmek veya çalıştırmak imkansız hale gelmiştir. Milyarlarca parametreye sahip bir modeli eğitmek için yüzlerce ekran kartının (GPU) birbiriyle mikro saniyeler düzeyinde senkronize çalışması gerekir.
+
+Bu devasa AI altyapısını manuel olarak yönetmeye kalktığımızda şu zorluklarla karşılaşırız:
+* Bir sunucu çöktüğünde günlerce süren model eğitiminin (training) yarıda kalması ve tüm çalışmanın boşa gitmesi.
+* Pahalı GPU kaynaklarının boşta kalarak şirket bütçelerini eritmesi.
+* Anlık gelen binlerce kullanıcı isteğinde yapay zeka modellerinin (inference) aşırı yüklenerek cevap veremez hale gelmesi.
+
+Kubernetes, bu devasa yapay zeka altyapısının orkestra şefidir. GPU'ları akıllıca paylaştırır, çöken eğitim işlerini (checkpoint'lerden) kaldığı yerden otomatik başlatır ve kullanıcı trafiğine göre model sunucularını otomatik ölçeklendirir.
+
+---
+
 ## Kubernetes ve Yapay Zeka
 
 2026 yılı yapay zekanın olgunluk yılıdır. Kubernetes, AI/ML iş yüklerini (Training ve Inference) çalıştırmak için en ideal platformdur çünkü:

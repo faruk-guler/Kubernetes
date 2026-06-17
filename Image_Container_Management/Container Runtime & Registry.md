@@ -1,5 +1,15 @@
 # Konteyner İmaj Hazırlama ve Registry Yönetimi
 
+## 🏬 Kilitli Antrepolar ve İmaj Fabrikası
+
+İyi bir aşçı (geliştirici), hazırladığı lezzetli yemeği (uygulama kodunu) müşteriye (kullanıcıya) sunmadan önce onu steril, taşınması kolay ve taze kalmasını sağlayacak vakumlu bir kaba (konteyner imajı) koyar. Hazırlanan bu kaplar, limandaki devasa kilitli antrepolara (**Container Registry**) kaldırılır. Kubernetes, bu antrepolardan sadece yetki anahtarı (**imagePullSecrets**) olanların konteynerleri çekip sunuculara dağıtmasına izin verir.
+
+Eğer bu kapları (imajları) oluşturduğumuz ana makinelerin kendilerini (sanal sunucuları) de standartlaştırmak istersek, adeta bir kalıp döküm makinesi gibi çalışan **HashiCorp Packer** ile altın imajlar (**Golden Image**) üretiriz.
+
+Bu bölümde, imaj hazırlamanın, güvenli saklamanın ve Kubernetes cluster'ı ile entegre etmenin en güncel pratiklerini ele alıyoruz.
+
+---
+
 ## 1. Multi-Stage Dockerfile (2026 Best Practices)
 
 Üretim imajları küçük ve güvenli olmalıdır. Multi-stage build ile build araçları son imajda yer almaz.
@@ -60,6 +70,7 @@ CMD ["python", "app.py"]
 ```
 
 ## HashiCorp Packer ile Altın İmaj (Golden Image) Oluşturma
+
 Konteynerlerin üzerinde koştuğu Node imajlarını (AMI, VMDK, ISO) otomatize etmek için kullanılır.
 ```hcl
 source "amazon-ebs" "k8s" {
@@ -75,6 +86,7 @@ build {
 ```
 
 ## Containerfile (Buildah/Podman)
+
 `Dockerfile` ile aynı sözdizimine sahiptir ancak Buildah ve Podman ecosisteminde `Containerfile` isimlendirmesi tercih edilir.
 
 ## 2. Dockerfile Best Practices

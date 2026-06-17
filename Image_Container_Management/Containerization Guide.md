@@ -1,51 +1,68 @@
-# Containerization Rehberi
+# Containerization (Konteynerleştirme) Rehberi
 
-Kubernetes yolculuğunun ilk adımı uygulamayı containerize etmektir. İyi yazılmış bir Dockerfile sadece çalışan bir image değil; küçük, güvenli, hızlı ve yeniden üretilebilir bir artefakt üretir.
+Kubernetes yolculuğumuzun ilk ve en kritik adımı, uygulamamızı bir konteyner imajı (container image) haline getirmektir. Kubernetes, kendi başına kodunuzu alıp çalıştırmaz; sadece konteynerleri orkestre eder. Bu nedenle, yazılan Dockerfile'ın kalitesi doğrudan Kubernetes cluster'ınızın güvenliğini, hızını, kaynak tüketimini ve ölçeklenme performansını etkiler.
+
+İyi yazılmış bir Dockerfile sadece çalışan bir imaj değil; küçük, güvenli, hızlı açılan ve katman önbelleği (layer cache) optimize edilmiş bir artefakt üretmelidir.
 
 ---
 
-## Dockerfile Temel Prensipleri
+## 1. Katman Önbelleği (Layer Caching) Mantığı
 
-### Multi-Stage Build (Zorunlu)
+Docker, bir imajı inşa ederken (build) her satırdaki talimatı bir **katman (layer)** olarak yazar. Bir katman değişmediği sürece Docker bir sonraki derlemede önbellekten (cache) okur ve saniyeler içinde derleme tamamlanır. Ancak üstteki bir katman değiştiğinde, altındaki tüm katmanların önbelleği geçersiz kılınır ve baştan çalıştırılır.
+
+* **Hatalı Sıralama:** Eğer kaynak kodumuzu bağımlılıklardan (dependencies) önce kopyalarsak, kodda yaptığımız tek bir karakterlik değişiklik bile tüm bağımlılıkların (npm install, pip install, go mod download vb.) internetten tekrar indirilmesine yol açar.
+* **Doğru Sıralama:** Önce sadece bağımlılık listesini (örneğin `package.json` veya `go.mod`) kopyalayıp yüklemeyi çalıştırmalı, ardından kaynak kodumuzu kopyalamalıyız. Böylece bağımlılıklar değişmedikçe bu adım önbellekten anında geçecektir.
+
+---
+
+## 2. Multi-Stage Build (Çok Aşamalı Derleme)
+
+Bir Go, Java veya TypeScript uygulamasını derlemek için derleyicilere, SDK'lara ve paket yöneticilerine ihtiyacımız vardır. Ancak bu araçların uygulamayı çalıştırmak için production ortamına gitmesine gerek yoktur. Örneğin bir Go compiler ~800MB yer kaplar ama ürettiği binary sadece 10MB'tır.
+
+* **Anti-pattern (Tek Aşamalı):** Tüm derleme araçlarının son imajda kalması imaj boyutunu devasa hale getirir ve içinde terminal/paket yöneticisi barındırdığı için büyük güvenlik açıkları (saldırı yüzeyi) oluşturur.
+* **Çözüm (Multi-stage):** Derleme işini "builder" adı verilen geçici bir aşamada tamamlayıp, nihai (runtime) aşamada sadece derlenmiş dosyaları (binary, build klasörü vb.) çok temiz ve minimal bir base imaj içine kopyalamaktır.
+
+### Multi-Stage Build Karşılaştırması (Go Örneği)
 
 ```dockerfile
-# ❌ Kötü: Tek aşamalı — Go derleyicisi production image'a giriyor
+# ❌ KÖTÜ: Go derleyicisi production imajına giriyor
 FROM golang:1.22
 WORKDIR /app
 COPY . .
 RUN go build -o server .
 CMD ["./server"]
-# Image boyutu: ~900MB
+# İmaj boyutu: ~900MB
 
-# ✅ İyi: Multi-stage — sadece binary production'a gidiyor
+# ✅ İYİ: Multi-stage — Sadece binary production'a gidiyor
+# AŞAMA 1: Derleme Aşaması (Builder)
 FROM golang:1.22-alpine AS builder
 WORKDIR /app
 COPY go.mod go.sum ./
-RUN go mod download                    # Bağımlılıkları önbelleğe al
+RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build \
-    -ldflags="-w -s" \                 # Debug sembollerini çıkar
-    -o server .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o server .
 
-FROM scratch                           # Boş image — sadece binary
+# AŞAMA 2: Çalıştırma Aşaması (Runtime)
+FROM scratch
 COPY --from=builder /app/server /server
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 EXPOSE 8080
-USER 65534                             # nobody user
+USER 65534
 ENTRYPOINT ["/server"]
-# Image boyutu: ~8MB
+# İmaj boyutu: ~8MB (Sadece binary ve SSL sertifikaları)
 ```
 
 ---
 
-## Dil Bazında En İyi Pratikler
+## 3. Dil Bazında Optimize Dockerfile Şablonları
 
-### Go
+### Go ve Distroless Kullanımı
+
+Go uygulamaları için en güvenli yaklaşım shell dahi barındırmayan Google'ın **distroless** imajlarını kullanmaktır:
 
 ```dockerfile
 FROM golang:1.22-alpine AS builder
 WORKDIR /app
-# go.mod/sum önce kopyala → bağımlılık cache katmanı
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
@@ -59,18 +76,18 @@ USER nonroot:nonroot
 ENTRYPOINT ["/server"]
 ```
 
-### Python
+### Python (Slim Base ve Non-Root)
+
+Python uygulamalarında gereksiz derleme araçlarını içermeyen `slim` imajlar tercih edilmelidir. Paket yüklemeleri için `pip --no-cache-dir` kullanılmalıdır:
 
 ```dockerfile
 FROM python:3.12-slim AS builder
 WORKDIR /app
-# Bağımlılıkları ayrı katmana al
 COPY requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
 
 FROM python:3.12-slim
 WORKDIR /app
-# Sadece kurulmuş paketleri kopyala
 COPY --from=builder /root/.local /root/.local
 COPY . .
 ENV PATH=/root/.local/bin:$PATH
@@ -80,13 +97,15 @@ USER 1000:1000
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "app:application"]
 ```
 
-### Node.js
+### Node.js (Production Dependencies)
+
+Node.js'te production aşamasında sadece `devDependencies` olmayan asıl bağımlılıkları yüklemek için `npm ci --only=production` kullanılır:
 
 ```dockerfile
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --only=production          # package-lock.json'dan tam yükle
+RUN npm ci --only=production
 
 FROM node:20-alpine
 WORKDIR /app
@@ -98,18 +117,19 @@ EXPOSE 3000
 CMD ["node", "server.js"]
 ```
 
-### Java (Spring Boot)
+### Java (Spring Boot Layered Jar)
+
+Java uygulamalarında container'ın bellek limitlerini JVM'e bildirmek için `UseContainerSupport` parametresi eklenmelidir:
 
 ```dockerfile
 FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /app
 COPY mvnw pom.xml ./
 COPY .mvn .mvn
-RUN ./mvnw dependency:go-offline      # Bağımlılık cache
+RUN ./mvnw dependency:go-offline
 COPY src ./src
 RUN ./mvnw package -DskipTests
 
-# Spring Boot layered jar
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 RUN addgroup -S spring && adduser -S spring -G spring
@@ -117,17 +137,18 @@ USER spring:spring
 COPY --from=builder /app/target/app.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", \
-  "-XX:+UseContainerSupport", \       # Container memory limitini kullan
-  "-XX:MaxRAMPercentage=75.0", \      # JVM heap = container limit × %75
+  "-XX:+UseContainerSupport", \
+  "-XX:MaxRAMPercentage=75.0", \
   "-jar", "app.jar"]
 ```
 
 ---
 
-## .dockerignore (Zorunlu)
+## 4. .dockerignore Dosyası
+
+Dockerfile ile aynı dizinde bulunması gereken `.dockerignore`, yerel bilgisayarınızdaki gereksiz veya gizli dosyaların Docker daemon'a gönderilmesini engelleyerek hem build süresini kısaltır hem de güvenliği artırır:
 
 ```dockerignore
-# .dockerignore — build context'e gönderilmeyecekler
 .git
 .gitignore
 Dockerfile
@@ -143,119 +164,29 @@ dist/
 build/
 *.test.go
 *_test.go
-vendor/    # Go vendor varsa, go.sum yeterli
+vendor/
 ```
 
 ---
 
-## Güvenlik Kontrol Listesi
+## 5. Güvenlik Kontrol Listesi (Security Checklist)
 
-```dockerfile
-# ✅ 1. Root olmayan kullanıcı
-USER 1000:1000
-
-# ✅ 2. Minimal base image
-FROM gcr.io/distroless/static-debian12   # Go için
-FROM python:3.12-slim                     # Python için (değil python:3.12)
-
-# ✅ 3. Sabit tag — latest KULLANMA
-FROM golang:1.22.3-alpine               # ❌ golang:1.27.0 değil
-
-# ✅ 4. Sır (secret) image'a girmesin
-# ❌ Yanlış:
-RUN curl -H "Authorization: Bearer $TOKEN" https://api.example.com/download
-# ✅ Doğru: Build arg kullan
-ARG GITHUB_TOKEN
-RUN --mount=type=secret,id=github_token \
-    GITHUB_TOKEN=$(cat /run/secrets/github_token) \
-    pip install git+https://...
-
-# ✅ 5. HEALTHCHECK tanımla
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget -qO- http://localhost:8080/healthz || exit 1
-```
+* **Root Olmayan Kullanıcı (Non-Root User):** Container içindeki uygulamayı asla `root` olarak çalıştırmayın. Olası bir container escape (konteynerden host'a sızma) durumunda saldırgan ana makinenin de root yetkisine sahip olur. Dockerfile sonuna mutlaka `USER 1000:1000` veya benzeri bir non-root kullanıcı tanımı ekleyin.
+* **Sabit Versiyon Etiketleri (Pinning Tags):** `FROM base:latest` kullanmayın. `latest` etiketi her an değişebilir ve uygulamanızın localde çalışırken canlı ortamda (production) çökmesine yol açabilir. Her zaman `golang:1.22.3-alpine` gibi tam sürüm belirtin.
+* **Gizli Bilgilerin Korunması:** API anahtarlarını, şifreleri Dockerfile içine `ENV` veya `ARG` olarak gömmeyin. İmaj geçmişini inceleyen herkes bu şifreleri görebilir. Derleme sırasında gizli bilgi gerekiyorsa `--mount=type=secret` kullanın.
 
 ---
 
-## Image Boyutu Optimizasyonu
+## 6. Trivy ile Güvenlik Taraması
+
+Oluşturduğumuz imajlardaki donanımsal kütüphane ve bağımlılık açıklarını (CVE) bulmak için Trivy kullanılır:
 
 ```bash
-# Image katmanlarını analiz et
-docker history my-app:v1 --human --format "{{.Size}}\t{{.CreatedBy}}"
-
-# Dive aracı ile görsel analiz
-docker run --rm -it \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  wagoodman/dive:1.27.0 my-app:v1
-
-# Boyutu küçültme teknikleri:
-# 1. Multi-stage build
-# 2. apt-get clean && rm -rf /var/lib/apt/lists/*
-# 3. --no-install-recommends
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      ca-certificates curl && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-```
-
----
-
-## Container Registry & Image Signing
-
-```bash
-# GitHub Container Registry (GHCR)
-docker build -t ghcr.io/company/my-app:sha-$(git rev-parse --short HEAD) .
-docker push ghcr.io/company/my-app:sha-$(git rev-parse --short HEAD)
-
-# Image imzalama (Cosign)
-cosign sign --key cosign.key ghcr.io/company/my-app:sha-abc123
-
-# Kubernetes'te imzalı image doğrulama (Kyverno)
-kubectl apply -f - <<EOF
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: verify-image-signature
-spec:
-  rules:
-  - name: verify-cosign
-    match:
-      resources:
-        kinds: [Pod]
-    verifyImages:
-    - imageReferences:
-      - "ghcr.io/company/*"
-      attestors:
-      - entries:
-        - keys:
-            publicKeys: |-
-              -----BEGIN PUBLIC KEY-----
-              MFkwEwYHKoZIzj0CAQYIKB...
-              -----END PUBLIC KEY-----
-EOF
-```
-
----
-
-## Trivy ile Güvenlik Taraması
-
-```bash
-# Local image tarama
+# Yerel bir imajı kritik ve yüksek açıklara karşı tarama
 trivy image my-app:v1 --severity HIGH,CRITICAL
 
-# CI/CD entegrasyonu (GitHub Actions)
-- name: Scan image
-  uses: aquasecurity/trivy-action@master
-  with:
-    image-ref: ghcr.io/company/my-app:${{ github.sha }}
-    format: sarif
-    severity: CRITICAL,HIGH
-    exit-code: 1    # CRITICAL varsa pipeline başarısız
-
-# Sürekli tarama (cluster'daki image'lar)
+# Sürekli tarama için cluster içerisine Trivy Operator kurulumu
 helm install trivy-operator aquasecurity/trivy-operator \
   --namespace trivy-system \
   --create-namespace
-kubectl get vulnerabilityreports -A
 ```

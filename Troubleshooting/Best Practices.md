@@ -7,7 +7,7 @@
 * ETCD servisleri izole edildi mi?
 * Düzenli etcd yedeklemeleri için bir planınız var mı?
 * Master Node'lar bölgeler (AZ/Region) arası dağıtıldı mı?
-* Worker (İşçi) Node'lar bölgeler (AZ/Region) arası dağıtıldı mı? 
+* Worker (İşçi) Node'lar bölgeler (AZ/Region) arası dağıtıldı mı?
 * Master ve Worker Node'lar için Autoscaling (Otomatik Ölçeklendirme) ayarlandı mı?
 * HA (Yüksek Erişilebilirlik) yük dengeleme oluşturuldu mu?
 * Scheduler ve Controller Manager için aktif-pasif yapılandırma var mı?
@@ -41,14 +41,14 @@
 * Etkin RBAC (Rol Tabanlı Erişim Kontrolü) var mı?
 * Kullanıcı erişimiyle ilgili en iyi uygulamaları takip ediyor musunuz? (En az yetki prensibi - Least Privilege)
 * Denetim günlüğü (Audit Log) etkinleştirildi mi?
-* Bastion host (Kale barındırıcısı) mu kuruyorsunuz? (Erişim için proxy/ara sistem)
+* Bastion host (Kale barındırıcısı) kuruldu mu? (Erişim için proxy/ara sistem)
 * Kabul denetleyicisinde (Admission Controller) AlwaysPullImages etkinleştirildi mi?
 * Pod Güvenlik Politikası (Kyverno/PSS) tanımlandı ve etkinleştirildi mi?
 * Bir Ağ eklentisi (CNI) ve yapılandırılmış ağ politikaları (NetworkPolicies) seçtiniz mi?
 * Kubelet için kimlik doğrulama (Authentication) uygulandı mı?
 * Kubernetes Sırlarını (Secrets/SealedSecrets) yapılandırdınız mı?
 * Beklemede veri (Data/etcd at Rest) şifrelemeyi etkinleştirdiniz mi?
-* Uygulamalar üzerinde Varsayılan Hizmet Hesabı (default ServiceAccount) devre dışı bırakılsın mı?
+* Uygulamalar üzerinde Varsayılan Hizmet Hesabı (default ServiceAccount) devre dışı bırakıldı mı?
 * Güvenlik açıkları için konteyner imajları (Trivy/Clair) tarandı mı?
 * Podlar, konteynerler ve birimler için yapılandırılmış güvenlik bağlamı (SecurityContext/runAsNonRoot) var mı?
 * Açık Kubernetes loglama etkinleştirildi mi?
@@ -61,10 +61,10 @@
 
 ## Depolama Yönetimi (Storage Management)
 
-* Kalıcı Birimler (PV) için Bulut sağlayıcısı tarafından önerilen ayarları kullanın (CSI sürücüleri).
-* PVC'yi dağıtım konfigürasyonuna dahil edin ve asla doğrudan PV talep kullanmayın.
-* Varsayılan bir depolama sınıfı (StorageClass) oluşturun.
-* Kullanıcıya esnek depolama sınıfları sağlayın.
+* Kalıcı Birimler (PV) için Bulut sağlayıcısı tarafından önerilen ayarlar kullanılıyor mu? (CSI sürücüleri)
+* PVC'ler dağıtım konfigürasyonuna dahil edilip doğrudan PV kullanımı engellendi mi?
+* Varsayılan bir depolama sınıfı (StorageClass) oluşturuldu mu?
+* Kullanıcılara esnek depolama sınıfları sağlandı mı?
 
 ## İzleme, Uyarı ve Analiz (Observability)
 
@@ -73,12 +73,12 @@
 
 ## CI/CD ve GitOps
 
-* Sürekli Teslimat için Güvenli CI/CD hatları (Pipelines) uygulayın.
-* İzlenebilirliği artırmak için onay iş akışıyla GitOps'u (ArgoCD/Flux) etkinleştirin.
-* Güvenlik açıklarını test edin, entegre edin ve tarayın (Shift-left security).
-* Konteyner imajları oluşturun ve kurumsal güvenli bir depoda (Nexus/Harbor) tutun.
-* Denetlenebilirliği artırmak için imajları Git commit SHA ile (tag olarak) etiketleyin. "Latest" tag kullanmaktan kaçının.
-* Kesinti süresini önlemek için Rolling Update ve/veya Blue-Green/Canary deployment modellerini benimseyin.
+* Sürekli Teslimat için güvenli CI/CD hatları (Pipelines) uygulandı mı?
+* İzlenebilirliği artırmak için onay iş akışıyla GitOps (ArgoCD/Flux) etkinleştirildi mi?
+* Güvenlik açıkları CI/CD aşamasında taranıyor mu? (Shift-left security)
+* Konteyner imajları güvenli bir kurumsal depoda (Nexus/Harbor) mı tutuluyor?
+* Denetlenebilirliği artırmak için imajlar Git commit SHA ile etiketlendi mi? ("latest" etiketi kullanmaktan kaçınıldı mı?)
+* Kesinti süresini önlemek için Rolling Update ve/veya Blue-Green/Canary dağıtım modelleri benimsendi mi?
 
 ## Ekstra Tavsiyeler
 

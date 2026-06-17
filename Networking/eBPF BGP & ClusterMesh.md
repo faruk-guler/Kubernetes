@@ -1,6 +1,6 @@
 # eBPF BGP ve Cilium ClusterMesh (Sınırları Kaldırmak)
 
-İleri seviye Kubernetes ağ yönetiminde artık her cluster'ı kapalı bir ada olarak görmek yerine, farklı kıtalardaki (veya farklı Veri Merkezlerindeki/Bulutlardaki) K8s cluster'larını **tek bir büyük Network'te birleştirmek** aranılan bir özelliktir. 
+İleri seviye Kubernetes ağ yönetiminde artık her cluster'ı kapalı bir ada olarak görmek yerine, farklı kıtalardaki (veya farklı Veri Merkezlerindeki/Bulutlardaki) K8s cluster'larını **tek bir büyük Network'te birleştirmek** aranılan bir özelliktir.
 
 Bunu klasik çözümlerde VPN ve zorlayıcı yönlendirmelerle yaparken, modern ortamda **Cilium ClusterMesh ve BGP (Border Gateway Protocol)** eBPF mimarisiyle natif olarak başarılır.
 
@@ -74,6 +74,7 @@ Bir cluster'ınız Amazon EKS'te (AWS), diğer cluster'ınız On-Prem VMWare sis
 ClusterMesh özelliği ile K8s API'leri birbirine değil, **Cilium ajanları birbirine tünel (IPsec/Wireguard) açar**. Yani Ankara'daki K8s Node'u ile Frankfurt'taki K8s Node'u doğrudan iletişim kurar.
 
 ### Gereksinimler
+
 1. Her cluster için farklı bir PodCIDR be ServiceCIDR (Çakışma - overlap olmamalıdır).
 2. Her cluster'ın benzersiz (Unique) bir isim numarası `cluster-name`, `cluster-id` olmalıdır.
 3. Node'lar arası UDP/TCP erişim (Tünel için) açık olmalıdır.

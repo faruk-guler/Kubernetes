@@ -19,6 +19,7 @@ K3s, Rancher Labs tarafından 2019'da açık kaynak olarak yayımlanan sertifika
 ## Kurulum
 
 ### Gereksinimler
+
 - Docker (çalışıyor olmalı)
 - kubectl
 - k3d binary

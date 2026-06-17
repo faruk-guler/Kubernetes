@@ -279,29 +279,77 @@ spec:
 
 ---
 
-## Label ve Annotation
+## Label (Etiket) ve Annotation (Açıklama)
+
+Kubernetes nesnelerine ek bilgi (metadata) eklemek için iki temel parametremiz vardır: **Label** ve **Annotation**. Her ikisi de anahtar-değer (key-value) eşleşmesiyle çalışsa da kullanım amaçları ve cluster üzerindeki etkileri tamamen farklıdır.
+
+### 1. Label ve Annotation Arasındaki Temel Felsefe Farkı
+
+* **Label (Etiket):** Kubernetes nesnelerini gruplamak, filtrelemek ve nesneler arasında bağ kurmak için kullanılır. Örneğin, bir `Service` nesnesinin trafiği hangi pod'lara yönlendireceğini seçmesi (`spec.selector`) etiketler sayesinde olur. Bu ilişki kurma özelliğinden ötürü etiketler hassas bilgi sınıfına girer. Yanlışlıkla bir etiketi eklemek veya silmek, uygulamanın trafiğinin kesilmesine veya pod'ların yanlış zamanlanmasına yol açabilir. Bu yüzden her ek bilgiyi label olarak eklemek yanlıştır.
+* **Annotation (Açıklama):** Herhangi bir nesneyi gruplama veya seçme (selector) amacıyla kullanmayacağımız, sadece nesneyle ilgili ek/tanımlayıcı bilgi sunmak istediğimiz durumlarda kullanılır. Ayrıca, Kubernetes'in çekirdek bileşeni olmayan fakat cluster'la entegre çalışan harici araçlar (Ingress Controller, çağrı merkezi yazılımları, yedekleme araçları vb.) tarafından okunacak talimatlar veya konfigürasyonlar da buraya yazılır.
+
+> **Örnek Senaryo:** Bir nesneyi kimin oluşturduğu, oluşturulma tarihi veya destek ekibinin e-posta adresi gibi bilgileri label olarak eklemek doğru değildir (çünkü bu bilgileri selector ile sorgulamayacağız). Bu ek bilgileri annotation olarak eklemek en doğru pratik olacaktır. Böylece, örneğin destek ekibinin kullandığı harici bir izleme robotu bu annotation değerini okuyup olası bir arızada ilgili kişiye otomatik mail gönderebilir.
+
+### 2. Adlandırma Kuralları ve Sözdizimi (Syntax)
+
+Bir annotation anahtar (key) alanı şu kurallara uymalıdır:
+
+```
+1w2.net/notification-email : admin@example.com
+└─Prefix─┘ └──────Key─────┘   └─────Value─────┘
+```
+
+* **Prefix (Önek):** Zorunlu değildir. Ancak özellikle harici araçlar kendi konfigürasyonlarını yazarken çakışmayı önlemek için önek kullanırlar (Örn: `nginx.ingress.kubernetes.io/...`).
+* **Key (Anahtar):** Maksimum 63 karakter olmalıdır. Alfanümerik bir karakterle başlamalı ve bitmelidir. İçerisinde `.`, `-`, `_` gibi özel karakterler barındırabilir.
+* **Value (Değer):** Anahtar kısmındaki kısıtlamalara tabi değildir. Alfanümerik olmayan karakterler ve çok daha uzun metinler barındırabilir.
+
+### 3. YAML Tanımı
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: annotation-pod
+  namespace: production
+  annotations:
+    owner: "mycat"
+    notification-email: "admin@example.com"
+    releasedate: "01.01.2021"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  containers:
+  - name: web-container
+    image: nginx:1.27
+    ports:
+    - containerPort: 80
+```
+
+### 4. Yönetim Komutları
 
 ```bash
-# Label ile listeleme
+# Label ile listeleme ve filtreleme
 kubectl get pods -l app=web-app
 kubectl get pods -l env=prod,tier=frontend
 kubectl get pods -l 'env in (prod,staging)'
 
-# Label ekle / kaldır
+# Dinamik olarak label ekleme ve silme
 kubectl label pod my-pod env=prod
-kubectl label pod my-pod env-          # Kaldır (- ile)
+kubectl label pod my-pod env-          # Anahtarın sonuna '-' koyarak silinir
 
-# Annotation ekle
-kubectl annotate deployment web-app \
-  kubernetes.io/change-cause="v2.1.0: Fix memory leak"
+# Dinamik olarak annotation ekleme ve silme
+kubectl annotate pod annotation-pod owner=mycat
+kubectl annotate pod annotation-pod owner-   # Anahtarın sonuna '-' koyarak silinir
 ```
 
+### 5. Karşılaştırma Özeti
+
 | Özellik | Label (Etiket) | Annotation (Açıklama) |
-|:--------|:---------------|:----------------------|
-| **Amacı** | Gruplama, Seçim (Selector) | Ek bilgi, Metadata, Tooling |
-| **Sorgulanabilir?** | Evet (`-l`) | Hayır |
-| **Boyut sınırı** | Kısa (63 karakter) | Büyük veri tutabilir |
-| **Örnek** | `app: nginx`, `env: prod` | `change-cause: v2`, `build: abc123` |
+| :--- | :--- | :--- |
+| **Ana Amacı** | Gruplama, Seçim (Selector) | Ek bilgi, Metadata, Harici Araç Yapılandırması |
+| **Sorgulanabilir mi?** | Evet (`-l` parametresi ile) | Hayır (Filtreleme amaçlı kullanılamaz) |
+| **Boyut Sınırı** | Kısa (Maksimum 63 karakter) | Büyük boyutlu veri veya JSON/YAML tutabilir |
+| **Örnek Kullanım** | `app: nginx`, `env: prod` | `owner: mycat`, `nginx.ingress.../ssl-redirect: "true"` |
+
 
 ---
 

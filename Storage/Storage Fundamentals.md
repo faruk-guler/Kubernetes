@@ -9,6 +9,7 @@ Kubernetes'te pod'lar geçicidir (ephemeral). Pod silindiğinde içindeki verile
 Bu türler pod ile birlikte ölürler, ancak pod içindeki konteynerler arasında veri paylaşımı sağlarlar.
 
 ### 1. emptyDir
+
 Pod bir node'a atandığında oluşturulur. Pod yaşadığı sürece veri korunur. Konteynerler arası veri paylaşımı için idealdir.
 ```yaml
 volumes:
@@ -17,6 +18,7 @@ volumes:
 ```
 
 ### 2. hostPath
+
 Node üzerindeki bir dizini pod'a mount eder. Genellikle log toplama veya yerel donanım erişimi için kullanılır.
 ```yaml
 volumes:
@@ -33,9 +35,11 @@ volumes:
 Kubernetes, depolama yönetimini uygulama geliştiriciden (PVC) ve altyapı yöneticisinden (PV) ayırır.
 
 ### PersistentVolume (PV)
+
 Cluster genelindeki "fiziksel" disk kaynağıdır (AWS EBS, NFS, Local SSD). Admin tarafından oluşturulur.
 
 ### PersistentVolumeClaim (PVC)
+
 Kullanıcının depolama talebidir. "Bana 10GB ReadWriteOnce bir disk ver" der. Kubernetes uygun bir PV'yi bu PVC'ye bağlar (Binding).
 
 ---

@@ -1,6 +1,10 @@
 # Kubernetes Mimari Tasarım Prensipleri
 
-Bir Kubernetes cluster'ı tasarlarken verilen kararlar yıllarca etkisini sürdürür. Bu bölüm, mimari düzeydeki kritik kararları ve trade-off'ları ele alır.
+## ⚖️ Ödünleşim Sanatı: Mimari Kararların Felsefesi
+
+Sistem mühendisliği, mükemmel çözümler bulma sanatı değil, **trade-off (ödünleşim / taviz)** yönetme sanatıdır. Kubernetes dünyasında hiçbir mimari karar bedava veya kesinlikle "en doğrusudur" diyerek alınamaz. Güvenliği en üst seviyeye çıkarmak isterseniz ağ karmaşıklığıyla boğuşursunuz; yüksek performans isterseniz faturaları kabartırsınız; yüksek erişilebilirlik (HA) hedeflerseniz yönetim ve yedekleme yükünü artırırsınız.
+
+Mimarın asıl görevi, kusursuz bir sistem tasarlamak değil, eldeki kaynaklar (bütçe, zaman ve insan gücü) doğrultusunda en optimize ve sürdürülebilir dengeyi kurmaktır. Bu bölüm, cluster tasarımında verilecek kritik kararları, mimari kalıpları ve bu kararların getirdiği ödünleşimleri ele alır.
 
 ---
 

@@ -14,6 +14,7 @@
 ---
 
 ### Geleneksel İzleme: EFK Stack (1w2.net Referans)
+
 Modern LGTM yapısına geçmeden önce sektörde standart olan **EFK Stack** bileşenlerini bilmek operasyonel olarak önemlidir:
 - **Elasticsearch:** Logların indekslendiği ve saklandığı veritabanı.
 - **Fluentd (veya Logstash):** Node'lardan logları toplayıp Elasticsearch'e gönderen ajan.

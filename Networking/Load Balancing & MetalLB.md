@@ -19,12 +19,14 @@ Bare-metal Kubernetes cluster'larında `LoadBalancer` tipinde bir Service oluşt
 ## MetalLB Çalışma Modları
 
 ### Layer 2 Modu (ARP/NDP)
+
 - En basit kurulum
 - Bir node, IP için ARP yanıtı verir → tüm trafik o node üzerinden geçer
 - Failover: ~10 saniye (ARP yenileme)
 - **Gerçek load balancing yok** — tek node bottleneck
 
 ### BGP Modu
+
 - Router'larla BGP konuşur
 - Gerçek ECMP (Equal-Cost Multi-Path) load balancing
 - Her node equal-weight olarak trafiği alır

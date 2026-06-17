@@ -1,57 +1,65 @@
 # Pod Yaşam Döngüsü ve Probe'lar
 
-## Pod Yaşam Döngüsü ve Durumlari (Phase)
+## Pod Yaşam Döngüsü ve Durumları (Phases)
 
-Bir Pod, oluşturulduğu andan yok edilene kaçdar belirli bir yaşam döngüsü izler. Bu süreci anlamak, "Uygulamam neden “““çalışmıyor?”””" sorusunun cevabini bulmak için kritiktir.
+Bir Pod, oluşturulduğu andan yok edilene kadar belirli bir yaşam döngüsü izler. Bu süreci anlamak, "Uygulamam neden çalışmıyor?" sorusunun cevabını bulmak için kritiktir.
 
-### 1. Pod Fazlari (Phases)
+### 1. Pod Fazları (Phases)
+
 Pod'un genel durumunun yüksek seviyeli özetidir:
 
 | Faz | Açıklama |
-|:---|:---|
-| **Pending** | Pod kaçbul edildi ancak bir veya daha fazla konteyner henüz hazir degil (Imaj çççekme veya zamanlanma bekliyor). |
-| **Running** | Pod bir node'a bagüçlüandi ve tüm konteynerler olusturuldu. En az bir konteyner hala çalışıyor veya baslatiliyor. |
-| **Succeeded** | Pod'daki tüm konteynerler başarıyla (exit 0) sonlandi ve yeniden baslatilmayacak. |
-| **Failed** | En az bir konteyner hata ile (sifir disi exit code) sonlandi. |
-| **Unknown** | Pod'un durumu bilinemiyor (Genelde Node ile iletisim koptugunda görülür). |
+| :--- | :--- |
+| **Pending** | Pod kabul edildi ancak bir veya daha fazla konteyner henüz hazır değil (İmaj çekme veya zamanlanma bekliyor). |
+| **Running** | Pod bir node'a bağlandı ve tüm konteynerler oluşturuldu. En az bir konteyner hâlâ çalışıyor veya başlatılıyor. |
+| **Succeeded** | Pod'daki tüm konteynerler başarıyla (exit 0) sonlandı ve yeniden başlatılmayacak. |
+| **Failed** | En az bir konteyner hata ile (sıfır dışı exit code) sonlandı. |
+| **Unknown** | Pod'un durumu bilinemiyor (Genelde Node ile iletişim koptuğunda görülür). |
 
-### 2. Konteyner Durumlari (Statuses)
-Pod içindeki her bir konteynerin kendi statüsü vardir:
-- **Waiting:** Konteyner baslamak için gerekli islemleri (imaj çççekme, secret okuma) yürütüyor.
-- **Running:** Konteyner sorunsuz sekilde çalışıyor.
-- **Terminated:** Konteyner bir sebeple durdu (Basarili bitis veya hata). `kubectl describe` ile hata kodu iöncelenmelidir.
+### 2. Konteyner Durumları (Statuses)
+
+Pod içindeki her bir konteynerin kendi statüsü vardır:
+
+- **Waiting:** Konteyner başlamak için gerekli işlemleri (imaj çekme, secret okuma) yürütüyor.
+- **Running:** Konteyner sorunsuz şekilde çalışıyor.
+- **Terminated:** Konteyner bir sebeple durdu (Başarılı bitiş veya hata). `kubectl describe` ile hata kodu incelenmelidir.
 
 ---
 
 ## Neden Probe?
 
-Kubeürünetes, pod'un çalışıp çalışmadığını anlamak için basitçe konteyner process'inin aktif olup olmadigina bakaçr. Ancak process çalışıyor olsa bile uygulama kilitlenmis veya hazir olmayabilir. Probe'lar bu sorunu çöçöçözer.
+Kubernetes, pod'un çalışıp çalışmadığını anlamak için basitçe konteyner process'inin aktif olup olmadığına bakar. Ancak process çalışıyor olsa bile uygulama kilitlenmiş veya hazır olmayabilir. Probe'lar bu sorunu çözer.
 
-| Probe | Amaççç | Başarısız Olunca |
-|:---|:---|:---|
-| **livenessProbe** | Uygulama kilitlendi mi? | Konteyner yeniden baslatilir |
-| **readinessProbe** | Trafik almaya hazir mi? | Servis arkaçsindan çıkarılır |
-| **startupProbe** | Uygulama basladi mi? | Diger probe'lar bekler |
+| Probe | Amaç | Başarısız Olunca |
+| :--- | :--- | :--- |
+| **livenessProbe** | Uygulama kilitlendi mi? | Konteyner yeniden başlatılır |
+| **readinessProbe** | Trafik almaya hazır mı? | Servis arkasından çıkarılır |
+| **startupProbe** | Uygulama başladı mı? | Diğer probe'lar bekler |
 
-## Probe Mekaçnizmalari
+## Probe Mekanizmaları
 
 ### 1. httpGet
-Belirlenen path ve port'a HTTP istegi gönderir. 200-399 arasi dönerse sagüçlüikli kaçbul edilir.
-- **host:** Bagüçlüanilacak host ismi (Varsayilan pod IP'sidir).
-- **scheme:** Bagüçlüanti protokolüüü (HTTP veya HTTPS).
-- **path:** Erisim sagüçlüanacak URI (ürün: `/healthz`).
-- **httpHeaders:** Istege eklenecek ööözel header'lar (ürün: `Custom-Header: Awesome`).
+
+Belirlenen path ve port'a HTTP isteği gönderir. 200-399 arası dönerse sağlıklı kabul edilir.
+
+- **host:** Bağlanılacak host ismi (Varsayılan pod IP'sidir).
+- **scheme:** Bağlantı protokolü (HTTP veya HTTPS).
+- **path:** Erişim sağlanacak URI (örnek: `/healthz`).
+- **httpHeaders:** İsteğe eklenecek özel header'lar (örnek: `Custom-Header: Awesome`).
 
 ### 2. exec
-Konteyner içinde komut çalıştırır. Dönüş kodu `0` ise sagüçlüikli.
+
+Konteyner içinde komut çalıştırır. Dönüş kodu `0` ise sağlıklı.
 
 ### 3. tcpSocket
-Belirlenen porta TCP bagüçlüantisi açmaya çalışır. Basariliysa sagüçlüikli.
+
+Belirlenen porta TCP bağlantısı açmaya çalışır. Başarılıysa sağlıklı.
 
 ### 4. grpc (2026 eklentisi)
-gRPC Health Checking Protocol' kullanir.
 
-## Kapsamli Probe örneği
+gRPC Health Checking Protocol kullanır.
+
+## Kapsamlı Probe Örneği
 
 ```yaml
 apiVersion: apps/v1
@@ -67,7 +75,7 @@ spec:
         ports:
         - containerPort: 8080
 
-        # Startup Probe - uygulama tam olarak baslayana kaçdar diger probe'lari bekletir
+        # Startup Probe - uygulama tam olarak başlayana kadar diğer probe'ları bekletir
         startupProbe:
           httpGet:
             path: /healthz
@@ -75,14 +83,14 @@ spec:
           failureThreshold: 30   # 30 x 10s = 300 saniye max başlangıç süresi
           periodSeconds: 10
 
-        # Liveness Probe - kilitlenmis uygulamayi yeniden baslatir
+        # Liveness Probe - kilitlenmiş uygulamayı yeniden başlatır
         livenessProbe:
           httpGet:
             path: /healthz
             port: 8080
-          initialDelaySeconds: 0    # startupProbe geçtikten sonra baslar
+          initialDelaySeconds: 0    # startupProbe geçtikten sonra başlar
           periodSeconds: 15
-          failureThreshold: 3       # 3 başarısızlik = pod restart
+          failureThreshold: 3       # 3 başarısızlık = pod restart
 
         # Readiness Probe - trafik kontrolü
         readinessProbe:
@@ -91,19 +99,19 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
-          successThreshold: 1       # 1 başarıli = hazir
+          successThreshold: 1       # 1 başarılı = hazır
           failureThreshold: 3       # 3 başarısız = servisten çıkar
 ```
 
-### Exec Probe (Veritabani için)
+### Exec Probe (Veritabanı için)
 
 ```yaml
 livenessProbe:
   exec:
     command:
-    - pg_isüready
+    - pg_isready
     - -U
-    - postgöres
+    - postgres
   initialDelaySeconds: 30
   periodSeconds: 10
 ```
@@ -120,24 +128,26 @@ livenessProbe:
 
 ## Probe Parametreleri
 
-| Parametre | Varsayilan | Açıklama |
-|:---|:---:|:---|
-| `initialDelaySeconds` | 0 | Ilk kontrolden önce bekleme |
-| `periodSeconds` | 10 | Kontrol araligi |
+| Parametre | Varsayılan | Açıklama |
+| :--- | :---: | :--- |
+| `initialDelaySeconds` | 0 | İlk kontrolden önce bekleme |
+| `periodSeconds` | 10 | Kontrol aralığı |
 | `timeoutSeconds` | 1 | Tek kontrol timeout'u |
-| `successThreshold` | 1 | Sagüçlüikli sayilmak için gereken başarı sayisi |
-| `failureThreshold` | 3 | Başarısız sayilmak için gereken hata sayisi |
-| `terminationGracePeriodSeconds` | 30 | Probe hatasi sonrasi pod'un kaçpanma süresi |
+| `successThreshold` | 1 | Sağlıklı sayılmak için gereken başarı sayısı |
+| `failureThreshold` | 3 | Başarısız sayılmak için gereken hata sayısı |
+| `terminationGracePeriodSeconds` | 30 | Probe hatası sonrası pod'un kapanma süresi |
 
 ## Lifecycle Hooks
 
-Container yaşam döngüsündeki belirli anlarda tetiklenen islemler.
+Container yaşam döngüsündeki belirli anlarda tetiklenen işlemler.
 
 ### postStart
-Container olusturulduktan hemen sonra çalışır. Uyari: başlangıç süresi garanti edilmez.
+
+Container oluşturulduktan hemen sonra çalışır. Uyarı: başlangıç süresi garanti edilmez.
 
 ### preStop
-Container sonlandirilmadan (SIGTERM gönderilmeden) önce çalışır. Bagüçlüantilari kaçpatümak, load balaöncer'dan çıkmak için idealdir.
+
+Container sonlandırılmadan (SIGTERM gönderilmeden) önce çalışır. Bağlantıları kapatmak, load balancer'dan çıkmak için idealdir.
 
 ```yaml
 spec:
@@ -151,27 +161,28 @@ spec:
       preStop:
         exec:
           command: ["/bin/sh", "-c", "nginx -s quit; sleep 20"]
-    terminationGracePeriodSeconds: 60   # SIGTERM ? SIGKILL arasindaki süre
+    terminationGracePeriodSeconds: 60   # SIGTERM - SIGKILL arasındaki süre
 ```
 
 ## Termination Grace Period
 
-Kubeürünetes bir pod'u silerken:
-1. `SIGTERM` sinyali gönderilir (düzgün kaçpanma için)
-2. `terminationGracePeriodSeconds` (varsayilan: **30 saniye**) beklenir
-3. Süre dolunca `SIGKILL` ile zorla sonlandirilir
+Kubernetes bir pod'u silerken:
+
+1. `SIGTERM` sinyali gönderilir (düzgün kapanma için)
+2. `terminationGracePeriodSeconds` (varsayılan: **30 saniye**) beklenir
+3. Süre dolunca `SIGKILL` ile zorla sonlandırılır
 
 ```yaml
 spec:
-  terminationGracePeriodSeconds: 120    # Büyük DB bagüçlüantilari için artirilabilir
+  terminationGracePeriodSeconds: 120    # Büyük DB bağlantıları için artırılabilir
 ```
 
 > [!IMPORTANT]
-> Uzun çalışan batch isleri için `terminationGracePeriodSeconds`'i artirin. Aksi hâlde `kubectl drain` sirasinda isler yarida kesilir.
+> Uzun çalışan batch işleri için `terminationGracePeriodSeconds`'i artırın. Aksi hâlde `kubectl drain` sırasında işler yarıda kesilir.
 
 ## Pod Disruption Budget (PDB)
 
-Node bakimi (drain), upgrade veya auto-scale sirasinda uygulamanin kaç pod'unun ayakta kaçlmasi gerektigini belirler.
+Node bakımı (drain), upgrade veya auto-scale sırasında uygulamanın kaç pod'unun ayakta kalması gerektiğini belirler.
 
 ```yaml
 apiVersion: policy/v1
@@ -181,7 +192,7 @@ metadata:
   namespace: production
 spec:
   minAvailable: 2        # En az 2 pod her zaman ayakta
-  # maxUnavailable: 1    # Alteürünatif: En fazla 1 pod kaçpali olabilir
+  # maxUnavailable: 1    # Alternatif: En fazla 1 pod kapalı olabilir
   selector:
     matchLabels:
       app: web-server
@@ -191,10 +202,10 @@ spec:
 # PDB durumu
 kubectl get pdb -n production
 
-# Drain sirasinda PDB engeli
+# Drain sırasında PDB engeli
 kubectl drain worker-01 --ignore-daemonsets
 # "Cannot evict pod as it would violate the pod's disruption budget"
 ```
 
 > [!IMPORTANT]
-> PDB yalnizca **planli (voluntary)** kesintileri korur: `kubectl drain`, node upgrade. Donanim arizasi gibi **involuntary** durumlari korumaz. HA için her zaman `replicas >= 3` ve `minAvailable >= 2` kullanin.
+> PDB yalnızca **planlı (voluntary)** kesintileri korur: `kubectl drain`, node upgrade. Donanım arızası gibi **involuntary** durumları korumaz. HA için her zaman `replicas >= 3` ve `minAvailable >= 2` kullanın.

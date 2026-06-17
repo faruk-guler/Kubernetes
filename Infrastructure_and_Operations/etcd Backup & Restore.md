@@ -3,6 +3,8 @@
 > [!CAUTION]
 > etcd, tüm cluster state'ini saklar. etcd olmadan cluster kurtarılamaz. **Düzenli yedekleme hayati önem taşır.**
 
+---
+
 ## etcd Neden Özel?
 
 etcd'de şunlar saklanır: tüm YAML tanımları, Secret'lar, ConfigMap'ler, RBAC kuralları, Deployment state'leri... Kısaca cluster'ın tamamı.

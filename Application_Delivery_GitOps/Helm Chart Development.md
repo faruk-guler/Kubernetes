@@ -1,97 +1,80 @@
-# Helm Chart Geliştirme
+# Kendi Uygulamamızı Paketleme: Helm Chart Geliştirme
 
-Hazır chart kullanmayı öğrenmek yeterli değil. Kendi uygulamanı paketlemek, ekibine dağıtmak ve OCI registry'de yayınlamak için Helm chart geliştirmeyi bilmek gerekir.
+Kubernetes üzerinde bir uygulamayı çalıştırmak için `Deployment`, `Service`, `Ingress`, `ConfigMap` ve `Secret` gibi birçok YAML dosyası hazırlarız. Ancak uygulamanızı farklı ortamlara (Geliştirme - Dev, Test - Staging, Canlı - Production) kurmak istediğinizde büyük bir sorunla karşılaşırsınız.
 
 ---
 
-## Chart Yapısı
+## Statik YAML Çoğaltma Sorunu ve Çözümü
 
-```bash
-helm create my-app
-# Oluşturulan yapı:
+* **Sorun:** Her ortam için ayrı statik YAML dosyaları oluşturursanız, parametrelerde yapacağınız tek bir güncelleme (örneğin bellek limitini artırma veya yeni bir çevre değişkeni ekleme) tüm bu dosyaları tek tek elle güncellemenizi gerektirir. Bu durum hem zaman kaybıdır hem de insan kaynaklı hatalara davetiye çıkarır.
+* **Çözüm (Helm):** Helm, Kubernetes dünyasının paket yöneticisidir (apt veya npm gibi). Helm kullanarak manifestolarımızı değişkenler barındıran şablonlara (**templates**) dönüştürürüz. Bu şablonlara gönderilecek ortam bazlı değişkenleri ise tek bir yapılandırma dosyasında (**values.yaml**) toplayarak yönetiriz. Böylece tek bir şablon setiyle yüzlerce farklı ortamı kolayca yönetebiliriz.
+
+---
+
+## 1. Helm Chart Klasör Yapısı
+
+Yeni bir Helm Chart oluşturmak için terminalde `helm create my-app` komutunu çalıştırırız. Bu komut, standartlara uygun aşağıdaki klasör hiyerarşisini otomatik olarak oluşturur:
+
+```
 my-app/
-├── Chart.yaml          ← Chart metadata
-├── values.yaml         ← Varsayılan değerler
-├── charts/             ← Bağımlı chart'lar
-├── templates/
+├── Chart.yaml          # Chart'ın adı, açıklaması ve versiyon bilgisini tutan dosya
+├── values.yaml         # Tüm şablonlarda kullanılacak varsayılan değişkenler
+├── charts/             # Bu chart'ın bağımlı olduğu diğer alt chart'lar (subcharts)
+├── templates/          # Kubernetes manifest şablonlarının bulunduğu dizin
 │   ├── deployment.yaml
 │   ├── service.yaml
 │   ├── ingress.yaml
-│   ├── configmap.yaml
-│   ├── _helpers.tpl    ← Yeniden kullanılabilir template'ler
-│   ├── hpa.yaml
-│   ├── serviceaccount.yaml
-│   ├── NOTES.txt       ← Kurulum sonrası gösterilen mesaj
-│   └── tests/
-│       └── test-connection.yaml
-└── .helmignore
+│   ├── _helpers.tpl    # Şablonlarda tekrar eden ortak kodları (helpers) barındıran dosya
+│   ├── NOTES.txt       # Kurulum tamamlandıktan sonra kullanıcıya gösterilen bilgilendirme metni
+│   └── tests/          # Chart kurulumunun başarılı olduğunu test eden podlar
+└── .helmignore         # Paketleme sırasında hariç tutulacak dosyalar listesi
 ```
 
 ---
 
-## Chart.yaml
+## 2. Chart.yaml Tasarımı
+
+`Chart.yaml`, paketimizin kimlik kartıdır. Burada uygulamanın sürümü (`appVersion`) ile paketimizin sürümü (`version`) ayrı tutulur. Bu ayrım, uygulama kodu değişmese dahi Kubernetes konfigürasyonunu güncelleyip paket sürümünü artırmamızı sağlar.
 
 ```yaml
-apiVersion: v2              # Helm 3 için v2
+apiVersion: v2
 name: my-app
-description: "Company API microservice"
-type: application           # application veya library
+description: "Şirket içi mikroservis uygulaması"
+type: application
 
-version: 1.2.3             # Chart versiyonu (SemVer)
-appVersion: "2.1.0"        # Uygulamanın versiyonu
+# SemVer standartlarında versiyonlar
+version: 1.2.3             # Helm Chart'ın kendi versiyonu
+appVersion: "2.1.0"        # Pod içinde çalışacak uygulamanın versiyonu
 
 maintainers:
-- name: Platform Team
+- name: Platform Ekibi
   email: platform@company.com
 
 dependencies:
 - name: postgresql
   version: "14.x.x"
   repository: https://charts.bitnami.com/bitnami
-  condition: postgresql.enabled    # values.yaml'da kontrol edilir
-- name: redis
-  version: "18.x.x"
-  repository: https://charts.bitnami.com/bitnami
-  condition: redis.enabled
+  condition: postgresql.enabled
 ```
 
 ---
 
-## values.yaml Tasarımı
+## 3. values.yaml ile Değişken Yönetimi
+
+`values.yaml` dosyası, şablonlara enjekte edilecek tüm varsayılan değerleri barındırır. Geliştiriciler kurulum yaparken sadece bu değerleri ezerek (override) kurulumu özelleştirir.
 
 ```yaml
-# Tüm varsayılanlar burada
-replicaCount: 1
+replicaCount: 2
 
 image:
   repository: ghcr.io/company/my-app
-  tag: ""              # Boşsa Chart.yaml'daki appVersion kullanılır
+  tag: ""                  # Boş bırakılırsa Chart.yaml'daki appVersion kullanılır
   pullPolicy: IfNotPresent
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
-serviceAccount:
-  create: true
-  name: ""
-  annotations: {}
 
 service:
   type: ClusterIP
   port: 80
   targetPort: 8080
-
-ingress:
-  enabled: false
-  className: nginx
-  annotations: {}
-  hosts:
-  - host: my-app.example.com
-    paths:
-    - path: /
-      pathType: Prefix
-  tls: []
 
 resources:
   requests:
@@ -101,73 +84,17 @@ resources:
     cpu: 500m
     memory: 256Mi
 
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 70
-
-env: {}
-#  DATABASE_URL: postgresql://...
-#  REDIS_HOST: redis:6379
-
-postgresql:
-  enabled: false          # Bağımlı chart'ı aktif et
-
-redis:
-  enabled: false
+env:
+  DATABASE_URL: "postgresql://user:pass@db:5421/db"
 ```
 
 ---
 
-## _helpers.tpl — Yeniden Kullanılabilir Template'ler
+## 4. Şablon Yapısı (Templates) ve Go Template Dili
 
-```
-{{/*
-Uygulama adını üret
-*/}}
-{{- define "my-app.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
-{{- end }}
+Helm, şablonları render etmek için Go programlama dilinin template motorunu kullanır. `{{ .Values.degisken }}` ifadesiyle `values.yaml` içindeki verilere erişiriz.
 
-{{/*
-Tam release adı: release-name + chart-name
-*/}}
-{{- define "my-app.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-{{- end }}
-
-{{/*
-Ortak label'lar
-*/}}
-{{- define "my-app.labels" -}}
-helm.sh/chart: {{ include "my-app.chart" . }}
-{{ include "my-app.selectorLabels" . }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-
-{{/*
-Selector label'lar
-*/}}
-{{- define "my-app.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "my-app.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-```
-
----
-
-## deployment.yaml — Template Örneği
+### deployment.yaml Şablon Örneği
 
 ```yaml
 apiVersion: apps/v1
@@ -177,9 +104,7 @@ metadata:
   labels:
     {{- include "my-app.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "my-app.selectorLabels" . | nindent 6 }}
@@ -188,10 +113,6 @@ spec:
       labels:
         {{- include "my-app.selectorLabels" . | nindent 8 }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -209,124 +130,68 @@ spec:
           {{- toYaml .Values.resources | nindent 12 }}
 ```
 
----
-
-## Helm Test
-
-```yaml
-# templates/tests/test-connection.yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: {{ include "my-app.fullname" . }}-test
-  labels:
-    {{- include "my-app.labels" . | nindent 4 }}
-  annotations:
-    "helm.sh/hook": test
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
-spec:
-  restartPolicy: Never
-  containers:
-  - name: test
-    image: curlimages/curl:1.9.0
-    command: ['curl', '-f', 'http://{{ include "my-app.fullname" . }}:{{ .Values.service.port }}/healthz']
-```
-
-```bash
-# Test çalıştır
-helm test my-release -n production
-# Pod/my-app-test PASSED
-```
+> [!NOTE]
+> **nindent 4** ifadesi, oluşturulan kodun başına 4 karakterlik girinti (indentation) ekler. Kubernetes YAML formatında girintiler hayati önem taşıdığı için bu fonksiyonlar şablon yazımında sıklıkla kullanılır.
 
 ---
 
-## Helm Unittest
+## 5. _helpers.tpl — Ortak Kod Blokları
 
-```bash
-# Plugin kurulumu
-helm plugin install https://github.com/helm-unittest/helm-unittest
+Chart içinde tekrar eden ortak etiketler (labels) veya isim türetme kuralları `_helpers.tpl` içinde tanımlanır ve şablonlarda `include` fonksiyonu ile çağrılır:
 
-# Test dosyası
-mkdir -p my-app/tests
-cat > my-app/tests/deployment_test.yaml << 'EOF'
-suite: deployment tests
-templates:
-- templates/deployment.yaml
-tests:
-- it: replicas doğru ayarlanmış
-  set:
-    replicaCount: 3
-  asserts:
-  - equal:
-      path: spec.replicas
-      value: 3
-- it: HPA varsa replicas yok
-  set:
-    autoscaling.enabled: true
-  asserts:
-  - notExists:
-      path: spec.replicas
-- it: image tag doğru
-  set:
-    image.repository: ghcr.io/company/app
-    image.tag: v2.0.0
-  asserts:
-  - equal:
-      path: spec.template.spec.containers[0].image
-      value: ghcr.io/company/app:v2.0.0
-EOF
+```
+{{/*
+Ortak etiketler (Labels)
+*/}}
+{{- define "my-app.labels" -}}
+helm.sh/chart: {{ include "my-app.chart" . }}
+{{ include "my-app.selectorLabels" . }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
 
-helm unittest my-app/
+{{/*
+Seçici etiketler (Selector Labels)
+*/}}
+{{- define "my-app.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "my-app.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
 ```
 
 ---
 
-## OCI Registry'ye Yayınlama
+## 6. Paketleme ve OCI Registry'de Yayınlama
+
+Helm 3.8+ sürümleriyle birlikte artık chart'larımızı paketleyip doğrudan Docker imajları gibi **OCI (Open Container Initiative)** uyumlu registry'lerde (GitHub Packages, Harbor, Docker Hub) saklayabiliriz.
 
 ```bash
-# Helm 3.8+ ile OCI desteği
-export HELM_EXPERIMENTAL_OCI=1
-
-# Chart'ı paketle
+# 1. Chart klasörünü paketleme (.tgz uzantılı arşiv üretir)
 helm package my-app/ --version 1.2.3
-# my-app-1.2.3.tgz oluştu
 
-# GitHub Container Registry'ye push
-helm registry login ghcr.io \
-  --username $GITHUB_USER \
-  --password $GITHUB_TOKEN
+# 2. Registry'de kimlik doğrulama
+helm registry login ghcr.io --username $GITHUB_USER --password $GITHUB_TOKEN
 
+# 3. Paketi OCI formatında push etme
 helm push my-app-1.2.3.tgz oci://ghcr.io/company/charts
 
-# Başka yerde kullan
-helm install my-release \
-  oci://ghcr.io/company/charts/my-app \
-  --version 1.2.3 \
-  -n production
+# 4. Başka bir sunucudan OCI paketini çekerek kurma
+helm install my-release oci://ghcr.io/company/charts/my-app --version 1.2.3 -n production
 ```
 
 ---
 
-## Chart Lint ve Doğrulama
+## 7. Doğrulama ve Test Komutları
+
+Geliştirdiğiniz chart'ı uygulamadan önce test etmek için şu yardımcı komutları kullanın:
 
 ```bash
-# Syntax kontrolü
+# Şablonlardaki sözdizimi (syntax) hatalarını tarama
 helm lint my-app/
 
-# Template render et (deploy etmeden gör)
-helm template my-release my-app/ \
-  --values my-values.yaml \
-  -n production | kubectl diff -f -
+# Değerleri enjekte ederek nihai YAML çıktısını ekrana yazdırma (Dry-Run)
+helm template my-release my-app/ --values my-values.yaml
 
-# Dry-run
-helm install my-release my-app/ \
-  --dry-run \
-  --debug \
-  -n production
-
-# chart-testing (CI için)
-docker run --rm -it \
-  -v $(pwd):/workdir \
-  quay.io/helmpack/chart-testing:1.27.0 \
-  ct lint --all --chart-dirs .
+# Değişiklikleri kurmadan önce cluster'daki mevcut haliye karşılaştırma (Diff)
+helm diff upgrade my-release my-app/ --values my-values.yaml
 ```

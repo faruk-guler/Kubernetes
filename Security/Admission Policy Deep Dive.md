@@ -2,7 +2,7 @@
 
 Kubernetes admission controller'lar (kabul denetleyicileri), API sunucusuna gelen isteklerin kimlik doğrulama (authentication) ve yetkilendirme (authorization) adımlarını geçtikten sonra, ancak nesne etki alanına (etcd) kaydedilmeden önce araya giren mekanizmalardır.
 
-Geleneksel olarak, özel doğrulama kuralları uygulamak isteyen ekiplerin Go, Python veya Node.js ile Admission Webhook'ları yazması, bunları cluster içinde devreye alması, TLS sertifikalarını yönetmesi ve ağ gecikmelerini/güvenilirlik risklerini üstlenmesi gerekiyordu. 
+Geleneksel olarak, özel doğrulama kuralları uygulamak isteyen ekiplerin Go, Python veya Node.js ile Admission Webhook'ları yazması, bunları cluster içinde devreye alması, TLS sertifikalarını yönetmesi ve ağ gecikmelerini/güvenilirlik risklerini üstlenmesi gerekiyordu.
 
 Kubernetes 1.30 ile birlikte GA (General Availability) aşamasına ulaşan **ValidatingAdmissionPolicy** (Doğrulama Kabul Politikası), herhangi bir webhook sunucusuna ihtiyaç duymadan, doğrudan API sunucusu içinde **CEL (Common Expression Language)** ifadeleri kullanarak deklaratif kurallar tanımlamanızı sağlar. Bu mekanizma, dışarıya ağ çağrısı yapmadığı için son derece hızlı, güvenli ve düşük maliyetlidir.
 

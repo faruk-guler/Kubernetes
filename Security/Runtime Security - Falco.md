@@ -11,6 +11,7 @@
 | **Runtime** | Çalışırken | **Falco**, Tetragon, **NeuVector** |
 
 ## Alternatif: NeuVector (Full-Lifecycle Security)
+
 NeuVector, çalışan pod'lar arasındaki ağ trafiğini (L7) görselleştiren ve "Zero Trust" modelini otomatik uygulayan bir platformdur.
 ```bash
 # NeuVector kurulumu (Helm)

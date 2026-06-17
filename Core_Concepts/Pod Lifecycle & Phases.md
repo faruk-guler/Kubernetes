@@ -79,6 +79,7 @@ kubectl get pod nginx-pod -o jsonpath='{.status.conditions[*].type}'
 Her container kendi durumunu `status.containerStatuses` altında raporlar:
 
 ### Waiting
+
 Container henüz çalışmıyor. `reason` alanı nedeni belirtir:
 
 | Reason | Anlamı |
@@ -89,9 +90,11 @@ Container henüz çalışmıyor. `reason` alanı nedeni belirtir:
 | `ErrImageNeverPull` | `imagePullPolicy: Never` ama image yok |
 
 ### Running
+
 Container başarıyla başladı ve çalışıyor.
 
 ### Terminated
+
 Container tamamlandı veya başarısız oldu.
 
 ```bash

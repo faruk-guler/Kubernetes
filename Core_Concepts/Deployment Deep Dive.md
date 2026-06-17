@@ -1,65 +1,59 @@
 # Deployment Deep Dive
 
-Deployment, Kubernetes'in en temel ve en çok kullanılan iş yükü objesidir. Pod'ları doğrudan değil, bir ReplicaSet üzerinden yönetir. Bu mimari, sıfır kesintili güncelleme ve anlık rollback'i mümkün kılar.
+Kubernetes'te tek bir pod çalıştırdığımızda (çıplak pod), donanımsal bir arıza veya node çökmesi durumunda o podun kaybolduğunu ve kendi kendine ayağa kalkamadığını öğrenmiştik. Bu sorunu çözmek için pod kopyalarını (replica) yöneten ve pod sayısını sabit tutan `ReplicaSet` nesnesi mevcuttur. Ancak, production ortamlarında uygulamalarımızı neredeyse hiç doğrudan `ReplicaSet` ile deploy etmeyiz.
+
+Uygulamalarımızı güncellememiz gerektiğinde (örneğin yeni bir imaj versiyonu çıktığında) sıfır kesinti (zero-downtime) sağlamak ve bir şeyler ters gittiğinde anında eski sürüme geri dönebilmek (rollback) isteriz. İşte bu yaşam döngüsü yönetimini gerçekleştiren en temel ve en popüler Kubernetes objesi **Deployment**'tır.
 
 ---
 
-## Deployment → ReplicaSet → Pod İlişkisi
+## Deployment $\rightarrow$ ReplicaSet $\rightarrow$ Pod İlişkisi
+
+Deployment, pod'ları doğrudan kendisi oluşturup yönetmez. Bunun yerine bir alt seviye nesne olan **ReplicaSet**'leri yönetir. Mimari zincir şu şekilde çalışır:
 
 ```
-Deployment (desired state tanımı)
+Deployment (İstenen durum şablonu)
     │
-    ├── ReplicaSet v1 (eski — 0 replica)
-    └── ReplicaSet v2 (yeni — 3 replica) ← Aktif
-              ├── Pod-1
-              ├── Pod-2
-              └── Pod-3
+    ├── ReplicaSet v1 (Eski sürüm — 0 replikaya düşürüldü)
+    └── ReplicaSet v2 (Yeni sürüm — 3 replika) ← Aktif
+              ├── Pod-1 (v2)
+              ├── Pod-2 (v2)
+              └── Pod-3 (v2)
 ```
 
-Her güncelleme yeni bir ReplicaSet oluşturur. Eski ReplicaSet silinmez — rollback için saklanır (`revisionHistoryLimit`).
+Siz Deployment üzerinde bir güncelleme yaptığınızda (örneğin imaj sürümünü değiştirdiğinizde), Deployment yeni sürüm için sıfırdan yeni bir ReplicaSet (v2) oluşturur. Eski ReplicaSet (v1) tamamen silinmez; kopyaları sıfıra indirilir ama geçmişte (revision history) saklanır. Bu sayede geri dönmek istediğinizde anında eski ReplicaSet scale edilerek rollback tamamlanır.
 
 ---
 
-## Tam Deployment Anatomisi
+## Tam Bir Deployment Anatomisi
+
+Aşağıda, tüm production-ready parametreleri barındıran örnek bir Deployment manifestosu yer almaktadır:
 
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: api-server
   namespace: production
   labels:
-    app: api
+    app: api-server
     version: v2.1.0
 spec:
-  # Kaç pod çalışsın?
   replicas: 3
-
-  # Kaç eski ReplicaSet saklanır?
-  revisionHistoryLimit: 5        # Varsayılan: 10
-
-  # Pod seçici — ReplicaSet hangi pod'lardan sorumlu?
+  revisionHistoryLimit: 5
   selector:
     matchLabels:
-      app: api
-
-  # Güncelleme stratejisi
+      app: api-server
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1          # Güncelleme sırasında en fazla 1 pod kapalı
-      maxSurge: 1                # Geçici olarak 1 fazla pod açılabilir
-
-  # Bir pod'un en az kaç saniye "Ready" kalması gerekir?
-  minReadySeconds: 10
-
-  # Güncelleme bu sürede bitmezse başarısız say
-  progressDeadlineSeconds: 600   # 10 dakika
-
+      maxUnavailable: 1
+      maxSurge: 1
+  minReadySeconds: 15
+  progressDeadlineSeconds: 600
   template:
     metadata:
       labels:
-        app: api                  # selector ile eşleşmeli
+        app: api-server
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
@@ -69,7 +63,6 @@ spec:
         image: ghcr.io/company/api:v2.1.0
         ports:
         - containerPort: 8080
-
         resources:
           requests:
             cpu: "200m"
@@ -77,7 +70,6 @@ spec:
           limits:
             cpu: "1"
             memory: "512Mi"
-
         readinessProbe:
           httpGet:
             path: /readyz
@@ -86,7 +78,6 @@ spec:
           periodSeconds: 5
           successThreshold: 1
           failureThreshold: 3
-
         livenessProbe:
           httpGet:
             path: /healthz
@@ -94,159 +85,114 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 10
           failureThreshold: 3
-
-        # Graceful shutdown
         lifecycle:
           preStop:
             exec:
               command: ["/bin/sh", "-c", "sleep 5"]
-
-      # Container kapanmadan önce bekleme süresi
       terminationGracePeriodSeconds: 30
-
-      # Pod dağılımı — aynı node'da çok pod olmasın
       topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: DoNotSchedule
         labelSelector:
           matchLabels:
-            app: api
+            app: api-server
 ```
 
 ---
 
-## Güncelleme Mekanizması (RollingUpdate)
+## Kritik Parametrelerin Açıklamaları
 
-```
-Başlangıç: [v1][v1][v1]  (3 pod, maxUnavailable=1, maxSurge=1)
+* **replicas:** Cluster'da sürekli olarak kaç adet sağlıklı pod kopyasının çalışacağını belirtir.
+* **revisionHistoryLimit:** Rollback (geri alma) işlemleri için geçmişte en fazla kaç adet eski ReplicaSet saklanacağını belirtir. Bu sınırın aşılması eski ReplicaSet'lerin silinmesine yol açar.
+* **minReadySeconds:** Bir podun "Running" olduktan sonra gerçekten "Available" (erişilebilir) kabul edilmesi için en az kaç saniye sağlıklı (ready) kalması gerektiğini belirtir. Bu parametre, başlangıçta çalışıp 5-10 saniye sonra çöken (crash loop) pod'ların tespit edilip güncellemenin otomatik olarak durdurulması için hayati önem taşır.
+* **progressDeadlineSeconds:** Güncelleme işleminin en fazla kaç saniye sürmesine izin verileceğini belirtir. Belirtilen sürede güncelleme tamamlanamazsa Deployment "Failed" durumuna çekilir.
 
-Adım 1: Yeni ReplicaSet başla
-[v1][v1][v1][v2]   (surge: 1 fazla pod — toplam 4)
+---
 
-Adım 2: v1'den 1 pod kapat
-[v1][v1][v2]       (maxUnavailable=1 sınırına uygun)
+## Güncelleme Stratejileri
 
-Adım 3: Yeni v2 pod ready olunca
-[v1][v1][v2][v2]   → [v1][v2][v2] → [v2][v2][v2]
+### 1. RollingUpdate (Kademeli Güncelleme)
 
-Son: Eski ReplicaSet 0 replica'ya iner (silinmez)
-```
+Sıfır kesinti (zero-downtime) ile yeni versiyona geçmek için pod'ların kademeli olarak güncellenmesi yöntemidir. Burada iki kritik parametre güncellenme hızını ve güvenliğini belirler:
 
-### minReadySeconds Kritik Rolü
+* **maxSurge:** Güncelleme sırasında hedeflenen replika sayısının en fazla kaç adet üzerine çıkılabileceğini belirtir. Yüzde (%) veya sayısal değer alabilir. `maxSurge: 1` ise, 3 replikalı sistemde güncelleme anında geçici olarak 4 pod çalışabilir.
+* **maxUnavailable:** Güncelleme sırasında aynı anda en fazla kaç pod'un devre dışı (offline) kalabileceğini belirtir. `maxUnavailable: 1` ise, 3 replikalı sistemde en az 2 pod'un her zaman aktif çalışması garanti edilir.
+
+#### Kademeli Güncelleme Akışı (maxSurge=1, maxUnavailable=1)
+
+1.  **Başlangıç:** 3 adet eski pod çalışmaktadır `[v1][v1][v1]`.
+2.  **Adım 1 (Surge):** Yeni sürümden 1 adet pod oluşturulur `[v1][v1][v1] + [v2]`. Toplam pod sayısı 4 olur (maxSurge limitine ulaşılır).
+3.  **Adım 2 (Scale Down):** Eski sürümden 1 pod silinir `[v1][v1][v2]`. Toplam pod sayısı 3'e düşer.
+4.  **Adım 3 (İlerleme):** Yeni pod `readinessProbe`'u geçip hazır hale geldikten sonra eski pod'lar sırayla kapatılmaya ve yenileri açılmaya devam eder: `[v1][v2][v2]` $\rightarrow$ `[v2][v2][v2]`.
+
+### 2. Recreate (Yeniden Oluşturma)
+
+Tüm eski pod'ların aynı anda silinip, ardından yeni sürüm pod'ların başlatılması yöntemidir.
 
 ```yaml
-minReadySeconds: 30
-# Pod "Running" değil, 30 saniye boyunca "Ready" kaldıktan sonra
-# "Available" sayılır. Bu süre dolmadan bir sonraki pod güncellenmez.
-# Erken "healthy" görünüp crash olan pod'ları yakalamak için kritik.
-```
-
----
-
-## Rollout Yönetimi
-
-```bash
-# Güncelleme başlat
-kubectl set image deployment/api api=ghcr.io/company/api:v2.2.0 -n production
-
-# veya patch ile
-kubectl patch deployment api -n production \
-  --patch '{"spec":{"template":{"spec":{"containers":[{"name":"api","image":"ghcr.io/company/api:v2.2.0"}]}}}}'
-
-# Rollout durumunu izle
-kubectl rollout status deployment/api -n production
-# Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
-
-# Geçmişi gör
-kubectl rollout history deployment/api -n production
-# REVISION  CHANGE-CAUSE
-# 1         <none>
-# 2         v2.1.0 → v2.2.0
-# 3         hotfix: fix memory leak
-
-# Belirli revision detayı
-kubectl rollout history deployment/api -n production --revision=2
-
-# Bir önceki versiyona rollback
-kubectl rollout undo deployment/api -n production
-
-# Belirli revision'a rollback
-kubectl rollout undo deployment/api -n production --to-revision=1
-
-# Güncellemeyi duraklat (canary manuel kontrol)
-kubectl rollout pause deployment/api -n production
-
-# Devam ettir
-kubectl rollout resume deployment/api -n production
-
-# Restart (image değişmedi ama pod'ları yenile)
-kubectl rollout restart deployment/api -n production
-```
-
----
-
-## Değişiklik Nedeni Kayıt
-
-```bash
-# kubectl annotate ile change-cause ekle (rollout history'de görünür)
-kubectl annotate deployment/api \
-  kubernetes.io/change-cause="v2.2.0: Add payment retry logic" \
-  -n production
-
-# Ya da doğrudan --record flag (deprecated, annotation önerilen)
-kubectl set image deployment/api api=v2.2.0 -n production
-kubectl annotate deployment/api kubernetes.io/change-cause="v2.2.0 release" -n production
-```
-
----
-
-## Recreate Stratejisi
-
-```yaml
-# Tüm eski pod'ları öldür, sonra yenilerini başlat
-# Kesinti yaşanır! Stateful uygulamalar veya tek port bağlayıcılar için
 strategy:
   type: Recreate
-# Akış: [v1][v1][v1] → [] → [v2][v2][v2]
 ```
+
+* **Akış:** `[v1][v1][v1]` $\rightarrow$ `[]` $\rightarrow$ `[v2][v2][v2]`
+* **Risk:** Eski pod'lar silinip yenileri açılana kadar geçen sürede **servis kesintisi (downtime)** yaşanır.
+* **Kullanım Amacı:** Aynı anda iki farklı versiyonun (v1 ve v2) aynı veritabanına erişmesinin çakışma yaratacağı durumlarda veya tekil bir lisans/bağlantı kısıtı olan servislerde tercih edilir.
 
 ---
 
-## Deployment Sorun Giderme
+## Rollout Yönetim Komutları
+
+Deployment üzerinde yapılan güncellemeleri yönetmek için aşağıdaki `kubectl` komutları kullanılır:
 
 ```bash
-# Deployment neden ilerlemedi?
-kubectl describe deployment api -n production
-# "Progressing" condition'ına bak:
-# Reason: ProgressDeadlineExceeded → progressDeadlineSeconds aşıldı
+# 1. Container imajını güncelleyerek yeni sürümü başlatma
+kubectl set image deployment/api-server api=ghcr.io/company/api:v2.2.0 -n production
 
-# ReplicaSet durumu
-kubectl get rs -l app=api -n production
-# NAME          DESIRED   CURRENT   READY   AGE
-# api-v2abc     3         3         2       5m   ← 2/3 ready, biri sorunlu
-# api-v1xyz     0         0         0       1h   ← eski, rollback için saklı
+# 2. Güncelleme sürecini canlı olarak izleme
+kubectl rollout status deployment/api-server -n production
 
-# Hangi pod'lar sorunu yaşıyor?
-kubectl get pods -l app=api -n production
-kubectl describe pod <sorunlu-pod> -n production
+# 3. Güncelleme geçmişini (revisions) görüntüleme
+kubectl rollout history deployment/api-server -n production
 
-# Rollout takılmış → zorla rollback
-kubectl rollout undo deployment/api -n production
+# 4. Rollout geçmişine güncelleme nedeni ekleme (Önerilen yöntem)
+kubectl annotate deployment/api-server kubernetes.io/change-cause="v2.2.0: Ödeme entegrasyonu eklendi" -n production
+
+# 5. Bir önceki sürüme anında geri dönme (Rollback)
+kubectl rollout undo deployment/api-server -n production
+
+# 6. Belirli bir geçmiş revizyona geri dönme (Örn: Revizyon 2)
+kubectl rollout undo deployment/api-server --to-revision=2 -n production
+
+# 7. Güncellemeyi geçici duraklatma (Canary testleri için kullanışlıdır)
+kubectl rollout pause deployment/api-server -n production
+
+# 8. Duraklatılan güncellemeyi devam ettirme
+kubectl rollout resume deployment/api-server -n production
+
+# 9. Pod'ları imaj değiştirmeden sırayla yeniden başlatma (ConfigMap değişikliklerinde kullanılır)
+kubectl rollout restart deployment/api-server -n production
 ```
 
 ---
 
-## Prometheus ile Deployment Monitörleme
+## Sorun Giderme (Troubleshooting)
+
+Eğer yeni bir güncelleme başlattıysanız ve rollout tamamlanmıyorsa:
+
+1.  **Deployment Durumu:** `kubectl describe deployment api-server -n production` komutunu çalıştırın ve `Conditions` altındaki `Progressing` durumunu inceleyin. `Reason: ProgressDeadlineExceeded` yazıyorsa belirlenen sürede pod'lar hazır olamamıştır.
+2.  **ReplicaSet İnceleme:** `kubectl get rs -n production` ile yeni sürüm ReplicaSet'in (DESIRED, CURRENT, READY kolonlarını) durumunu görün. DESIRED 3 iken READY 0 ise pod'lar hata alıyordur.
+3.  **Pod Logları:** `kubectl get pods -n production` ile hata veren pod adını bulup `kubectl logs <pod-adi> --previous` ile container çökmeden önceki log kayıtlarını inceleyin.
+
+---
+
+## Prometheus ile Deployment Metrikleri
 
 ```promql
-# Deployment'ın kaç replica'sı istendi vs hazır?
-kube_deployment_spec_replicas{deployment="api"} -
-kube_deployment_status_replicas_available{deployment="api"} > 0
+# İstenen replika sayısı ile hazır olan replika sayısı eşit mi kontrolü
+kube_deployment_spec_replicas{deployment="api-server"} - 
+kube_deployment_status_replicas_available{deployment="api-server"} > 0
 
-# Rollout süresi (son güncelleme ne kadar sürdü?)
-kube_deployment_status_condition{condition="Progressing", status="True"}
-
-# Deployment başarısız mı?
+# Deployment'ın genel erişilebilirlik durumu
 kube_deployment_status_condition{condition="Available", status="False"}
 ```

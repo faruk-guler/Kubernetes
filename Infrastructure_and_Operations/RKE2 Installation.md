@@ -190,6 +190,7 @@ sudo systemctl restart rke2-agent   # Agent'larda
 RKE2 cluster'ını yeni bir sürüme yükseltmek için güvenli operasyon akışı:
 
 ### 1. Ön Hazırlık (Tavsiye)
+
 - **Snapshot/Backup:** VM düzeyinde snapshot alın.
 - **Drenaj:** Node'u servis dışı bırakın: `kubectl drain worker-node-1 --ignore-daemonsets --delete-emptydir-data`
 
@@ -200,6 +201,7 @@ curl -sfL https://get.rke2.io | INSTALL_RKE2_CHANNEL=latest sh -
 ```
 
 ### 3. Servisleri Yeniden Başlat (Sırayla)
+
 Server node'larda (her seferinde biri):
 ```bash
 sudo systemctl restart rke2-server

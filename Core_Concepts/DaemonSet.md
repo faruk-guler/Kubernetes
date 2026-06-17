@@ -1,28 +1,29 @@
 # DaemonSet
 
-DaemonSet, her node'da (veya seçilmiş node'larda) tam olarak bir pod çalıştırmayı garanti eder. Yeni node eklendiğinde pod otomatik başlatılır, node kaldırıldığında pod temizlenir.
+Kubernetes'te `Deployment` veya `StatefulSet` kullandığımızda cluster'a "Bu uygulamadan 3 adet kopya çalıştır" deriz. Kubernetes'in akıllı zamanlayıcısı (Scheduler) bu pod'ları en uygun gördüğü node'lar üzerine dağıtır. Hatta bazen iki pod aynı node'da çalışırken, bir diğer node tamamen boş kalabilir. Ancak bazı durumlar vardır ki pod'ların cluster geneline dağılması yetmez; **her bir worker node üzerinde tam olarak bir adet pod'un çalışıyor olması gerekir.**
+
+İşte bu ihtiyacı karşılamak için Kubernetes bizlere **DaemonSet** objesini sunmaktadır.
 
 ---
 
-## DaemonSet Ne Zaman Kullanılır?
+## Neden DaemonSet?
 
-```
-Deployment:  "Cluster'da toplam 3 kopya çalışsın" → Scheduler karar verir
-DaemonSet:   "Her node'da 1 kopya çalışsın" → Node başına 1 pod garantisi
+Bunu daha iyi anlamak için gerçek bir sistem yönetimi senaryosunu ele alalım:
 
-Kullanım alanları:
-  ✅ Log toplayıcılar (Fluentbit, Promtail, Filebeat)
-  ✅ Metrik toplayıcılar (node-exporter)
-  ✅ CNI plugin'ler (Cilium, Calico agent)
-  ✅ Storage plugin'ler (Longhorn manager, Rook)
-  ✅ Güvenlik agent'ları (Falco, Wazuh)
-  ✅ Network proxy'ler (kube-proxy)
-  ✅ GPU sürücüleri (NVIDIA device plugin)
-```
+* **Senaryo:** Cluster'ımızda 5 adet worker node bulunuyor ve biz bu node'ların donanım sıcaklıklarını, işlemci ve bellek metriklerini toplamak istiyoruz (node-exporter). Veya her node üzerindeki container loglarını (fluentbit/promtail) toplayıp merkezi bir log sunucusuna göndermemiz gerekiyor.
+* **Deployment Denemesi:** Eğer bu iş için 5 replikalı bir `Deployment` oluşturursak, Scheduler bu pod'larır 3 farklı node üzerine yığabilir ve diğer 2 node metrik toplanamadığı için kör kalır.
+* **Ölçekleme Sıkıntısı:** Ayrıca yarın bir gün cluster'ımıza 2 yeni node daha eklediğimizde Deployment'ı elle 7 replikaya scale etmemiz gerekir. Node'lardan biri silindiğinde ise bu sefer replika sayısı fazla gelir.
+
+**DaemonSet Çözümü:** Bu görevi bir `DaemonSet` olarak deploy ettiğimizde Kubernetes şunları garanti eder:
+* Cluster'daki her bir sağlıklı node üzerinde otomatik olarak **bir adet** pod ayağa kaldırılır.
+* Cluster'a yeni bir node eklendiğinde, Scheduler araya girmeden yeni node üzerinde otomatik olarak DaemonSet pod'u başlatılır.
+* Bir node cluster'dan çıkarıldığında (veya silindiğinde), o node üzerinde çalışan pod da silinir ve arkasında çöp bırakmaz.
 
 ---
 
-## Temel DaemonSet
+## Temel DaemonSet Anatomisi
+
+Aşağıda, cluster genelindeki sistem loglarını toplamak amacıyla yazılmış örnek bir Fluentbit DaemonSet manifestosu bulunmaktadır:
 
 ```yaml
 apiVersion: apps/v1
@@ -36,19 +37,16 @@ spec:
   selector:
     matchLabels:
       app: log-collector
-
-  # Güncelleme stratejisi
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1     # Aynı anda en fazla 1 node'da güncelle
-
+      maxUnavailable: 1
   template:
     metadata:
       labels:
         app: log-collector
     spec:
-      # DaemonSet için tolerations — sistem node'larına da girebilsin
+      # DaemonSet'in master/control-plane node'larında da çalışabilmesi için tolerations tanımları
       tolerations:
       - key: node-role.kubernetes.io/control-plane
         operator: Exists
@@ -63,9 +61,7 @@ spec:
         operator: Exists
         effect: NoExecute
 
-      # Sistem namespace'lerindeki log'lara erişim için
       serviceAccountName: log-collector-sa
-
       containers:
       - name: fluentbit
         image: fluent/fluent-bit:2.2.2
@@ -80,7 +76,7 @@ spec:
         - name: NODE_NAME
           valueFrom:
             fieldRef:
-              fieldPath: spec.nodeName    # Hangi node'da olduğunu bilsin
+              fieldPath: spec.nodeName
         volumeMounts:
         - name: varlog
           mountPath: /var/log
@@ -90,7 +86,6 @@ spec:
           readOnly: true
         - name: config
           mountPath: /fluent-bit/etc/
-
       volumes:
       - name: varlog
         hostPath:
@@ -101,26 +96,36 @@ spec:
       - name: config
         configMap:
           name: fluentbit-config
-
-      # DaemonSet pod'larını sistem pod'larıyla aynı önceliğe al
       priorityClassName: system-node-critical
 ```
 
+### Kritik Alanların Açıklamaları
+
+* **Tolerations:** Master veya Control Plane gibi sistem yönetici node'ları varsayılan olarak normal pod'ların üzerinde çalışmasını engellemek için taints (engeller) barındırır. Fluentbit gibi kritik altyapı pod'larının her node'da çalışebilmesi için bu taints engellerini aşacak `tolerations` tanımlarının yapılması şarttır.
+* **hostPath:** Log toplayıcıların fiziksel olarak o node üzerindeki log dosyalarına (örneğin `/var/log`) erişebilmesi gerekir. Bu amaçla host node üzerindeki dizini container içine mount etmek için `hostPath` volume türü kullanılır.
+* **priorityClassName:** `system-node-critical` değeri, node üzerinde kaynak (RAM/CPU) sıkışıklığı yaşandığında bu pod'un diğer kullanıcı pod'ları gibi sistemden atılmasını (eviction) engeller.
+
 ---
 
-## Seçici Node Hedefleme
+## Seçici Node Hedefleme (Node Selection)
+
+Her zaman tüm node'larda değil, sadece belirli niteliklere sahip node'larda DaemonSet çalıştırmak isteyebiliriz. Örneğin; sadece GPU barındıran node'larda bir donanım izleme aracı çalıştırmak istiyorsak `nodeSelector` veya `nodeAffinity` kullanabiliriz.
 
 ```yaml
-# Yalnızca belirli node'larda çalıştır
 spec:
   template:
     spec:
-      # NodeSelector ile
+      # Sadece GPU node'larını hedefleme
       nodeSelector:
-        kubernetes.io/os: linux
         node-role: gpu-worker
+```
 
-      # veya NodeAffinity ile (daha esnek)
+Veya daha esnek kurallar için `nodeAffinity` kullanılabilir:
+
+```yaml
+spec:
+  template:
+    spec:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -128,15 +133,27 @@ spec:
             - matchExpressions:
               - key: node.kubernetes.io/instance-type
                 operator: In
-                values: ["g4dn.xlarge", "g4dn.2xlarge"]   # Sadece GPU node'lar
+                values: ["g4dn.xlarge", "g4dn.2xlarge"]
 ```
 
 ---
 
-## Gerçek Dünya: Fluentbit Log Pipeline
+## Güncelleme Stratejileri (Update Strategies)
+
+DaemonSet güncellemeleri cluster genelini etkilediği için dikkatle yönetilmelidir:
+
+* **RollingUpdate (Varsayılan):** Güncelleme sırasında eski pod'lar sırayla silinir ve yenileri kurulur. `maxUnavailable: 1` parametresi aynı anda en fazla 1 node'un log/metrik servisinin kesintiye uğramasını garanti eder.
+* **OnDelete:** DaemonSet şablonunu güncellediğinizde hiçbir şey olmaz. Ancak siz bir node üzerindeki DaemonSet pod'unu manuel olarak sildiğinizde, Kubernetes o node üzerinde yeni versiyona sahip pod'u başlatır. Bu strateji kritik production güncellemelerinde kontrolün tamamen sizde olmasını sağlar.
+
+---
+
+## Gerçek Dünya Örnekleri
+
+### 1. Fluentbit Log Pipeline Yapılandırması
+
+Fluentbit'in node'lardan logları toplayıp merkezi bir Loki log sunucusuna göndermesini sağlayan ConfigMap yapılandırması:
 
 ```yaml
-# fluentbit-config ConfigMap
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -167,12 +184,12 @@ data:
         Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
         Merge_Log           On
         K8S-Logging.Parser  On
-        K8S-Logging.Exclude On    # fluentbit.io/exclude: "true" annotation'lı pod'ları atla
+        K8S-Logging.Exclude On
 
     [FILTER]
         Name  grep
         Match kube.*
-        Exclude log .*healthcheck.*   # Healthcheck log'larını at
+        Exclude log .*healthcheck.*
 
     [OUTPUT]
         Name            loki
@@ -190,21 +207,13 @@ data:
         Format      json
         Time_Key    time
         Time_Format %Y-%m-%dT%H:%M:%S.%L
-
-    [PARSER]
-        Name        nginx
-        Format      regex
-        Regex       ^(?<remote>[^ ]*) .* \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*) "(?<referer>[^\"]*)" "(?<agent>[^\"]*)"
-        Time_Key    time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
 ```
 
----
+### 2. Node-Exporter DaemonSet (Prometheus Metrikleri)
 
-## Node-Exporter DaemonSet (Prometheus)
+Her node'un CPU, bellek ve disk kullanımını ana host seviyesinde toplamak için tasarlanmış `node-exporter` pod tanımı:
 
 ```yaml
-# node-exporter — her node'un CPU/RAM/Disk metriklerini toplar
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -216,8 +225,8 @@ spec:
       app: node-exporter
   template:
     spec:
-      hostNetwork: true       # Host network namespace — gerçek metrikler
-      hostPID: true           # Host PID namespace
+      hostNetwork: true
+      hostPID: true
       containers:
       - name: node-exporter
         image: prom/node-exporter:v1.7.0
@@ -239,77 +248,31 @@ spec:
         hostPath:
           path: /
       tolerations:
-      - operator: Exists       # Tüm taint'lere tolerans — her node'da çalış
+      - operator: Exists
 ```
 
 ---
 
-## Güncelleme Stratejileri
-
-```yaml
-# RollingUpdate (varsayılan) — önerilen
-updateStrategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxUnavailable: 1         # Aynı anda en fazla 1 pod offline
-
-# OnDelete — manuel kontrol
-updateStrategy:
-  type: OnDelete
-  # Güncelleme için pod'u elle silmen gerekir
-  # kubectl delete pod <pod-name>
-  # DaemonSet yeni versiyonla yeniden başlatır
-```
-
----
-
-## Pod'a Özgün Davranış Verme
-
-```yaml
-# Her pod kendi node adını biliyor — node bazlı config için kullanışlı
-env:
-- name: NODE_NAME
-  valueFrom:
-    fieldRef:
-      fieldPath: spec.nodeName
-
-- name: NODE_IP
-  valueFrom:
-    fieldRef:
-      fieldPath: status.hostIP
-
-- name: POD_NAME
-  valueFrom:
-    fieldRef:
-      fieldPath: metadata.name
-```
-
----
-
-## İzleme ve Yönetim
+## Yönetim ve İzleme Komutları
 
 ```bash
-# DaemonSet durumu
+# DaemonSet durumunu sorgulama
 kubectl get daemonset -n monitoring
-# NAME            DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR
-# log-collector   5         5         5       5            5           <none>
 
-# Hangi node'larda çalışıyor?
+# DaemonSet altındaki pod'ların hangi node'larda çalıştığını görme
 kubectl get pods -n monitoring -l app=log-collector -o wide
 
-# DESIRED != READY → Sorun var
-kubectl describe daemonset log-collector -n monitoring
-
-# Güncelleme durumu
+# Güncelleme sürecini takip etme
 kubectl rollout status daemonset/log-collector -n monitoring
 
-# Rollback
+# Güncellemeyi geri alma (Rollback)
 kubectl rollout undo daemonset/log-collector -n monitoring
 ```
 
+### Prometheus İzleme Alarmları
+
 ```promql
-# Prometheus: DaemonSet sağlık kontrolü
-# Tüm node'larda çalışıyor mu?
-kube_daemonset_status_desired_number_scheduled{daemonset="log-collector"} -
+# Cluster'da kaç node'da DaemonSet pod'unun eksik çalıştığını tespit etme
+kube_daemonset_status_desired_number_scheduled{daemonset="log-collector"} - 
 kube_daemonset_status_number_ready{daemonset="log-collector"} > 0
 ```
