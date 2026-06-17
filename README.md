@@ -47,8 +47,6 @@ Google bu soruyla 2000'lerin başından beri boğuşuyordu. Gmail, Search, YouTu
 
 Yunanca'da *dümenci* anlamına gelir. Gemiyi hedefine götüren, fırtınada rotayı koruyan kişi.
 
----
-
 ## Kubernetes Ne Değildir
 
 Kubernetes'i anlamanın en iyi yolu, ne *olmadığını* bilmekten geçer.
@@ -59,7 +57,6 @@ Kubernetes'i anlamanın en iyi yolu, ne *olmadığını* bilmekten geçer.
 
 **Kubernetes sihir değildir.** Her şey Linux kernel'inin primitive'leri üzerine inşa edilmiştir: `cgroups`, `namespaces`, `iptables` veya `eBPF`. Kubernetes bu mekanizmaları soyutlar, ama altında hep aynı temel var.
 
----
 
 ## Temel Felsefe: Bildirimsel Yönetim
 
@@ -75,7 +72,6 @@ Kubernetes bunu bir YAML dosyasına yazmanızı bekler ve sonra **sonsuza kadar 
 
 Bu yaklaşıma **declarative (bildirimsel) model** denir ve bir cluster'ın nasıl yönetileceği konusundaki en güçlü paradigma değişikliğidir. YAML dosyalarınız artık sadece yapılandırma değil, sistemin *gerçeğinin* tek kaynağıdır — **Single Source of Truth**.
 
----
 
 ## Control Loop: Sonsuz Uzlaşma Döngüsü
 
@@ -93,7 +89,6 @@ Her controller şunu sürekli yapar:
 
 Bu döngü saniyede onlarca kez çalışır. Cluster hiçbir zaman "tamamlandı" durumuna ulaşmaz; her zaman istenen duruma doğru *yaklaşmaya* çalışır. Bu felsefi bir nokta değil, pratik bir güçtür: sisteminiz kendi kendini iyileştirir (*self-healing*).
 
----
 
 ## Mimari: Kimin Kim Olduğu
 
@@ -107,7 +102,6 @@ Aralarındaki iletişim tek yönlüdür: Worker node'lar hiçbir zaman birbirler
 
 `etcd` ise cluster'ın hafızasıdır — dağıtık, tutarlı bir anahtar-değer veritabanı. Cluster'da olan her şey burada kayıtlıdır. etcd giderse Kubernetes kör olur; ne yapacağını bilemez.
 
----
 
 ## Neden 2026'da Hâlâ Öğrenilmeli?
 
@@ -119,7 +113,6 @@ Dahası, Kubernetes artık sadece web uygulamalarını değil; **GPU iş yükler
 
 Kubernetes öğrenmek, bir ürün öğrenmek değil; dağıtık sistemlerin ortak dilini öğrenmektir.
 
----
 
 ## Bu Kitabı Nasıl Okumalısınız?
 
@@ -131,7 +124,6 @@ Her bölümün sonunda YAML örnekleri var. Bunlar dekorasyon değil — kopyala
 
 Ve bir şey bozulduğunda paniklemeden önce şunu sorun: *"Kubernetes şu an ne yapmaya çalışıyor?"* Cevabı genellikle `kubectl describe` ve `kubectl logs` içindedir.
 
----
 
 > *"The ships hung in the sky in much the same way that bricks don't."*
 >
