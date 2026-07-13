@@ -124,8 +124,6 @@ Ve bir şey bozulduğunda paniklemeden önce şunu sorun: *"Kubernetes şu an ne
  — Douglas Adams
 ---
 
----
-
 ## 🗺️ Öğrenim Yol Haritası (Roadmap)
 
 Bu devasa bilgi yığınında kaybolmamak için dokümantasyonu aşağıdaki "Zero to Hero" sırasıyla okumanız tavsiye edilir:
@@ -164,6 +162,5 @@ https://k8s-tr.github.io/k8s-docs/
 https://k8s.1w2.net/
 ```
 
----
 ---
 > *Not: İlgili bölümlerin uygulamalı YAML dosyalarını Manifests/ klasöründeki eşleşen dizinlerde bulabilirsiniz.*
