@@ -163,5 +163,4 @@ https://k8s.1w2.net/
 ```
 
 ---
----
 > *Not: İlgili bölümlerin uygulamalı YAML dosyalarını Manifests/ klasöründeki eşleşen dizinlerde bulabilirsiniz.*
