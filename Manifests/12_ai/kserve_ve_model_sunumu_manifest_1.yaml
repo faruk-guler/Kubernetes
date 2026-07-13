@@ -1,0 +1,16 @@
+# hf-sentiment isimli InferenceService nesnesi tanımlama dosyası
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: hf-sentiment
+  namespace: ml-serving
+spec:
+  predictor:
+    model:
+      modelFormat:
+        name: huggingface
+      storageUri: hf://cardiffiff/twitter-roberta-base-sentiment-latest
+      resources:
+        limits:
+          cpu: "2"
+          memory: 4Gi

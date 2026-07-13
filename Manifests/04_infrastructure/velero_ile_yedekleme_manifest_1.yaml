@@ -1,0 +1,12 @@
+# backup-yedek-hedef isimli BackupStorageLocation nesnesi tanımlama dosyası
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: backup-yedek-hedef
+  namespace: velero
+spec:
+  provider: aws
+  objectStore:
+    bucket: velero-backups-secondary
+  config:
+    region: eu-west-2

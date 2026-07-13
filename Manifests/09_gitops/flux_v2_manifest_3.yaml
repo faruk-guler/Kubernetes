@@ -1,0 +1,14 @@
+# deploy-production-apps isimli GitRepository nesnesi tanımlama dosyası
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: deploy-production-apps
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: "./overlays/production" # Git reposundaki kustomize yolu
+  prune: true # Git'ten silinen kaynakları Kubernetes'ten de sil!
+  sourceRef:
+    kind: GitRepository
+    name: app-source-repo
+  targetNamespace: apps-production

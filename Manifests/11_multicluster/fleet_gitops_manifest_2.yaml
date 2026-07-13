@@ -1,0 +1,11 @@
+# europe-retail-stores isimli ClusterGroup nesnesi tanımlama dosyası
+apiVersion: fleet.cattle.io/v1alpha1
+kind: ClusterGroup
+metadata:
+  name: europe-retail-stores
+  namespace: fleet-default
+spec:
+  selector:
+    matchLabels:
+      region: europe
+      type: retail-store

@@ -1,0 +1,14 @@
+# legacy-amd64-app isimli Deployment nesnesi tanımlama dosyası
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legacy-amd64-app
+spec:
+  replicas: 2
+  template:
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64 # Sadece x86_64 / amd64 işlemcili düğümlere gönder
+      containers:
+      - name: legacy-app
+        image: registry.example.com/production/legacy-app:v1.0

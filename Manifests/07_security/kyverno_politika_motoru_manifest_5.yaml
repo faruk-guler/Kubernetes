@@ -1,0 +1,25 @@
+# inject-default-resources isimli ClusterPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: inject-default-resources
+spec:
+  rules:
+  - name: add-default-limits
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      patchStrategicMerge:
+        spec:
+          containers:
+          - (name): "*" # Eşleşen tüm konteynerler için
+            resources:
+              limits:
+                cpu: "500m"
+                memory: "512Mi"
+              requests:
+                cpu: "100m"
+                memory: "256Mi"

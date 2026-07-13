@@ -1,0 +1,20 @@
+# macvlan-conf isimli NetworkAttachmentDefinition nesnesi tanımlama dosyası
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: macvlan-conf
+  namespace: default
+spec:
+  config: '{
+      "cniVersion": "0.3.1",
+      "type": "macvlan",
+      "master": "eth1",
+      "mode": "bridge",
+      "ipam": {
+        "type": "host-local",
+        "subnet": "192.168.1.0/24",
+        "rangeStart": "192.168.1.200",
+        "rangeEnd": "192.168.1.220",
+        "gateway": "192.168.1.1"
+      }
+    }'

@@ -1,0 +1,24 @@
+# wasm-http-service isimli Deployment nesnesi tanımlama dosyası
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wasm-http-service
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wasm-app
+  template:
+    metadata:
+      labels:
+        app: wasm-app
+    spec:
+      runtimeClassName: wasm-spin # WASM shim'ini kullanacağını belirtiyoruz
+      containers:
+      - name: wasm-container
+        image: ghcr.io/fermyon/spin-rust-hello:v1.0 # OCI formatında paketlenmiş WASM imajı
+        resources:
+          limits:
+            cpu: 100m
+            memory: 30Mi # Devasa tasarruf: Sadece 30MB RAM limiti!

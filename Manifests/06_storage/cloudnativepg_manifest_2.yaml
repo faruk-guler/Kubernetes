@@ -1,0 +1,13 @@
+# postgres-restored isimli Cluster nesnesi tanımlama dosyası
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-restored
+  namespace: production
+spec:
+  instances: 3
+  bootstrap:
+    recovery:
+      source: postgres-prod
+      recoveryTarget:
+        targetTime: "2026-04-01 14:00:00" # Dönelecek tarih ve saat

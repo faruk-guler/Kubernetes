@@ -1,0 +1,23 @@
+# backend-policy isimli NetworkPolicy nesnesi tanımlama dosyası
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-policy
+  namespace: network-policy-tutorial
+spec:
+  podSelector:
+    matchLabels:
+      app: backend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: frontend # Sadece frontend'den gelen istekleri kabul et
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: database # Sadece database'e gidebilir

@@ -1,0 +1,23 @@
+# billing-api-l7-policy isimli CiliumNetworkPolicy nesnesi tanımlama dosyası
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: billing-api-l7-policy
+  namespace: production
+spec:
+  endpointSelector:
+    matchLabels:
+      app: billing-api
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: frontend
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+          rules:
+            http:
+              # Sadece GET /billing/invoice isteklerine izin ver, POST isteklerini engelle!
+              - method: "GET"
+                path: "/billing/invoice"

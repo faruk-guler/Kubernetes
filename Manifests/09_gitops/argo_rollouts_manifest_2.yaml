@@ -1,0 +1,41 @@
+# ab-test-pricing-model isimli Experiment nesnesi tanımlama dosyası
+apiVersion: argoproj.io/v1alpha1
+kind: Experiment
+metadata:
+  name: ab-test-pricing-model
+  namespace: production
+spec:
+  duration: 1h # Deney 1 saat sürsün
+  templates:
+  - name: stable-model
+    spec:
+      replicas: 2
+      selector:
+        matchLabels:
+          app: pricing
+          version: stable
+      template:
+        metadata:
+          labels:
+            app: pricing
+            version: stable
+        spec:
+          containers:
+          - name: app
+            image: pricing:v2.0
+  - name: experimental-model
+    spec:
+      replicas: 2
+      selector:
+        matchLabels:
+          app: pricing
+          version: experimental
+      template:
+        metadata:
+          labels:
+            app: pricing
+            version: experimental
+        spec:
+          containers:
+          - name: app
+            image: pricing:v3.0

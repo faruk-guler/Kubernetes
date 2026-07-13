@@ -1,0 +1,14 @@
+# mandatory-team-label-binding isimli ValidatingAdmissionPolicyBinding nesnesi tanımlama dosyası
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: mandatory-team-label-binding
+spec:
+  policyName: mandatory-team-label
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: NotIn
+        values: ["kube-system", "monitoring"]

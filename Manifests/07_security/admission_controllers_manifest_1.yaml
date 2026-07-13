@@ -1,0 +1,26 @@
+# pod-validation-webhook isimli ValidatingWebhookConfiguration nesnesi tanımlama dosyası
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: pod-validation-webhook
+webhooks:
+- name: pod-validator.example.com
+  rules:
+  - apiGroups: [""]
+    apiVersions: ["v1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["pods"]
+    scope: "Namespaced"
+  clientConfig:
+    service:
+      name: webhook-validation-service
+      namespace: security-system
+      path: "/validate-pods"
+    caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t..." # Base64 kodlu TLS CA sertifikası
+  admissionReviewVersions: ["v1"]
+  sideEffects: None
+  timeoutSeconds: 5
+  failurePolicy: Fail # Webhook çökerse istekleri engelle (Sıkı Güvenlik)
+  namespaceSelector:
+    matchLabels:
+      security-level: "high"

@@ -1,0 +1,13 @@
+# kustomize isimli Deployment nesnesi tanımlama dosyası
+patches:
+  - target:
+      version: v1
+      kind: Deployment
+      name: my-app
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "1Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {"name": "PROD_API_KEY", "value": "secret-key-123"}

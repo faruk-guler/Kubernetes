@@ -1,0 +1,11 @@
+# team-billing-quota isimli ResourceQuota nesnesi tanımlama dosyası
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: team-billing-quota
+  namespace: billing-dev
+spec:
+  hard:
+    requests.cpu: "4" # Dev ortamında toplam max 4 core
+    requests.memory: "8Gi" # Dev ortamında toplam max 8GB RAM
+    pods: "10" # Max 10 adet pod çalışabilir

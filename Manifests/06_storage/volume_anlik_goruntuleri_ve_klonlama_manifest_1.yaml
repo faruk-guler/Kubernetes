@@ -1,0 +1,10 @@
+# db-backup-snapshot isimli VolumeSnapshot nesnesi tanımlama dosyası
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: db-backup-snapshot
+  namespace: production
+spec:
+  volumeSnapshotClassName: longhorn-snapshot-class
+  source:
+    persistentVolumeClaimName: production-db-pvc # Yedeği alınacak kaynak PVC

@@ -1,0 +1,21 @@
+# vcluster isimli Kubernetes nesnesi tanımlama dosyası
+api:
+  image: registry.k8s.io/kube-apiserver:v1.30.0
+
+# Senkronizasyon kuralları
+sync:
+  # Host kümedeki Ingress'leri sanal kümeye senkronize et
+  ingresses:
+    enabled: true
+  # Host kümedeki StorageClass'ları sanal kümeye senkronize et
+  storageClasses:
+    enabled: true
+
+# Sanal kümenin kaynak sınırları
+resources:
+  limits:
+    cpu: "2"
+    memory: 2Gi
+  requests:
+    cpu: "500m"
+    memory: 512Mi

@@ -1,0 +1,30 @@
+# payment-api isimli Rollout nesnesi tanımlama dosyası
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: payment-api
+  namespace: production
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: payment-api
+  strategy:
+    canary:
+      analysis:
+        templates:
+        - templateName: http-success-rate-analysis # Otomatik metrik denetim şablonu
+      steps:
+      - setWeight: 10
+      - pause: { duration: 5m } # 5 dakika boyunca hata oranını gözlemle
+      - setWeight: 30
+      - pause: { duration: 5m }
+      - setWeight: 100
+  template:
+    metadata:
+      labels:
+        app: payment-api
+    spec:
+      containers:
+      - name: api
+        image: payment:v2.0

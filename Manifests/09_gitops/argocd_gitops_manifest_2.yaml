@@ -1,0 +1,21 @@
+# billing-service-prod isimli Application nesnesi tanımlama dosyası
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: billing-service-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/company/my-app-gitops.git'
+    targetRevision: main # Prod için main/stable branch takip edilir
+    path: overlays/prod   # Prod kustomize dizini
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: billing-prod # Hedef isim alanı
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true # İsim alanı yoksa otomatik oluştur

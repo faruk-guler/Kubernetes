@@ -1,0 +1,18 @@
+# cron-scaler isimli ScaledObject nesnesi tanımlama dosyası
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: cron-scaler
+  namespace: production
+spec:
+  scaleTargetRef:
+    name: report-generator
+  minReplicaCount: 0
+  maxReplicaCount: 10
+  triggers:
+  - type: cron
+    metadata:
+      timezone: Europe/Istanbul
+      start: 30 8 * * 1-5  # Pazartesi-Cuma günleri sabah 08:30'da pod sayısını yükselt
+      end: 0 18 * * 1-5    # Akşam 18:00'de normal duruma geri dön
+      desiredReplicas: "5"

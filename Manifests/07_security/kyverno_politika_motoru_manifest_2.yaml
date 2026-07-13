@@ -1,0 +1,20 @@
+# require-env-label isimli ClusterPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-env-label
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: check-env-label
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Pod üzerinde 'environment' etiketi tanımlanmalıdır!"
+      pattern:
+        metadata:
+          labels:
+            environment: "?*"

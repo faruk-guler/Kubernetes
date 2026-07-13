@@ -1,0 +1,11 @@
+# db-pdb isimli PodDisruptionBudget nesnesi tanımlama dosyası
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: db-pdb
+  namespace: production
+spec:
+  minAvailable: 2 # En az 2 pod sürekli çalışır durumda kalmalı
+  selector:
+    matchLabels:
+      app: postgres-ha

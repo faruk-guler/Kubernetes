@@ -1,0 +1,24 @@
+# generate-default-networkpolicy isimli NetworkPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: generate-default-networkpolicy
+spec:
+  rules:
+  - name: auto-deny-all-np
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    generate:
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      name: default-deny-all
+      namespace: "{{request.name}}" # Yeni oluşturulan namespace adı
+      data:
+        spec:
+          podSelector: {}
+          policyTypes:
+          - Ingress
+          - Egress

@@ -1,0 +1,26 @@
+# {{name}}-nginx-ingress isimli ApplicationSet nesnesi tanımlama dosyası
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: global-ingress-controller
+  namespace: argocd
+spec:
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          # Sadece "environment: production" etiketine sahip olan harici kümelere deploy et
+          environment: production
+  template:
+    metadata:
+      # {{name}} değişkeni, eşleşen kümenin ArgoCD'deki adını otomatik alır
+      name: '{{name}}-nginx-ingress'
+    spec:
+      project: default
+      source:
+        chart: ingress-nginx
+        repoURL: https://kubernetes.github.io/ingress-nginx
+        targetRevision: 4.8.0
+      destination:
+        server: '{{server}}' # Kümenin Kubernetes API adresi otomatik enjekte edilir
+        namespace: ingress-system

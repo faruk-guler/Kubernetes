@@ -1,0 +1,18 @@
+# my-app-release isimli HelmRepository nesnesi tanımlama dosyası
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: my-app-release
+  namespace: production
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: my-chart
+      version: "1.2.x" # 1.2.0 - 1.2.9 arasındaki en güncel sürümü takip et
+      sourceRef:
+        kind: HelmRepository
+        name: oci-helm-repo
+        namespace: flux-system
+  values:
+    replicaCount: 3

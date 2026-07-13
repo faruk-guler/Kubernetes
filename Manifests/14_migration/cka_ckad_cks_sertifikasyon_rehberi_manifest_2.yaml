@@ -1,0 +1,22 @@
+# app-with-sidecar isimli Pod nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-with-sidecar
+spec:
+  volumes:
+    - name: shared-logs
+      emptyDir: {}
+  containers:
+    - name: main-app
+      image: busybox
+      command: ["sh", "-c", "while true; do echo 'Uygulama logu' >> /var/log/app.log; sleep 5; done"]
+      volumeMounts:
+        - name: shared-logs
+          mountPath: /var/log
+    - name: log-sidecar
+      image: busybox
+      command: ["sh", "-c", "tail -f /var/log/app.log"]
+      volumeMounts:
+        - name: shared-logs
+          mountPath: /var/log

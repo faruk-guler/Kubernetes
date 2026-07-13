@@ -1,0 +1,16 @@
+# web-app-lb isimli Service nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-app-lb
+  namespace: production
+  annotations:
+    # İsteğe bağlı: Belirli bir IP havuzunu seçmek için
+    metallb.universe.tf/address-pool: production-ip-pool
+spec:
+  type: LoadBalancer
+  selector:
+    app: web-app
+  ports:
+    - port: 80
+      targetPort: 8080

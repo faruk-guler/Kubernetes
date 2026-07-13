@@ -1,0 +1,17 @@
+# shadow-traffic-service isimli VirtualService nesnesi tanımlama dosyası
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: shadow-traffic-service
+spec:
+  hosts:
+  - payment.company.com
+  http:
+  - route:
+    - destination:
+        host: payment-stable
+      weight: 100
+    mirror: # Trafiği aynala
+      host: payment-canary
+    mirrorPercentage:
+      value: 10 # Canlı trafiğin %10'unu kopyala

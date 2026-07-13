@@ -1,0 +1,24 @@
+# fleet_gitops isimli Kubernetes nesnesi tanımlama dosyası
+defaultNamespace: default
+
+# Kümelerin etiketlerine göre YAML parametrelerini özelleştirin:
+targetCustomizations:
+  # Mağaza 101 için özelleştirme
+  - name: store-101
+    clusterSelector:
+      matchLabels:
+        storeId: "101"
+    helm:
+      values:
+        storeName: "Istanbul-Kadikoy-101"
+        localIP: "192.168.101.10"
+
+  # Mağaza 102 için özelleştirme
+  - name: store-102
+    clusterSelector:
+      matchLabels:
+        storeId: "102"
+    helm:
+      values:
+        storeName: "Berlin-Mitte-102"
+        localIP: "192.168.102.10"

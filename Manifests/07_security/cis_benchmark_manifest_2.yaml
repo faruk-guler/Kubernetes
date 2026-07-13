@@ -1,0 +1,12 @@
+# cis_benchmark isimli EncryptionConfiguration nesnesi tanımlama dosyası
+apiVersion: apiserver.config.k8s.io/v1
+kind: EncryptionConfiguration
+resources:
+  - resources:
+      - secrets
+    providers:
+      - aescbc:
+          keys:
+            - name: key1
+              secret: c2VjcmV0LWtleS1zaG91bGQtYmUtMzItYnl0ZXM= # 32 byte base64 key
+      - identity: {} # Fallback

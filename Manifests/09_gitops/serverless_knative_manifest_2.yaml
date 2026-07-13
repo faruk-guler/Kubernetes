@@ -1,0 +1,18 @@
+# hello-serverless-v2 # Yeni revizyon ismi isimli Service nesnesi tanımlama dosyası
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: hello-serverless
+  namespace: production
+spec:
+  template:
+    metadata:
+      name: hello-serverless-v2 # Yeni revizyon ismi
+    spec:
+      containers:
+      - image: gcr.io/knative-samples/helloworld-go:v2
+  traffic:
+  - revisionName: hello-serverless-v1 # Eski revizyon
+    percent: 80 # Trafiğin %80'i eski sürüme gitsin
+  - revisionName: hello-serverless-v2 # Yeni revizyon (Canary)
+    percent: 20 # Trafiğin %20'si yeni sürüme gitsin

@@ -1,0 +1,12 @@
+# helm isimli Kubernetes nesnesi tanımlama dosyası
+replicaCount: 3
+service:
+  type: ClusterIP
+  port: 80
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

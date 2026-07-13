@@ -1,0 +1,22 @@
+# billing-asia-override isimli Deployment nesnesi tanımlama dosyası
+apiVersion: policy.karmada.io/v1alpha1
+kind: OverridePolicy
+metadata:
+  name: billing-asia-override
+  namespace: production
+spec:
+  resourceSelectors:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: billing-api
+  # Sadece Asya kümesine giderken uygulanacak yama:
+  overrideRules:
+    - targetCluster:
+        clusterNames:
+          - cluster-asia
+      overriders:
+        plaintext:
+          # Asya veritabanı adresini çevre değişkenine enjekte et:
+          - op: replace
+            path: /spec/template/spec/containers/0/env/0/value
+            value: "db-asia.company.com"

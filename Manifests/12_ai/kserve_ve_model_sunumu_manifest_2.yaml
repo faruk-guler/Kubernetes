@@ -1,0 +1,19 @@
+# llama-3-serving isimli InferenceService nesnesi tanımlama dosyası
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: llama-3-serving
+  namespace: ml-serving
+spec:
+  predictor:
+    model:
+      modelFormat:
+        name: vllm
+      storageUri: hf://meta-llama/Meta-Llama-3-8B-Instruct
+      args:
+        - --port=8080
+        - --model=meta-llama/Meta-Llama-3-8B-Instruct
+      resources:
+        limits:
+          nvidia.com/gpu: "1" # vLLM GPU gerektirir
+          memory: 24Gi

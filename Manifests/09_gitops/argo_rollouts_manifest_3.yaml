@@ -1,0 +1,27 @@
+# double-check-metrics isimli AnalysisTemplate nesnesi tanımlama dosyası
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: double-check-metrics
+  namespace: production
+spec:
+  metrics:
+  # 1. Prometheus Hata Analizi
+  - name: prometheus-error-rate
+    interval: 1m
+    successCondition: result[0] < 0.01 # Hata oranı %1'in altında olmalı
+    failureLimit: 3
+    provider:
+      prometheus:
+        address: http://prometheus-operated.monitoring.svc.cluster.local:9090
+        query: |
+          sum(rate(http_requests_total{job="billing-api", status=~"5.."}[1m]))
+          /
+          sum(rate(http_requests_total{job="billing-api"}[1m]))
+  # 2. Datadog Servis Durumu Analizi
+  - name: datadog-http-latency
+    interval: 2m
+    successCondition: result[0] < 200 # P99 yanıt süresi 200ms'den küçük olmalı
+    provider:
+      datadog:
+        query: "avg:trace.http.request.duration.p99{service:billing-api}"

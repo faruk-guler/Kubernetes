@@ -1,0 +1,15 @@
+# pyroscope-ebpf isimli Helm Values yapılandırma dosyası
+ebpf:
+  enabled: true
+  nodeSelector:
+    kubernetes.io/os: linux
+  tolerations:
+    - effect: NoSchedule
+      operator: Exists
+service:
+  type: ClusterIP
+  port: 4040
+prometheus:
+  enabled: true
+  serviceMonitor:
+    enabled: true

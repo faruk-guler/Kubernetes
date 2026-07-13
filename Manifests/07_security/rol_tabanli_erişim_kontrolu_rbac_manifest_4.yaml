@@ -1,0 +1,12 @@
+# rol_tabanli_erişim_kontrolu_rbac isimli Policy nesnesi tanımlama dosyası
+apiVersion: audit.k8s.io/v1
+kind: Policy
+rules:
+- level: RequestResponse
+  resources:
+  - group: ""
+    resources: ["secrets"] # Secret erişimlerini en detaylı seviyede kaydet
+- level: Metadata
+  resources:
+  - group: ""
+    resources: ["pods"] # Pod işlemlerini sadece metadata seviyesinde tut

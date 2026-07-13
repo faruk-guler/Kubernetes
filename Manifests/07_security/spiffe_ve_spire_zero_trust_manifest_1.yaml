@@ -1,0 +1,20 @@
+# billing-service isimli Pod nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Pod
+metadata:
+  name: billing-service
+  namespace: production
+spec:
+  serviceAccountName: api-service-account
+  containers:
+  - name: app
+    image: billing:v1.0
+    volumeMounts:
+    - name: spiffe-workload-api
+      mountPath: /run/spire/sockets
+      readOnly: true
+  volumes:
+  - name: spiffe-workload-api
+    csi:
+      driver: "spiffe.csi.spiffe.io"
+      readOnly: true

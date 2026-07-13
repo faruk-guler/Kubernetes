@@ -1,0 +1,14 @@
+# argo_rollouts isimli Kubernetes nesnesi tanımlama dosyası
+spec:
+  strategy:
+    blueGreen:
+      activeService: billing-active
+      previewService: billing-preview
+      # Trafik Mavi'den Yeşil'e geçmeden önce çalışacak analiz:
+      prePromotionAnalysis:
+        templates:
+        - templateName: run-integration-tests
+      # Trafik geçişi tamamlandıktan sonra çalışacak analiz:
+      postPromotionAnalysis:
+        templates:
+        - templateName: double-check-metrics

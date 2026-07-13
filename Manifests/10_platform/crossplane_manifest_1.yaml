@@ -1,0 +1,31 @@
+# xpostgresinstances.database.company.com isimli PostgreSQLInstance nesnesi tanımlama dosyası
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xpostgresinstances.database.company.com
+spec:
+  group: database.company.com
+  names:
+    kind: XPostgreSQLInstance
+    plural: xpostgresinstances
+  claimNames:
+    kind: PostgreSQLInstance
+    plural: postgresinstances
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              storageGB:
+                type: integer
+              dbName:
+                type: string
+            required:
+            - storageGB
+            - dbName

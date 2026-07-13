@@ -1,0 +1,17 @@
+# kafka-orders-source isimli Broker nesnesi tanımlama dosyası
+apiVersion: sources.knative.dev/v1
+kind: KafkaSource
+metadata:
+  name: kafka-orders-source
+  namespace: production
+spec:
+  consumerGroup: knative-group
+  bootstrapServers:
+    - my-kafka-cluster.kafka.svc.cluster.local:9092
+  topics:
+    - store-orders
+  sink:
+    ref:
+      apiVersion: eventing.knative.dev/v1
+      kind: Broker
+      name: default-event-broker

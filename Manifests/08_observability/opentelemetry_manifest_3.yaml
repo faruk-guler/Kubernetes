@@ -1,0 +1,16 @@
+# global-auto-instrumentation isimli Instrumentation nesnesi tanımlama dosyası
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: global-auto-instrumentation
+  namespace: production
+spec:
+  exporter:
+    endpoint: http://otel-daemonset-collector.opentelemetry.svc.cluster.local:4317
+  propagators:
+    - tracecontext
+    - baggage
+  java:
+    image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:latest
+  nodejs:
+    image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-nodejs:latest

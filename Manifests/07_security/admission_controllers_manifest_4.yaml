@@ -1,0 +1,19 @@
+# kyverno-resource-validating-webhook-cfg isimli ValidatingWebhookConfiguration nesnesi tanımlama dosyası
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: kyverno-resource-validating-webhook-cfg
+webhooks:
+- name: validate.kyverno.svc
+  clientConfig:
+    service:
+      name: kyverno-svc
+      namespace: kyverno
+      path: "/validate"
+  failurePolicy: Fail
+  # Kyverno sadece kendi namespace'i dışındaki kaynakları denetler (kendi kendini kilitlememek için)
+  namespaceSelector:
+    matchExpressions:
+    - key: kubernetes.io/metadata.name
+      operator: NotIn
+      values: ["kyverno"]

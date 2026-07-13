@@ -1,0 +1,19 @@
+# payment-service isimli Service nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: production
+  annotations:
+    # Bu servisi global bir servis haline getirin:
+    io.cilium/global-service: "true"
+    # Shared: Diğer kümeler de bu servisin arkasındaki pod'lara erişebilsin:
+    io.cilium/shared-service: "true"
+    # Trafik önceliği (local/remote):
+    # local = Öncelikli olarak kendi kümesindeki pod'lara gönder, pod kalmazsa diğer kümeye taşır.
+    io.cilium/service-affinity: "local"
+spec:
+  ports:
+  - port: 80
+  selector:
+    app: payment-processor

@@ -1,0 +1,25 @@
+# xpostgresinstances.aws.rds isimli RDSInstance nesnesi tanımlama dosyası
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xpostgresinstances.aws.rds
+  labels:
+    provider: aws
+    db: postgres
+spec:
+  compositeDeleteWithImpl: true
+  toCompositeResourcesDefRef:
+    name: xpostgresinstances.database.company.com
+  resources:
+  - name: rds-database-instance
+    base:
+      apiVersion: database.aws.upbound.io/v1beta1
+      kind: RDSInstance
+      spec:
+        forProvider:
+          engine: postgres
+          engineVersion: "15.4"
+          instanceClass: db.t3.micro
+          publiclyAccessible: false
+        writeConnectionSecretToRef:
+          namespace: crossplane-system

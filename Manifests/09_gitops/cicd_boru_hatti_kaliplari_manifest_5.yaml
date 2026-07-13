@@ -1,0 +1,12 @@
+# cicd_boru_hatti_kaliplari isimli Kubernetes nesnesi tanımlama dosyası
+- name: Update Image Tag in GitOps Repo
+      run: |
+        git config --global user.email "ci-bot@company.com"
+        git config --global user.name "CI Bot"
+        git clone https://x-access-token:${{ secrets.GITOPS_PAT }}@github.com/company/gitops-infra.git
+        cd gitops-infra
+        # values.yaml dosyasındaki sürümü yeni imaj etiketiyle değiştir:
+        sed -i "s|tag:.*|tag: \"${{ github.sha }}\"|g" apps/my-app/values.yaml
+        git add .
+        git commit -m "chore(gitops): deploy image tag ${{ github.sha }} [skip ci]"
+        git push origin main

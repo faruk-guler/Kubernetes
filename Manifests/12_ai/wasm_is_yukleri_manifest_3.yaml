@@ -1,0 +1,12 @@
+# wasm-serverless isimli Service nesnesi tanımlama dosyası
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: wasm-serverless
+  namespace: production
+spec:
+  template:
+    spec:
+      runtimeClassName: wasm-spin
+      containers:
+      - image: ghcr.io/my-company/k8s-hello-wasm:v1.0

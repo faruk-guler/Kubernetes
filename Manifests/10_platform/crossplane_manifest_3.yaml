@@ -1,0 +1,11 @@
+# my-company-prod-assets-2026 isimli Bucket nesnesi tanımlama dosyası
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  name: my-company-prod-assets-2026
+spec:
+  forProvider:
+    region: eu-west-1
+    acl: private
+  providerConfigRef:
+    name: default-aws-config

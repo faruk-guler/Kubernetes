@@ -1,0 +1,12 @@
+# min-replicas-binding isimli ValidatingAdmissionPolicyBinding nesnesi tanımlama dosyası
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: min-replicas-binding
+spec:
+  policyName: min-replicas-policy
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        environment: production

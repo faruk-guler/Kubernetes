@@ -1,0 +1,26 @@
+# billing-ingress isimli Ingress nesnesi tanımlama dosyası
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: billing-ingress
+  namespace: production
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx # Kullanılacak ingress controller
+  tls:
+    - hosts:
+        - billing.company.com
+      secretName: billing-tls-secret
+  rules:
+    - host: billing.company.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: billing-api-service
+                port:
+                  number: 80

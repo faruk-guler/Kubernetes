@@ -1,0 +1,13 @@
+# argo-rollouts-notification-config isimli ConfigMap nesnesi tanımlama dosyası
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argo-rollouts-notification-config
+  namespace: argo-rollouts
+data:
+  # Slack Webhook tanımlaması
+  trigger.on-rollout-paused: |
+    - send: [slack-channel]
+      when: status.currentStepIndex == 1
+  service.slack: |
+    token: xoxb-xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx

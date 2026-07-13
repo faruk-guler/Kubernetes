@@ -1,0 +1,18 @@
+# queue-worker-scaler isimli Deployment nesnesi tanımlama dosyası
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: queue-worker-scaler
+  namespace: production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: queue-worker
+  minReplicaCount: 0 # Kuyruk boşsa podları tamamen kapat!
+  maxReplicaCount: 10
+  triggers:
+  - type: rabbitmq
+    metadata:
+      queueName: user-notifications
+      queueLength: "5" # Her 5 mesaj için 1 yeni pod ayağa kaldır

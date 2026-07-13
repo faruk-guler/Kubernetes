@@ -1,0 +1,20 @@
+# customer-api-flow isimli FlowSchema nesnesi tanımlama dosyası
+apiVersion: flowcontrol.apiserver.k8s.io/v1
+kind: FlowSchema
+metadata:
+  name: customer-api-flow
+spec:
+  priorityLevelConfiguration:
+    name: customer-api-priority # İsteklerin yönlendirileceği öncelik seviyesi
+  matchingPrecedence: 500 # Kuralların eşleşme sırası (Düşük sayı önceliklidir)
+  distinguisherMethod:
+    type: ByUser # Her kullanıcıyı kendi içinde adil dağıt
+  rules:
+  - subjects:
+    - kind: User
+      name: "custom-app-user"
+    resourceRules:
+    - verbs: ["*"]
+      apiGroups: ["*"]
+      resources: ["*"]
+      namespaces: ["production"]

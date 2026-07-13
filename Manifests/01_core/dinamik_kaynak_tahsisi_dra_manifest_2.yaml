@@ -1,0 +1,24 @@
+# nvlink-connected-gpu isimli DeviceClass nesnesi tanımlama dosyası
+apiVersion: resource.k8s.io/v1alpha3
+kind: ResourceClass
+metadata:
+  name: nvidia-h100-gpu
+driverName: gpu.nvidia.com # NVIDIA DRA Sürücüsü
+suitableNodes:
+  nodeSelectorTerms:
+  - matchExpressions:
+    - key: feature.node.kubernetes.io/gpu-type
+      operator: In
+      values:
+      - H100
+---
+apiVersion: resource.k8s.io/v1alpha3
+kind: DeviceClass
+metadata:
+  name: nvlink-connected-gpu
+spec:
+  config:
+  - opaque:
+      parameters:
+        requiresNVLink: "true"
+        minVram: "40Gi"

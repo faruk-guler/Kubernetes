@@ -1,0 +1,44 @@
+# etcd-backup isimli CronJob nesnesi tanımlama dosyası
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-backup
+  namespace: kube-system
+spec:
+  schedule: "0 0 * * *" # Her gece 00:00'da çalışır
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          hostNetwork: true # Master IP'sine doğrudan erişebilmek için
+          nodeName: k8s-master-01 # Sadece bu master üzerinde çalışsın
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: registry.k8s.io/etcd:3.5.15-0 # Kümedeki etcd sürümünüz ile eşleştirin
+            env:
+            - name: ETCDCTL_API
+              value: "3"
+            command:
+            - /bin/sh
+            - -c
+            - |
+              etcdctl --endpoints=https://127.0.0.1:2379 \
+                --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+                --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+                --key=/etc/kubernetes/pki/etcd/healthcheck-client.key \
+                snapshot save /backup/etcd-$(date +%Y%m%d-%H%M).db
+            volumeMounts:
+            - mountPath: /etc/kubernetes/pki/etcd
+              name: etcd-certs
+              readOnly: true
+            - mountPath: /backup
+              name: backup-dir
+          volumes:
+          - name: etcd-certs
+            hostPath:
+              path: /etc/kubernetes/pki/etcd
+          - name: backup-dir
+            hostPath:
+              path: /backup

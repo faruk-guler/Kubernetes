@@ -1,0 +1,17 @@
+# cost-optimized-pool isimli NodePool nesnesi tanımlama dosyası
+apiVersion: karpenter.sh/v1beta1
+kind: NodePool
+metadata:
+  name: cost-optimized-pool
+spec:
+  template:
+    spec:
+      requirements:
+        - key: "karpenter.sh/capacity-type"
+          operator: In
+          values: ["spot"] # Öncelikli olarak spot sunucu kirala
+        - key: "kubernetes.io/arch"
+          operator: In
+          values: ["arm64"] # ARM64 (Graviton) sunucular x86'ya göre %40 daha ucuzdur
+  disruption:
+    consolidationPolicy: WhenUnderutilized # Node boşaldığında otomatik kapat

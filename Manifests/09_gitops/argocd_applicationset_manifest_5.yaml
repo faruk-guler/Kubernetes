@@ -1,0 +1,20 @@
+# argocd_applicationset isimli Kubernetes nesnesi tanımlama dosyası
+spec:
+  strategy:
+    type: RollingSync
+    rollingSync:
+      steps:
+        # 1. Aşama: Staging kümeleri güncellensin
+        - matchExpressions:
+            - key: environment
+              operator: In
+              values:
+                - staging
+          maxUpdate: 100% # Tüm staging'leri aynı anda güncelle
+        # 2. Aşama: Staging başarılı olursa Prod kümelerini %20 şer oranla güncelle (Canary)
+        - matchExpressions:
+            - key: environment
+              operator: In
+              values:
+                - production
+          maxUpdate: 20%

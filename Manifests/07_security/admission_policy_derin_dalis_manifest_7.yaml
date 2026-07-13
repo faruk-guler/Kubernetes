@@ -1,0 +1,19 @@
+# replica-limit-parametric isimli ConfigMap nesnesi tanımlama dosyası
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: replica-limit-parametric
+spec:
+  failurePolicy: Fail
+  paramKind:
+    apiVersion: v1
+    kind: ConfigMap
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["deployments"]
+  validations:
+  - expression: "object.spec.replicas <= int(params.data.maxReplicas)"
+    messageExpression: "'Hata: Replikasyon limiti aşılmıştır. İzin verilen maksimum replica: ' + params.data.maxReplicas"

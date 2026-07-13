@@ -1,0 +1,14 @@
+# payment-processor isimli Component nesnesi tanımlama dosyası
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: payment-processor
+  description: "Banka entegrasyonlarını ve ödeme akışlarını yöneten mikroservis."
+  annotations:
+    backstage.io/techdocs-ref: dir:. # Dokümantasyon klasörü referansı
+    kubernetes-id: payment-processor # Kubernetes pod etiket eşleştirmesi
+spec:
+  type: service
+  lifecycle: production
+  owner: group:payment-team
+  system: core-finance

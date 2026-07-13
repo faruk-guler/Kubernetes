@@ -1,0 +1,33 @@
+# replica-limit-binding isimli ValidatingAdmissionPolicyBinding nesnesi tanımlama dosyası
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: replica-limit-policy
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["deployments"]
+  variables:
+  - name: maxReplicas
+    expression: "10"
+  validations:
+  - expression: "object.spec.replicas <= variables.maxReplicas"
+    message: "Hata: Bir deployment en fazla 10 kopya (replica) içerebilir!"
+
+---
+# Politikayı kümede aktif etmek için bağlama nesnesi:
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: replica-limit-binding
+spec:
+  policyName: replica-limit-policy
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        environment: production

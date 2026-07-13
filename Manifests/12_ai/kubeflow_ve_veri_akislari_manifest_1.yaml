@@ -1,0 +1,40 @@
+# random-forest-tuning isimli Job nesnesi tanımlama dosyası
+apiVersion: kubeflow.org/v1beta1
+kind: Experiment
+metadata:
+  name: random-forest-tuning
+  namespace: kubeflow
+spec:
+  objective:
+    type: maximize
+    goal: 0.99
+    objectiveMetricName: accuracy
+  algorithm:
+    algorithmName: random
+  parallelTrialCount: 2
+  maxTrialCount: 6
+  parameters:
+    - name: n_estimators
+      parameterType: int
+      feasibleSpace:
+        min: "50"
+        max: "200"
+  trialTemplate:
+    primaryContainerName: training-container
+    trialParameters:
+      - name: nEstimators
+        reference: n_estimators
+    trialSpec:
+      apiVersion: batch/v1
+      kind: Job
+      spec:
+        template:
+          spec:
+            containers:
+              - name: training-container
+                image: python:3.11
+                command:
+                  - "python3"
+                  - "-c"
+                  - "print('Estimators:', ${trialParameters.nEstimators})"
+            restartPolicy: Never

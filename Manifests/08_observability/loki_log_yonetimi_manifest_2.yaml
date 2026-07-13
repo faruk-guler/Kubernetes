@@ -1,0 +1,15 @@
+# loki_log_yonetimi isimli Kubernetes nesnesi tanımlama dosyası
+loki:
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 3
+  storage:
+    type: s3
+    s3:
+      endpoint: minio.storage.svc.cluster.local:9000
+      bucketnames: loki-chunks
+      access_key_id: "MinioAccessKey"
+      secret_access_key: "MinioSecretKey"
+      insecure: true
+  limits_config:
+    retention_period: 168h # 7 günlük log saklama süresi

@@ -1,0 +1,16 @@
+# min-replicas-policy isimli ValidatingAdmissionPolicy nesnesi tanımlama dosyası
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: min-replicas-policy
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["deployments"]
+  validations:
+  - expression: "object.spec.replicas >= 3"
+    messageExpression: "'Hata: Üretim ortamında deployment kopyası (' + string(object.spec.replicas) + ') 3ten az olamaz!'"

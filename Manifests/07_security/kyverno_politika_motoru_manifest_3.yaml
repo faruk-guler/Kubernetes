@@ -1,0 +1,19 @@
+# limit-container-count isimli ClusterPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: limit-container-count
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: container-count-check
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      cel:
+        expressions:
+        - expression: "size(object.spec.containers) <= 3"
+          message: "Hata: Bir pod en fazla 3 konteyner barındırabilir!"

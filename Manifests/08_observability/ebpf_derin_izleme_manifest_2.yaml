@@ -1,0 +1,22 @@
+# monitor-sensitive-files isimli TracingPolicy nesnesi tanımlama dosyası
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: monitor-sensitive-files
+  namespace: kube-system
+spec:
+  kprobes:
+  - call: "sys_openat"
+    syscall: true
+    args:
+    - index: 1
+      type: "string" # Açılan dosyanın yolu (path)
+    selectors:
+    - matchArgs:
+      - index: 1
+        operator: "Prefix"
+        values:
+        - "/etc/shadow"
+        - "/etc/passwd"
+      matchActions:
+      - action: Sigkill # Tehdidi anında sonlandırmak için konteyneri öldür!

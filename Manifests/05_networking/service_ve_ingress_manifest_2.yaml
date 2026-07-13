@@ -1,0 +1,14 @@
+# billing-api-service isimli Service nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing-api-service
+  namespace: production
+spec:
+  type: ClusterIP
+  selector:
+    app: billing-api
+  ports:
+    - protocol: TCP
+      port: 80         # Servisin dinlediği dış port
+      targetPort: 8080 # Pod içindeki uygulamanın portu

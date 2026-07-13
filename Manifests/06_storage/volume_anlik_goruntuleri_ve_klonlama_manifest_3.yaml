@@ -1,0 +1,16 @@
+# db-test-clone-pvc isimli PersistentVolumeClaim nesnesi tanımlama dosyası
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-test-clone-pvc
+  namespace: production
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi # Orijinal diskin boyutuyla aynı olmalıdır
+  dataSource:
+    name: production-db-pvc # Doğrudan kaynak PVC ismi hedef gösterilir
+    kind: PersistentVolumeClaim

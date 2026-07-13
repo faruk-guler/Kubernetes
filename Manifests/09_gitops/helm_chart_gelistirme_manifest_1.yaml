@@ -1,0 +1,34 @@
+# helm_chart_gelistirme isimli Kubernetes nesnesi tanımlama dosyası
+replicaCount: 2
+
+image:
+  repository: registry.company.com/apps/my-app
+  pullPolicy: IfNotPresent
+  tag: "" # Boş bırakılırsa Chart.yaml'daki appVersion değeri çekilir
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: app.company.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+postgresql:
+  enabled: true
+  auth:
+    database: appdb
+    username: appuser

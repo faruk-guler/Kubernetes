@@ -1,0 +1,19 @@
+# reviews-traffic-split isimli Service nesnesi tanımlama dosyası
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: reviews-traffic-split
+  namespace: production
+spec:
+  parentRefs:
+    - group: ""
+      kind: Service
+      name: reviews-service # Ana servis adı
+  rules:
+    - backendRefs:
+        - name: reviews-v1
+          port: 80
+          weight: 90
+        - name: reviews-v2
+          port: 80
+          weight: 10

@@ -1,0 +1,22 @@
+# sidecar-injector-webhook isimli MutatingWebhookConfiguration nesnesi tanımlama dosyası
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: sidecar-injector-webhook
+webhooks:
+- name: sidecar-injector.example.com
+  rules:
+  - apiGroups: [""]
+    apiVersions: ["v1"]
+    operations: ["CREATE"]
+    resources: ["pods"]
+  clientConfig:
+    service:
+      name: sidecar-injector-service
+      namespace: monitoring
+      path: "/inject-sidecar"
+    caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t..."
+  admissionReviewVersions: ["v1"]
+  sideEffects: None
+  timeoutSeconds: 10
+  failurePolicy: Ignore # Webhook çalışmazsa podların oluşumunu engelleme (Hoşgörülü Mod)

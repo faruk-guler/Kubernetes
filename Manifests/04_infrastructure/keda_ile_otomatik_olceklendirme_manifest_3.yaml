@@ -1,0 +1,21 @@
+# keda-rabbitmq-auth # Yukarıda tanımladığımız kimlik doğrulama referansı isimli Deployment nesnesi tanımlama dosyası
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: rabbitmq-worker-scaler
+  namespace: production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: order-processor # Ölçeklenecek hedef uygulama (Deployment)
+  minReplicaCount: 0  # Kuyruk boşsa pod sayısını 0'a çek (Maliyet Tasarrufu)
+  maxReplicaCount: 20 # En fazla çıkabileceği pod sayısı
+  cooldownPeriod:  300 # Son mesajdan sonra 0'a inmek için beklenecek süre (saniye)
+  triggers:
+  - type: rabbitmq
+    metadata:
+      queueName: orders-queue
+      value: "5" # Kuyruktaki her 5 mesaj için yeni 1 pod ekle
+    authenticationRef:
+      name: keda-rabbitmq-auth # Yukarıda tanımladığımız kimlik doğrulama referansı

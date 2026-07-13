@@ -1,0 +1,18 @@
+# cis_benchmark isimli Kubernetes nesnesi tanımlama dosyası
+spec:
+  containers:
+  - command:
+    - kube-apiserver
+    # 1. Anonim erişimi tamamen kapat
+    - --anonymous-auth=false
+    # 2. Yetkilendirme modlarını sırala (Önce node kuralı, sonra RBAC)
+    - --authorization-mode=Node,RBAC
+    # 3. Minimum TLS versiyonunu yükselt (TLS 1.3 önerilir, en az TLS 1.2)
+    - --tls-min-version=VersionTLS12
+    # 4. Denetim günlüklerini (Audit Log) aktif et
+    - --audit-log-path=/var/log/kubernetes/audit.log
+    - --audit-log-maxage=30
+    - --audit-log-maxbackup=10
+    - --audit-log-maxsize=100
+    # 5. Disk üzerinde sırların (Secrets) şifrelenmesini etkinleştir
+    - --encryption-provider-config=/etc/kubernetes/encryption-config.yaml

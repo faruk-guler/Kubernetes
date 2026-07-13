@@ -21,7 +21,6 @@ Date: 2026
 
 ![Kubernetes Logo](Images/kubernetes.png)
 
-
 ## 📖 Kubernetes'e Başlarken
 
 Bu bir "komut kılavuzu" değildir. İnternette binlerce `kubectl get pods` örneği var. Bu kitabı yazmamın sebebi, Kubernetes'i *gerçekten* anlamak; yani bir şey bozulduğunda nereye bakacağını bilmek, bir mimari kararı neden aldığını savunabilmek, ve bir sistemi sıfırdan inşa edip ayakta tutabilmek için gereken zihinsel modeli kurmak.
@@ -57,7 +56,6 @@ Kubernetes'i anlamanın en iyi yolu, ne *olmadığını* bilmekten geçer.
 
 **Kubernetes sihir değildir.** Her şey Linux kernel'inin primitive'leri üzerine inşa edilmiştir: `cgroups`, `namespaces`, `iptables` veya `eBPF`. Kubernetes bu mekanizmaları soyutlar, ama altında hep aynı temel var.
 
-
 ## Temel Felsefe: Bildirimsel Yönetim
 
 Kubernetes'in en devrimci fikri teknik bir özellik değil, bir *düşünce biçimidir*.
@@ -71,7 +69,6 @@ Kubernetes tam tersi bir yol izler. Siz sadece *istediğiniz durumu* tarif eders
 Kubernetes bunu bir YAML dosyasına yazmanızı bekler ve sonra **sonsuza kadar bu durumu korumaya çalışır**. Bir kopya çöktüğünde yenisini başlatır. Sunucu kapandığında pod'ları başka sunucuya taşır. Siz bir şey yapmanıza gerek kalmaz.
 
 Bu yaklaşıma **declarative (bildirimsel) model** denir ve bir cluster'ın nasıl yönetileceği konusundaki en güçlü paradigma değişikliğidir. YAML dosyalarınız artık sadece yapılandırma değil, sistemin *gerçeğinin* tek kaynağıdır — **Single Source of Truth**.
-
 
 ## Control Loop: Sonsuz Uzlaşma Döngüsü
 
@@ -89,7 +86,6 @@ Her controller şunu sürekli yapar:
 
 Bu döngü saniyede onlarca kez çalışır. Cluster hiçbir zaman "tamamlandı" durumuna ulaşmaz; her zaman istenen duruma doğru *yaklaşmaya* çalışır. Bu felsefi bir nokta değil, pratik bir güçtür: sisteminiz kendi kendini iyileştirir (*self-healing*).
 
-
 ## Mimari: Kimin Kim Olduğu
 
 Kubernetes bir cluster'dan oluşur. Cluster içinde iki tip makine vardır.
@@ -102,7 +98,6 @@ Aralarındaki iletişim tek yönlüdür: Worker node'lar hiçbir zaman birbirler
 
 `etcd` ise cluster'ın hafızasıdır — dağıtık, tutarlı bir anahtar-değer veritabanı. Cluster'da olan her şey burada kayıtlıdır. etcd giderse Kubernetes kör olur; ne yapacağını bilemez.
 
-
 ## Neden 2026'da Hâlâ Öğrenilmeli?
 
 Kubernetes 2014'te çıktı. "Olgunlaştı, eskidi" diyenler var. Yanlış.
@@ -112,7 +107,6 @@ Kubernetes 2014'te çıktı. "Olgunlaştı, eskidi" diyenler var. Yanlış.
 Dahası, Kubernetes artık sadece web uygulamalarını değil; **GPU iş yüklerini** (büyük dil modelleri, ML training), **edge computing**'i (fabrika sensörleri, baz istasyonları), **sanal makineleri** (KubeVirt), ve **serverless iş yüklerini** (Knative) de yönetiyor.
 
 Kubernetes öğrenmek, bir ürün öğrenmek değil; dağıtık sistemlerin ortak dilini öğrenmektir.
-
 
 ## Bu Kitabı Nasıl Okumalısınız?
 
@@ -124,12 +118,44 @@ Her bölümün sonunda YAML örnekleri var. Bunlar dekorasyon değil — kopyala
 
 Ve bir şey bozulduğunda paniklemeden önce şunu sorun: *"Kubernetes şu an ne yapmaya çalışıyor?"* Cevabı genellikle `kubectl describe` ve `kubectl logs` içindedir.
 
-
 > *"The ships hung in the sky in much the same way that bricks don't."*
 >
 > "Gemiler gökyüzünde tıpkı tuğlaların havada asılı kalmaması gibi asılı duruyordu."
  — Douglas Adams
 ---
+
+---
+
+## 🗺️ Öğrenim Yol Haritası (Roadmap)
+
+Bu devasa bilgi yığınında kaybolmamak için dokümantasyonu aşağıdaki "Zero to Hero" sırasıyla okumanız tavsiye edilir:
+
+```text
+       [ BAŞLANGIÇ ]
+             │
+             ▼
+ [01_core] ──> [02_containers] ──> [03_architecture]
+                                                   │
+ ┌─────────────────────────────────────────────────┘
+ │
+ ▼
+ [04_infrastructure] ──> [05_networking] ──> [06_storage]
+                                                        │
+ ┌──────────────────────────────────────────────────────┘
+ │
+ ▼
+ [07_security] ──> [08_observability] ──> [09_gitops]
+                                                    │
+ ┌──────────────────────────────────────────────────┘
+ │
+ ▼
+ [10_platform] ──> [11_multicluster] ──> [12_ai]
+                                               │
+ ┌─────────────────────────────────────────────┘
+ │
+ ▼
+ [13_troubleshooting] ──> [14_migration] ──> [ SON ]
+```
 
 ```text
 Teşekkürler:
@@ -137,3 +163,7 @@ https://mstryoda.github.io/kubernetes-kitap/
 https://k8s-tr.github.io/k8s-docs/
 https://k8s.1w2.net/
 ```
+
+---
+---
+> *Not: İlgili bölümlerin uygulamalı YAML dosyalarını Manifests/ klasöründeki eşleşen dizinlerde bulabilirsiniz.*

@@ -1,0 +1,15 @@
+# daemonset-pod-monitor isimli PodMonitor nesnesi tanımlama dosyası
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: daemonset-pod-monitor
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: custom-node-exporter
+  podMetricsEndpoints:
+  - port: http-metrics
+    interval: 30s

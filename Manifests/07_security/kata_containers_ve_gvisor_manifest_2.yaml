@@ -1,0 +1,13 @@
+# isolated-web-app isimli Pod nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Pod
+metadata:
+  name: isolated-web-app
+  namespace: untrusted-workloads
+spec:
+  runtimeClassName: gvisor # gVisor sanal çekirdeği ile çalıştır!
+  containers:
+  - name: web-server
+    image: nginx:alpine
+    ports:
+    - containerPort: 80

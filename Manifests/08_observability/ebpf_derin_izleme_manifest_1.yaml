@@ -1,0 +1,13 @@
+# monitor-tcp-connect isimli TracingPolicy nesnesi tanımlama dosyası
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: monitor-tcp-connect
+  namespace: kube-system
+spec:
+  kprobes:
+  - call: "tcp_connect"
+    syscall: false
+    args:
+    - index: 0
+      type: "sock"

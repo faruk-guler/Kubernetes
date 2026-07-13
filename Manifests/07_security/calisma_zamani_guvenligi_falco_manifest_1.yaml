@@ -1,0 +1,9 @@
+# calisma_zamani_guvenligi_falco isimli Kubernetes nesnesi tanımlama dosyası
+customRules:
+  rules_user.yaml: |
+    - rule: Terminal Spawned in Container
+      desc: Konteyner icinde yetkisiz bir terminal/komut satiri baslatildi
+      condition: container and spawned_process and proc.name in (bash, sh, zsh, csh) and not user_known_shell_activities
+      output: "Tehlike: Konteyner icinde shell baslatildi (user=%user.name pod=%container.info process=%proc.name parent=%proc.pname cmdline=%proc.cmdline)"
+      priority: WARNING
+      tags: [container, shell, mitre_execution]

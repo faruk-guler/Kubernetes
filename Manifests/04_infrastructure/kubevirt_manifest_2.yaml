@@ -1,0 +1,41 @@
+# test-vm isimli VirtualMachine nesnesi tanımlama dosyası
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: test-vm
+  namespace: default
+spec:
+  running: false
+  template:
+    metadata:
+      labels:
+        kubevirt.io/size: small
+        kubevirt.io/domain: test-vm
+    spec:
+      domain:
+        devices:
+          disks:
+            - name: containerdisk
+              disk:
+                bus: virtio
+            - name: cloudinitdisk
+              disk:
+                bus: virtio
+          interfaces:
+            - name: default
+              masquerade: {}
+        resources:
+          requests:
+            memory: 2Gi
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: kubevirt/cirros-containerdisk-demo:latest
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |
+              #!/bin/sh
+              echo 'Hello from KubeVirt!'

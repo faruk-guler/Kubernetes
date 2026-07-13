@@ -1,0 +1,18 @@
+# kafka-worker-scaler isimli ScaledObject nesnesi tanımlama dosyası
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: kafka-worker-scaler
+  namespace: production
+spec:
+  scaleTargetRef:
+    name: kafka-consumer-deployment
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+  - type: kafka
+    metadata:
+      bootstrapServers: kafka-cluster-kafka-bootstrap.kafka.svc:9092
+      consumerGroup: my-group
+      topic: telemetry-data
+      lagThreshold: "100" # Tüketilmeyi bekleyen her 100 mesaj için yeni pod aç

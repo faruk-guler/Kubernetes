@@ -1,0 +1,17 @@
+# payment-bluegreen isimli Rollout nesnesi tanımlama dosyası
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: payment-bluegreen
+  namespace: production
+spec:
+  replicas: 4
+  strategy:
+    blueGreen:
+      activeService: payment-active
+      previewService: payment-preview
+      autoPromotionEnabled: false # Otomatik geçişi kapat (Manuel onaya bağla)
+  template:
+    metadata:
+      labels:
+        app: payment-bluegreen

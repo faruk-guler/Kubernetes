@@ -1,0 +1,22 @@
+# slack-alerts isimli AlertmanagerConfig nesnesi tanımlama dosyası
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: slack-alerts
+  namespace: monitoring
+spec:
+  route:
+    groupBy: ['alertname', 'namespace']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    receiver: 'slack-notifications'
+  receivers:
+  - name: 'slack-notifications'
+    slackConfigs:
+    - channel: '#k8s-alerts'
+      apiURL:
+        name: slack-webhook-secret
+        key: webhook-url
+      sendResolved: true
+      text: "🚨 *Uyarı:* {{ .CommonAnnotations.summary }}\n*Açıklama:* {{ .CommonAnnotations.description }}"

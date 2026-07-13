@@ -1,0 +1,15 @@
+# customer-api-priority isimli PriorityLevelConfiguration nesnesi tanımlama dosyası
+apiVersion: flowcontrol.apiserver.k8s.io/v1
+kind: PriorityLevelConfiguration
+metadata:
+  name: customer-api-priority
+spec:
+  type: Limited
+  limited:
+    nominalConcurrencyShares: 50 # API sunucusunun toplam işleme kapasitesinden alacağı pay
+    limitResponse:
+      type: Queue # Limit aşılırsa hemen reddetme, kuyruğa al
+      queuing:
+        queues: 64 # İsteklerin dağıtılacağı alt kuyruk sayısı (Fair Queuing için)
+        queueLengthLimit: 100 # Kuyruk başına maksimum istek limiti
+        handshakePercent: 30

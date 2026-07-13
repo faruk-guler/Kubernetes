@@ -1,0 +1,12 @@
+# postgres-prod isimli Cluster nesnesi tanımlama dosyası
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-prod
+  namespace: production
+spec:
+  instances: 3 # 1 Primary, 2 Replica
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.1
+  storage:
+    size: 10Gi
+    storageClass: longhorn # Kullanılacak StorageClass

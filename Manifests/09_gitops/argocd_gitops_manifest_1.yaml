@@ -1,0 +1,19 @@
+# root-bootstrap-app isimli Application nesnesi tanımlama dosyası
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-bootstrap-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/company/k8s-infra-gitops.git'
+    targetRevision: HEAD
+    path: apps/ # Diğer Application YAML dosyalarının bulunduğu klasör
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true       # Git'ten silinen uygulamaları kümeden de sil!
+      selfHeal: true    # Manuel müdahaleleri ezerek Git'teki haline döndür!

@@ -1,0 +1,11 @@
+# keda-rabbitmq-auth isimli TriggerAuthentication nesnesi tanımlama dosyası
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: keda-rabbitmq-auth
+  namespace: production
+spec:
+  secretTargetRef:
+    - parameter: host
+      name: rabbitmq-credentials
+      key: host

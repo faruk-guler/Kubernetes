@@ -1,0 +1,17 @@
+# db-recovered-pvc isimli VolumeSnapshot nesnesi tanımlama dosyası
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-recovered-pvc
+  namespace: production
+spec:
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi # Orijinal disk ile aynı veya daha büyük olmalıdır
+  dataSource:
+    name: db-backup-snapshot # Kurtarılacak yedek adı
+    kind: VolumeSnapshot
+    apiGroup: snapshot.storage.k8s.io

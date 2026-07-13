@@ -1,0 +1,25 @@
+# app-alert-rules isimli PrometheusRule nesnesi tanımlama dosyası
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: app-alert-rules
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+  - name: production-alerts
+    rules:
+    # 1. Kayıt Kuralı (Metrik performansını artırmak için ön-hesaplama)
+    - record: job:http_inprogress_requests:sum
+      expr: sum(http_inprogress_requests) by (job)
+
+    # 2. Uyarı Kuralı (Kritik Pod Crash)
+    - alert: KubernetesPodCrashLooping
+      expr: rate(kube_pod_container_status_restarts_total[5m]) * 60 > 2
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Kritik Hata: Pod CrashLoopBackOff moduna girdi!"
+        description: "{{ $labels.namespace }} isim alanındaki {{ $labels.pod }} podu son 5 dakikada çok sık yeniden başlatıldı."

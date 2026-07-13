@@ -1,0 +1,21 @@
+# deny-privilege-escalation isimli ClusterPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: deny-privilege-escalation
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: check-privilege-escalation
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Konteynerlerde allowPrivilegeEscalation: false yapılmalıdır!"
+      pattern:
+        spec:
+          containers:
+          - securityContext:
+              allowPrivilegeEscalation: false

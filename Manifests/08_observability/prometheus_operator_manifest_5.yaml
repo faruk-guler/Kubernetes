@@ -1,0 +1,25 @@
+# main-prometheus-instance isimli Prometheus nesnesi tanımlama dosyası
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: main-prometheus-instance
+  namespace: monitoring
+spec:
+  replicas: 2 # HA Yapılandırması (Aynı anda 2 sunucu çalışır)
+  serviceAccountName: prometheus-k8s
+  serviceMonitorSelector:
+    matchLabels:
+      release: prometheus
+  podMonitorSelector:
+    matchLabels:
+      release: prometheus
+  ruleSelector:
+    matchLabels:
+      release: prometheus
+  storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: gp3-sc # Dinamik AWS block storage veya Longhorn
+        resources:
+          requests:
+            storage: 100Gi

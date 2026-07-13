@@ -1,0 +1,16 @@
+# k8s-pod-event-source isimli Broker nesnesi tanımlama dosyası
+apiVersion: sources.knative.dev/v1
+kind: ApiServerSource
+metadata:
+  name: k8s-pod-event-source
+  namespace: production
+spec:
+  resources:
+    - apiVersion: v1
+      kind: Pod # Pod olaylarını dinle
+  mode: Resource
+  sink:
+    ref:
+      apiVersion: eventing.knative.dev/v1
+      kind: Broker
+      name: default-event-broker

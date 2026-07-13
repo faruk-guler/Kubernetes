@@ -1,0 +1,15 @@
+# dynamic-k8s-overview isimli GrafanaDashboard nesnesi tanımlama dosyası
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: dynamic-k8s-overview
+  namespace: monitoring
+spec:
+  # Panelin dahil edileceği Grafana sunucu referansı
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana-main"
+  # Grafana.com üzerindeki hazır JSON panelini URL veya JSON string olarak belirtin
+  configMapRef:
+    name: k8s-dashboard-json-configmap
+    key: k8s-overview.json

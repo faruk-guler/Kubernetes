@@ -1,0 +1,21 @@
+# enforce-gvisor-runtime isimli ClusterPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-gvisor-runtime
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: check-gvisor-runtime-class
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaces:
+          - untrusted-workloads
+    validate:
+      message: "Bu isim alanındaki tüm podlar 'gvisor' runtimeClassName kullanmak zorundadır!"
+      pattern:
+        spec:
+          runtimeClassName: "gvisor"

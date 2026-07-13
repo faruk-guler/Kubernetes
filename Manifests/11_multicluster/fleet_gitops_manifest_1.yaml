@@ -1,0 +1,17 @@
+# corporate-apps isimli GitRepo nesnesi tanımlama dosyası
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: corporate-apps
+  namespace: fleet-default
+spec:
+  repo: https://github.com/company/fleet-apps-manifests.git
+  branch: main
+  paths:
+  - apps/web-app # Git reposu içindeki yol
+  # Hedef kümeleri etiketlerine göre seçin:
+  targets:
+  - name: production-clusters
+    clusterSelector:
+      matchLabels:
+        env: prod

@@ -1,0 +1,16 @@
+# wasm-edge-app isimli Pod nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wasm-edge-app
+  namespace: production
+spec:
+  runtimeClassName: wasm-spin # WASM runtime'ını kullan!
+  containers:
+  - name: my-wasm-program
+    # Docker imajı değil, OCI registry'e push edilmiş derlenmiş WASM binary dosyası:
+    image: ghcr.io/company/wasm/sensor-app:v1.0.0
+    resources:
+      limits:
+        cpu: 100m
+        memory: 16Mi # Sadece 16MB RAM yeterlidir!

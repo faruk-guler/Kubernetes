@@ -1,0 +1,11 @@
+# web-app-pdb isimli PodDisruptionBudget nesnesi tanımlama dosyası
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web-app-pdb
+  namespace: production
+spec:
+  maxUnavailable: 20% # Podların en fazla %20'si aynı anda kapatılabilir
+  selector:
+    matchLabels:
+      app: web-frontend

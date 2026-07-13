@@ -1,0 +1,15 @@
+# secured-app isimli Deployment nesnesi tanımlama dosyası
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secured-app
+  namespace: production
+spec:
+  replicas: 3
+  template:
+    spec:
+      imagePullSecrets:
+      - name: registry-credentials # Tanımladığımız Secret
+      containers:
+      - name: app
+        image: registry.example.com/production/myapp:v1.0

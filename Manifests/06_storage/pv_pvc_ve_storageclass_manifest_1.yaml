@@ -1,0 +1,18 @@
+# nfs-pv-global isimli PersistentVolume nesnesi tanımlama dosyası
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv-global
+  labels:
+    type: nfs
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany # Aynı anda birden fazla düğüm bağlayabilir
+  persistentVolumeReclaimPolicy: Retain # PVC silinirse veriyi koru
+  storageClassName: nfs-slow
+  nfs:
+    path: /nfs/kubedata/projeler
+    server: 192.168.1.50 # NFS Sunucu IP'si

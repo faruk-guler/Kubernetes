@@ -1,0 +1,36 @@
+# ray-cluster-production isimli RayCluster nesnesi tanımlama dosyası
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: ray-cluster-production
+  namespace: ray-system
+spec:
+  rayVersion: '2.9.0'
+  headGroupSpec:
+    rayStartParams:
+      dashboard-host: '0.0.0.0'
+    template:
+      spec:
+        containers:
+        - name: ray-head
+          image: rayproject/ray:2.9.0-py310
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+  workerGroupSpecs:
+  - groupName: gpu-group
+    replicas: 2 # 2 adet worker node ayağa kalkacak
+    minReplicas: 1
+    maxReplicas: 10
+    rayStartParams: {}
+    template:
+      spec:
+        containers:
+        - name: ray-worker
+          image: rayproject/ray:2.9.0-py310
+          resources:
+            limits:
+              cpu: "8"
+              memory: 32Gi
+              nvidia.com/gpu: "1" # Her bir işçiye 1 GPU

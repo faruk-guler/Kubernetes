@@ -1,0 +1,15 @@
+# app-ci-pipeline isimli Pipeline nesnesi tanımlama dosyası
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: app-ci-pipeline
+  namespace: tekton-pipelines
+spec:
+  tasks:
+  - name: fetch-code-task
+    taskRef:
+      name: git-clone
+  - name: build-code-task
+    runAfter: ["fetch-code-task"] # Önce git-clone bitsin
+    taskRef:
+      name: build-app-task

@@ -1,0 +1,10 @@
+# networkpolicy_derin_dalis isimli Kubernetes nesnesi tanımlama dosyası
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          purpose: production # Sadece bu etiketli namespace'ler
+      podSelector:
+        matchLabels:
+          app: monitoring-client # Sadece bu etiketli podlar

@@ -1,0 +1,12 @@
+# db-service-headless isimli Service nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service-headless
+  namespace: production
+spec:
+  clusterIP: None # Bu parametre servisi Headless yapar
+  selector:
+    app: mysql
+  ports:
+    - port: 3306

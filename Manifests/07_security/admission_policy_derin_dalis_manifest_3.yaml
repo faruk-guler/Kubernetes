@@ -1,0 +1,16 @@
+# mandatory-team-label isimli ValidatingAdmissionPolicy nesnesi tanımlama dosyası
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: mandatory-team-label
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validations:
+  - expression: "has(object.metadata.labels) && 'team' in object.metadata.labels && object.metadata.labels['team'] != ''"
+    message: "Hata: Pod etiketlerinde geçerli bir 'team' (takım) etiketi bulunmalıdır!"

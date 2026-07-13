@@ -1,0 +1,25 @@
+# app-canary isimli Deployment nesnesi tanımlama dosyası
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: app-canary
+  namespace: production
+spec:
+  provider: gatewayapi # Gateway API sürücüsünü kullan
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: app-deployment
+  service:
+    port: 80
+    targetPort: 8080
+  analysis:
+    interval: 1m
+    threshold: 5
+    maxWeight: 50
+    stepWeight: 10
+    metrics:
+    - name: request-success-rate
+      thresholdRange:
+        min: 99
+      interval: 1m

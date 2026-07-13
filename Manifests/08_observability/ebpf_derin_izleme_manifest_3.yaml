@@ -1,0 +1,16 @@
+# monitor-privilege-escalation isimli TracingPolicy nesnesi tanımlama dosyası
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: monitor-privilege-escalation
+  namespace: kube-system
+spec:
+  kprobes:
+  - call: "commit_creds"
+    syscall: false
+    args:
+    - index: 0
+      type: "cred"
+    selectors:
+    - matchActions:
+      - action: Post

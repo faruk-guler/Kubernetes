@@ -1,0 +1,33 @@
+# {{name}}-{{path.basename}} isimli ApplicationSet nesnesi tanımlama dosyası
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: matrix-deployer
+  namespace: argocd
+spec:
+  generators:
+  - matrix:
+      generators:
+      # 1. Üreteç: Tüm prod kümeleri
+      - clusters:
+          selector:
+            matchLabels:
+              tier: prod
+      # 2. Üreteç: Git üzerindeki uygulamalar
+      - git:
+          repoURL: 'https://github.com/company/apps-repo.git'
+          revision: HEAD
+          directories:
+          - path: services/*
+  template:
+    metadata:
+      name: '{{name}}-{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: 'https://github.com/company/apps-repo.git'
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: '{{server}}'
+        namespace: '{{path.basename}}'

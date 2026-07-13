@@ -1,0 +1,48 @@
+# git-commit-automation isimli GitRepository nesnesi tanımlama dosyası
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: app-image-repo
+  namespace: flux-system
+spec:
+  image: registry.company.com/apps/my-app
+  interval: 2m
+
+---
+# 2. Hangi Sürüm Kuralının Takip Edileceğini Belirleme (ImagePolicy)
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: semver-patch-policy
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: app-image-repo
+  policy:
+    # SemVer kurallarına göre 1.4.x patch güncellemelerini otomatik al
+    semver:
+      range: '>=1.4.0 <1.5.0'
+
+---
+# 3. Değişimi Git'e Yazma ve Commit Etme (ImageUpdateAutomation)
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: git-commit-automation
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: app-source-repo
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: fluxcd-bot@company.com
+        name: fluxcd-bot
+      messageTemplate: 'chore(gitops): auto-update app image to {{range .Updated.Images}}{{print .NewTag}}{{end}}'
+  update:
+    path: ./clusters/production # YAML dosyalarının aranacağı dizin

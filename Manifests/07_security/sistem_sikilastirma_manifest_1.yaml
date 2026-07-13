@@ -1,0 +1,12 @@
+# apparmor-protected-pod isimli Pod nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Pod
+metadata:
+  name: apparmor-protected-pod
+  annotations:
+    # "container-name" isimli konteynere "no-shells" profilini uygula
+    container.apparmor.security.beta.kubernetes.io/app-container: localhost/no-shells
+spec:
+  containers:
+  - name: app-container
+    image: my-app:v1

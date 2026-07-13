@@ -1,0 +1,57 @@
+# secured-web-app isimli Deployment nesnesi tanımlama dosyası
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secured-web-app
+  namespace: production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web-service
+  template:
+    metadata:
+      labels:
+        app: web-service
+    spec:
+      # POD SEVİYESİ GÜVENLİK
+      securityContext:
+        runAsUser: 10001        # Container içindeki süreçleri UID 10001 olarak çalıştır
+        runAsGroup: 30000       # GID 30000 grubuna dahil et
+        fsGroup: 20000          # Mount edilen volume dosyalarını bu grup sahipliğine ata
+        runAsNonRoot: true      # Root (UID 0) olarak çalışmayı küme düzeyinde engelle
+        seccompProfile:
+          type: RuntimeDefault  # Varsayılan güvenli syscall profilini kullan
+      containers:
+      - name: application
+        image: nginx:alpine-slim # Minimal ve güvenli taban imajı
+        # KONTEYNER SEVİYESİ GÜVENLİK
+        securityContext:
+          allowPrivilegeEscalation: false # Süreçlerin daha yüksek yetki istemesini engelle
+          readOnlyRootFilesystem: true     # Root dosya sistemini salt okunur yap
+          privileged: false               # Asla privileged (tanrı modu) modda çalıştırma
+          capabilities:
+            drop:
+            - ALL                         # Tüm Linux kernel capabilities haklarını sil
+            add:
+            - NET_BIND_SERVICE            # Sadece 1024 altındaki portları (Örn: 80) dinlemek için izin ver
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        # Salt okunur dosya sisteminde yazılması gereken geçici klasörleri emptyDir ile mount edin:
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+        - name: cache-volume
+          mountPath: /var/cache/nginx
+      volumes:
+      - name: tmp-volume
+        emptyDir: {}
+      - name: cache-volume
+        emptyDir: {}

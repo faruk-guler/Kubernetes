@@ -1,0 +1,10 @@
+# konteyner_calisma_zamani_ve_kayit_defteri isimli Kubernetes nesnesi tanımlama dosyası
+- name: Run Trivy vulnerability scanner
+  uses: aquasecurity/trivy-action@master
+  with:
+    image-ref: 'registry.example.com/production/myapp:v1.0'
+    format: 'table'
+    exit-code: '1' # Kritik açıklarda build/pipeline aşamasını başarısız say (durur)
+    ignore-unfixed: true
+    vuln-type: 'os,library'
+    severity: 'CRITICAL,HIGH'

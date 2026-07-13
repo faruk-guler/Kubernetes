@@ -1,0 +1,28 @@
+# cicd_boru_hatti_kaliplari isimli Kubernetes nesnesi tanımlama dosyası
+name: CI/CD Direct Kubernetes Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 1. Kubernetes Küme Erişim Yetkisini Ayarla
+    - name: Set up Kubeconfig
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBECONFIG_DATA }} # Base64 kodlu kubeconfig verisi
+
+    # 2. YAML Değişkenlerini Güncelle ve Deploy Et
+    - name: Deploy to Kubernetes
+      run: |
+        # Deployment dosyasındaki imaj sürümünü Git Commit SHA'sı ile ez:
+        sed -i "s|image: my-app:.*|image: registry.company.com/my-app:${{ github.sha }}|g" k8s/deployment.yaml
+        kubectl apply -f k8s/

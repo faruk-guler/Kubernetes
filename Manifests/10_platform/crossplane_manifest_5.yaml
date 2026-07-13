@@ -1,0 +1,11 @@
+# my-app-db isimli PostgreSQLInstance nesnesi tanımlama dosyası
+apiVersion: database.company.com/v1alpha1
+kind: PostgreSQLInstance
+metadata:
+  name: my-app-db
+  namespace: production
+spec:
+  storageGB: 20
+  dbName: appprod
+  writeConnectionSecretToRef:
+    name: k8s-db-secret # Bağlantı bilgilerinin yazılacağı Secret

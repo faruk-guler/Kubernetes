@@ -1,0 +1,19 @@
+# network-delay isimli NetworkChaos nesnesi tanımlama dosyası
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-delay
+  namespace: production
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+      - production
+    labelSelectors:
+      app: payment-service
+  delay:
+    latency: "200ms"
+    correlation: "100"
+    jitter: "0ms"
+  duration: "1m"

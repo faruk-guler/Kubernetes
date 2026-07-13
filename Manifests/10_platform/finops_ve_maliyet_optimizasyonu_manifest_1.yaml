@@ -1,0 +1,15 @@
+# payment-api-vpa isimli Deployment nesnesi tanımlama dosyası
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: payment-api-vpa
+  namespace: production
+spec:
+  targetRef:
+    apiVersion: "apps/v1"
+    kind: Deployment
+    name: payment-api
+  updatePolicy:
+    # Off: Önerileri sadece raporlar, podları otomatik güncellemez (İlk aşama için önerilir).
+    # Auto: Podları kapatıp yeni önerilen kaynak değerleriyle otomatik başlatır.
+    updateMode: "Off"

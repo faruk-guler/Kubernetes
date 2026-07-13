@@ -1,0 +1,25 @@
+# sistem_sikilastirma isimli Kubernetes nesnesi tanımlama dosyası
+spec:
+  containers:
+  - command:
+    - kube-apiserver
+    - --audit-policy-file=/etc/kubernetes/audit-policy.yaml
+    - --audit-log-path=/var/log/kubernetes/audit.log
+    - --audit-log-maxage=30
+    - --audit-log-maxbackup=10
+    - --audit-log-maxsize=100
+    volumeMounts:
+    - mountPath: /etc/kubernetes/audit-policy.yaml
+      name: audit-policy
+      readOnly: true
+    - mountPath: /var/log/kubernetes/
+      name: audit-logs
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/audit-policy.yaml
+      type: File
+    name: audit-policy
+  - hostPath:
+      path: /var/log/kubernetes/
+      type: DirectoryOrCreate
+    name: audit-logs

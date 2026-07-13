@@ -1,0 +1,20 @@
+# block-latest-tag-and-external-registries isimli ClusterPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: block-latest-tag-and-external-registries
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: enforce-pinned-tag-and-internal-registry
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Latest etiketli imajlar veya dış kaynaklı registry adresleri yasaktır!"
+      pattern:
+        spec:
+          containers:
+          - image: "registry.company.com/*:*" # Sadece sirket registrysi ve belirtilmiş etiketler

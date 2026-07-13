@@ -1,0 +1,24 @@
+# billing-service-monitor isimli ServiceMonitor nesnesi tanımlama dosyası
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: billing-service-monitor
+  namespace: production
+  labels:
+    # Bu label, prometheus-stack'in bu monitörü tanıması için önemlidir
+    release: prometheus
+spec:
+  # Hangi pod servislerinin taranacağını etiket seçiciyle belirleyin
+  selector:
+    matchLabels:
+      app: billing-app
+  # Aramanın yapılacağı namespace listesi
+  namespaceSelector:
+    matchNames:
+    - production
+  # Metrik endpoints detayları
+  endpoints:
+  - port: metrics # Servis tanımındaki portun adı (targetPort değil name olmalı)
+    path: /actuator/prometheus # Spring boot actuator veya custom metrik path'i
+    interval: 15s # Tarama sıklığı
+    scrapeTimeout: 10s

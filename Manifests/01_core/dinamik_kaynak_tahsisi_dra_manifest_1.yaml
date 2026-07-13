@@ -1,0 +1,26 @@
+# gpu-claim-template isimli ResourceClaimTemplate nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Pod
+metadata:
+  name: deep-learning-trainer
+  namespace: ml-training
+spec:
+  containers:
+  - name: training-container
+    image: pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
+    command: ["python", "train.py"]
+    resources:
+      claims:
+      - name: my-gpu-resource # Pod altındaki claim referansı
+  resourceClaims:
+  - name: my-gpu-resource
+    resourceClaimTemplateName: gpu-claim-template
+---
+apiVersion: resource.k8s.io/v1alpha3
+kind: ResourceClaimTemplate
+metadata:
+  name: gpu-claim-template
+  namespace: ml-training
+spec:
+  spec:
+    resourceClassName: nvidia-h100-gpu

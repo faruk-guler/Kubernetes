@@ -1,0 +1,10 @@
+# company-app-assets-production isimli Bucket nesnesi tanımlama dosyası
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  name: company-app-assets-production
+spec:
+  forProvider:
+    region: us-east-1
+  providerConfigRef:
+    name: default # AWS kimlik doğrulaması barındıran config

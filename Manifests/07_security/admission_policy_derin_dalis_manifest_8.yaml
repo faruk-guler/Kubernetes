@@ -1,0 +1,15 @@
+# replica-limit-parametric-binding isimli ValidatingAdmissionPolicyBinding nesnesi tanımlama dosyası
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: replica-limit-parametric-binding
+spec:
+  policyName: replica-limit-parametric
+  validationActions: [Deny]
+  paramRef:
+    name: limit-parameters-config
+    namespace: production
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        environment: production

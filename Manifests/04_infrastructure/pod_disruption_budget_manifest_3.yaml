@@ -1,0 +1,19 @@
+# require-pdb-in-production isimli ClusterPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-pdb-in-production
+spec:
+  validationFailureAction: Audit # Test için audit, zorunlu kılmak için 'Enforce'
+  rules:
+  - name: validate-pdb-exists
+    match:
+      any:
+      - resources:
+          kinds:
+          - Deployment
+          namespaces:
+          - production
+    validate:
+      message: "Canlı (production) ortamındaki her Deployment için uygun bir PodDisruptionBudget tanımlanmalıdır."
+      # PDB'lerin varlığını doğrulayan kontrol mantığı buraya eklenir

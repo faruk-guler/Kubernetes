@@ -1,0 +1,26 @@
+# database-backup-job isimli Job nesnesi tanımlama dosyası
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-backup-job
+  namespace: production
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+      - name: log-exporter
+        image: fluent/fluent-bit:2.2.0
+        # restartPolicy: Always belirterek bunu bir NATIVE SIDECAR yapıyoruz
+        restartPolicy: Always
+        resources:
+          limits:
+            cpu: "100m"
+            memory: "128Mi"
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+      containers:
+      - name: backup-worker
+        image: alpine:3.18
+        command: ["sh", "-c", "echo 'Yedekleme başladı...'; sleep 10; echo 'Yedekleme tamamlandı.'"]

@@ -1,0 +1,16 @@
+# my-app-config isimli Config nesnesi tanımlama dosyası
+apiVersion: skaffold/v4beta3
+kind: Config
+metadata:
+  name: my-app-config
+build:
+  artifacts:
+  - image: registry.example.com/myapp
+    context: .
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+    - k8s/deployment.yaml
+    - k8s/service.yaml

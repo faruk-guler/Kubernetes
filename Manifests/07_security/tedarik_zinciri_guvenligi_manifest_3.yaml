@@ -1,0 +1,20 @@
+# restrict-registries-and-tags isimli ClusterPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-registries-and-tags
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: check-image-registry-and-tag
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Latest etiketli imajlar veya dış kaynaklı registry adresleri yasaktır!"
+      pattern:
+        spec:
+          containers:
+          - image: "ghcr.io/company/*:v*" # Sadece sirket registry'si ve versiyonlu etiketler

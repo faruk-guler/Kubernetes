@@ -1,0 +1,13 @@
+# finops_ve_maliyet_optimizasyonu isimli Kubernetes nesnesi tanımlama dosyası
+spec:
+  template:
+    spec:
+      # Pod'un sadece Spot sunuculara gitmesini sağla:
+      nodeSelector:
+        node.kubernetes.io/instance-type-class: spot
+      # Spot sunucuların üzerindeki kesinti toleransını (taint) aş:
+      tolerations:
+      - key: "sku"
+        operator: "Equal"
+        value: "spot"
+        effect: "NoSchedule"

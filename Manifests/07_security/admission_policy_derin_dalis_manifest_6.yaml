@@ -1,0 +1,14 @@
+# secure-registries-binding isimli ValidatingAdmissionPolicyBinding nesnesi tanımlama dosyası
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: secure-registries-binding
+spec:
+  policyName: secure-registries-only
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: NotIn
+        values: ["kube-system"]

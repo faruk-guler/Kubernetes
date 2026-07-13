@@ -1,0 +1,21 @@
+# log-alert-rules isimli PrometheusRule nesnesi tanımlama dosyası
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: log-alert-rules
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+  - name: loki-alerts
+    rules:
+    - alert: HighDatabaseConnectionFailures
+      # Son 5 dakikada "connection refused" logu 10'dan fazla çıktıysa uyar
+      expr: sum(count_over_time({app="db-client"} |= "connection refused" [5m])) > 10
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Kritik Veritabanı Bağlantı Hatası Algılandı"
+        description: "Son 5 dakikada db-client podunda 10'dan fazla veritabanı bağlantı hatası logu tespit edildi."

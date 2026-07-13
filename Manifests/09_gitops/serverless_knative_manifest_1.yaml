@@ -1,0 +1,20 @@
+# hello-serverless isimli Service nesnesi tanımlama dosyası
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: hello-serverless
+  namespace: production
+spec:
+  template:
+    metadata:
+      annotations:
+        # Otomatik ölçekleme ayarları
+        autoscaling.knative.dev/target: "100" # Her pod başına eşzamanlı maksimum 100 istek hedefi
+        autoscaling.knative.dev/min-scale: "0" # Alt sınır (Sıfıra inebilir!)
+        autoscaling.knative.dev/max-scale: "10" # Üst sınır (En fazla 10 pod)
+    spec:
+      containers:
+      - image: gcr.io/knative-samples/helloworld-go
+        env:
+        - name: TARGET
+          value: "Serverless World"

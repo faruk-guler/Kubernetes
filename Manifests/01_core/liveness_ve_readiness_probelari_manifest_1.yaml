@@ -1,0 +1,10 @@
+# api-pdb isimli PodDisruptionBudget nesnesi tanımlama dosyası
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: api-pdb
+spec:
+  minAvailable: 3  # Her zaman 3 kopya sağlıklı kalmak zorunda
+  selector:
+    matchLabels:
+      app: api-server

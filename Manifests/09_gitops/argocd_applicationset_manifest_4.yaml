@@ -1,0 +1,25 @@
+# prod-{{path.basename}} isimli ApplicationSet nesnesi tanımlama dosyası
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: monorepo-services
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      repoURL: 'https://github.com/company/monorepo-code.git'
+      revision: HEAD
+      directories:
+      - path: apps/* # apps altındaki her klasörü izle
+  template:
+    metadata:
+      name: 'prod-{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: 'https://github.com/company/monorepo-code.git'
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: production

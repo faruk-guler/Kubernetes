@@ -1,0 +1,13 @@
+# bgp-config isimli CiliumBGPClusterConfig nesnesi tanımlama dosyası
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPClusterConfig
+metadata:
+  name: bgp-config
+spec:
+  nodeSelector:
+    matchLabels:
+      bgp-peer: "true" # Sadece bu etikete sahip düğümler BGP konuşur
+  peers:
+    - peerAddress: "192.168.1.1" # Fiziksel Router IP adresi
+      peerASN: 65001              # Router BGP Otonom Sistem Numarası (ASN)
+      myASN: 65002                # Kubernetes Düğümlerinin ASN Numarası

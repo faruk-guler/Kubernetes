@@ -1,0 +1,15 @@
+# sklearn-churn-model isimli InferenceService nesnesi tanımlama dosyası
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: sklearn-churn-model
+  namespace: ml-serving
+spec:
+  predictor:
+    canaryTrafficPercent: 10 # Gelen trafiğin %10'u yeni sürüme gider
+    sklearn:
+      storageUri: s3://my-company-ml-bucket/models/churn/v2-canary/
+      resources:
+        limits:
+          cpu: "1"
+          memory: 2Gi

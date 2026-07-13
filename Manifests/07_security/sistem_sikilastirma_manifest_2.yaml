@@ -1,0 +1,19 @@
+# sistem_sikilastirma isimli Policy nesnesi tanımlama dosyası
+apiVersion: audit.k8s.io/v1
+kind: Policy
+rules:
+# 1. Secret nesneleri üzerindeki değişimleri hem istek hem cevap içeriğiyle kaydet
+- level: RequestResponse
+  resources:
+  - group: ""
+    resources: ["secrets"]
+# 2. ConfigMap ve Service nesnelerini Metadata seviyesinde kaydet
+- level: Metadata
+  resources:
+  - group: ""
+    resources: ["configmaps", "services"]
+# 3. Kube-system ve system:nodes gibi muaf tutulacak servis istekleri
+- level: None
+  userGroups: ["system:nodes"]
+# 4. Geri kalan her şeyi Metadata düzeyinde kaydet
+- level: Metadata

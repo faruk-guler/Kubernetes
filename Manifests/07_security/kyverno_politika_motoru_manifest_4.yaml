@@ -1,0 +1,21 @@
+# sync-ns-owner-label isimli Pod nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sync-ns-owner-label
+spec:
+  rules:
+  - name: mutate-pod-owner
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      targets:
+        - apiVersion: v1
+          kind: Pod
+      patchStrategicMerge:
+        metadata:
+          labels:
+            owner: "{{request.namespace}}"

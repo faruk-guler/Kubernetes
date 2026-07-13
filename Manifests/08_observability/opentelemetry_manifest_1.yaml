@@ -1,0 +1,32 @@
+# otel-daemonset-collector isimli OpenTelemetryCollector nesnesi tanımlama dosyası
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel-daemonset-collector
+  namespace: opentelemetry
+spec:
+  mode: daemonset # Her node'a bir pod yerleştir
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+    processors:
+      batch:
+        send_batch_size: 8192
+        timeout: 1s
+    exporters:
+      # Verileri merkezi OTel Gateway sunucusuna ilet
+      otlp:
+        endpoint: otel-gateway.opentelemetry.svc.cluster.local:4317
+        tls:
+          insecure: true
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlp]

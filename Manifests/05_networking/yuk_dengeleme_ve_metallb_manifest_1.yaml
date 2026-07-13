@@ -1,0 +1,10 @@
+# production-ip-pool isimli IPAddressPool nesnesi tanımlama dosyası
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: production-ip-pool
+  namespace: metallb-system
+spec:
+  # Düğümlerle aynı ağ segmentindeki boş IP aralığı yazılır
+  addresses:
+    - 192.168.1.200-192.168.1.250

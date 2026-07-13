@@ -1,0 +1,25 @@
+# vcluster isimli Kubernetes nesnesi tanımlama dosyası
+steps:
+- name: Checkout code
+  uses: actions/checkout@v4
+
+- name: Set up kubectl & vcluster
+  run: |
+    curl -L -o vcluster https://github.com/loft-sh/vcluster/releases/latest/download/vcluster-linux-amd64
+    chmod +x vcluster && sudo mv vcluster /usr/local/bin/
+
+- name: Create Ephemeral vCluster
+  run: |
+    vcluster create pr-${{ github.event.number }} --namespace pr-${{ github.event.number }} --create-namespace
+
+- name: Run Integration Tests
+  run: |
+    vcluster connect pr-${{ github.event.number }} -n pr-${{ github.event.number }} --background-proxy
+    export KUBECONFIG=kubeconfig.yaml
+    kubectl apply -f manifests/
+    # Testleri koştur...
+
+- name: Cleanup vCluster
+  if: always()
+  run: |
+    vcluster delete pr-${{ github.event.number }} -n pr-${{ github.event.number }}

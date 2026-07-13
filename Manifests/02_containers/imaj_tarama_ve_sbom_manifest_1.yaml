@@ -1,0 +1,24 @@
+# verify-image-signature isimli ClusterPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-image-signature
+spec:
+  validationFailureAction: Enforce # Kurala uymayan pod'u çalıştırma (Bloke et)
+  rules:
+    - name: verify-signature
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      verifyImages:
+      - imageReferences:
+        - "registry.example.com/production/*"
+        attestations: []
+        authority:
+          keyless: false
+          key: |-
+            -----BEGIN PUBLIC KEY-----
+            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEh5m... (Public Key buraya yapıştırılır)
+            -----END PUBLIC KEY-----

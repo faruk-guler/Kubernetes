@@ -1,0 +1,15 @@
+# kustomize isimli Kustomization nesnesi tanımlama dosyası
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Ortak base klasörünü referans al:
+resources:
+  - ../../base
+# Prod ortamına özel yamaları uygula:
+patches:
+  - path: replica-patch.yaml
+# Prod ortamına ait ConfigMap ve Secret'ları otomatik üret (configMapGenerator):
+configMapGenerator:
+  - name: app-config
+    literals:
+      - DB_HOST=prod-db.company.com
+      - LOG_LEVEL=WARN

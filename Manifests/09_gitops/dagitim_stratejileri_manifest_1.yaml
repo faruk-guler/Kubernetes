@@ -1,0 +1,17 @@
+# billing-api isimli Deployment nesnesi tanımlama dosyası
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-api
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1       # Güncelleme sırasında en fazla kaç ekstra pod oluşturulabilir (Oran %25 de olabilir)
+      maxUnavailable: 0 # Güncelleme sırasında en fazla kaç pod devre dışı kalabilir (0 = Kesinti istemiyorum!)
+  template:
+    spec:
+      containers:
+      - name: api
+        image: billing:v2.0

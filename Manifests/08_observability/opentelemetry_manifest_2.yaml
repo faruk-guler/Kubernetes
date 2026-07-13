@@ -1,0 +1,36 @@
+# otel-gateway isimli OpenTelemetryCollector nesnesi tanımlama dosyası
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel-gateway
+  namespace: opentelemetry
+spec:
+  mode: deployment
+  replicas: 3
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+    processors:
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 75
+        spike_limit_percentage: 15
+      batch:
+    exporters:
+      # Traceleri Tempo'ya gönder:
+      otlp/tempo:
+        endpoint: tempo.monitoring.svc.cluster.local:4317
+        tls:
+          insecure: true
+      # Metrikleri Prometheus/Mimir'e gönder:
+      prometheus:
+        endpoint: 0.0.0.0:8889
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [otlp/tempo]

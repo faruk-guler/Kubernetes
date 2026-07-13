@@ -1,0 +1,10 @@
+# default-aws-config isimli ProviderConfig nesnesi tanımlama dosyası
+apiVersion: aws.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default-aws-config
+spec:
+  credentials:
+    source: WebIdentity
+    webIdentity:
+      roleARN: arn:aws:iam::123456789012:role/eks-crossplane-aws-role # AWS IAM Rolü

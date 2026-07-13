@@ -1,0 +1,13 @@
+# gateway_api isimli Kubernetes nesnesi tanımlama dosyası
+spec:
+  parentRefs:
+    - name: external-gateway
+      namespace: infra-system
+  rules:
+    - backendRefs:
+        - name: billing-api-v1
+          port: 80
+          weight: 90 # Trafiğin %90'ı eski sürüme gider
+        - name: billing-api-v2
+          port: 80
+          weight: 10 # Trafiğin %10'u test sürümüne gider

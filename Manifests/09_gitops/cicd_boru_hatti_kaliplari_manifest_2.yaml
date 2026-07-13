@@ -1,0 +1,17 @@
+# build-app-task isimli Task nesnesi tanımlama dosyası
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-app-task
+  namespace: tekton-pipelines
+spec:
+  params:
+  - name: pathToApp
+    type: string
+    default: "/workspace"
+  steps:
+  - name: compile-code
+    image: maven:3.8-openjdk-17-slim
+    workingDir: $(params.pathToApp)
+    script: |
+      mvn clean package -DskipTests

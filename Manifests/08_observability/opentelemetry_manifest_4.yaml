@@ -1,0 +1,16 @@
+# nodejs-api isimli Deployment nesnesi tanımlama dosyası
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-api
+  namespace: production
+spec:
+  template:
+    metadata:
+      annotations:
+        # Node.js uygulamasının içine otomatik OTel ajanı enjekte et!
+        instrumentation.opentelemetry.io/inject-nodejs: "global-auto-instrumentation"
+    spec:
+      containers:
+      - name: api
+        image: my-node-app:v1.0

@@ -1,0 +1,22 @@
+# team-billing-pager isimli AlertmanagerConfig nesnesi tanımlama dosyası
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: team-billing-pager
+  namespace: production
+  labels:
+    release: prometheus
+spec:
+  route:
+    groupBy: ['alertname']
+    groupWait: 15s
+    groupInterval: 3m
+    repeatInterval: 4h
+    receiver: 'billing-pagerduty'
+  receivers:
+  - name: 'billing-pagerduty'
+    pagerdutyConfigs:
+    - serviceKey:
+        name: pagerduty-keys
+        key: billing-service-key
+      sendResolved: true

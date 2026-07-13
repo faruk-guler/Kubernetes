@@ -1,0 +1,14 @@
+# static-web isimli Pod nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-web
+  labels:
+    role: static-helper
+spec:
+  containers:
+  - name: web
+    image: nginx:1.25
+    ports:
+    - name: web
+      containerPort: 80

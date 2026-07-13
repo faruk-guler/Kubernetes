@@ -1,0 +1,19 @@
+# windows-dotnet-app isimli Pod nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Pod
+metadata:
+  name: windows-dotnet-app
+  namespace: default
+spec:
+  nodeSelector:
+    kubernetes.io/os: windows # Sadece Windows işletim sistemine sahip düğümlere git
+  tolerations:
+  - key: "os"
+    operator: "Equal"
+    value: "windows"
+    effect: "NoSchedule" # Windows düğümündeki lekeyi tolere et
+  containers:
+  - name: dotnet-app
+    image: mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-ltsc2022 # Windows Base Image
+    ports:
+    - containerPort: 80

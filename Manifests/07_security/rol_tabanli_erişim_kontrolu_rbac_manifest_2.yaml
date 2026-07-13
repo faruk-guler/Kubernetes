@@ -1,0 +1,25 @@
+# read-pods-binding isimli Role nesnesi tanımlama dosyası
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: development
+  name: pod-reader
+rules:
+- apiGroups: [""] # "" işareti core API grubunu temsil eder (Pod, Service, ConfigMap vb.)
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list", "watch"] # Sadece okuma izinleri verilmiştir
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods-binding
+  namespace: development
+subjects:
+- kind: User
+  name: "developer@example.com" # Yetkilendirilecek kullanıcı
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: pod-reader # Yukarıda tanımlanan Role referansı
+  apiGroup: rbac.authorization.k8s.io

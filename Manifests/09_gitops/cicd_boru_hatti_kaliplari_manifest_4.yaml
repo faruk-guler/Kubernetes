@@ -1,0 +1,12 @@
+# app-ci-run-001 isimli PipelineRun nesnesi tanımlama dosyası
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: app-ci-run-001
+  namespace: tekton-pipelines
+spec:
+  pipelineRef:
+    name: app-ci-pipeline
+  params:
+  - name: repo-url
+    value: "https://github.com/company/my-app.git"

@@ -1,0 +1,16 @@
+# billing-db-service isimli Service nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing-db-service
+  namespace: production
+  annotations:
+    # Bu anotasyon servisi tüm bağlı kümelere duyurur ve trafiği paylaştırır
+    io.cilium/global-service: "true"
+    # İsteğe bağlı: Trafiği önce yerel podlara gönder, yoksa diğer kümeye taşır
+    io.cilium/shared-service: "true"
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: postgres

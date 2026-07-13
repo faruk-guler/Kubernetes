@@ -1,0 +1,13 @@
+# nfs-pvc-talebi isimli PersistentVolumeClaim nesnesi tanımlama dosyası
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc-talebi
+  namespace: production
+spec:
+  storageClassName: nfs-slow
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi

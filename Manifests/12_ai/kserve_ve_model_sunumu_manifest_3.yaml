@@ -1,0 +1,14 @@
+# sklearn-churn-model isimli InferenceService nesnesi tanımlama dosyası
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: sklearn-churn-model
+  namespace: ml-serving
+spec:
+  predictor:
+    sklearn:
+      storageUri: s3://my-company-ml-bucket/models/churn/v1/
+      resources:
+        limits:
+          cpu: "1"
+          memory: 2Gi

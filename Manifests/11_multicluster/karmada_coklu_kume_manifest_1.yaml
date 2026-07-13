@@ -1,0 +1,33 @@
+# billing-propagation-policy isimli Deployment nesnesi tanımlama dosyası
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: billing-propagation-policy
+  namespace: production
+spec:
+  # Hangi Kubernetes kaynağının yayılacağını seçin:
+  resourceSelectors:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: billing-api
+  # Dağıtım Kuralları:
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - cluster-europe
+        - cluster-asia
+    # Replicas (Kopyalar) Dağıtım Stratejisi:
+    # Avrupa kümesine 3 kopya, Asya kümesine 1 kopya gönder
+    replicaScheduling:
+      replicaSchedulingType: Divided
+      replicaDivisionPreference: Weighted
+      weightPreference:
+        staticWeightList:
+          - targetCluster:
+              clusterNames:
+                - cluster-europe
+            weight: 3
+          - targetCluster:
+              clusterNames:
+                - cluster-asia
+            weight: 1

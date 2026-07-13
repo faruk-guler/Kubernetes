@@ -1,0 +1,16 @@
+# billing-recording-rules isimli PrometheusRule nesnesi tanımlama dosyası
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: billing-recording-rules
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+  - name: billing.rules
+    rules:
+    # Arka planda 15 saniyede bir hesaplanıp kaydedilir.
+    # Grafana artık alttaki uzun formülü değil, doğrudan "job:billing_api_requests:rate5m" metriğini okur.
+    - record: job:billing_api_requests:rate5m
+      expr: sum(rate(http_requests_total{job="billing-api"}[5m])) by (status)

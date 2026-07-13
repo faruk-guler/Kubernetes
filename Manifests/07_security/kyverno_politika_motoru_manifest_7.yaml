@@ -1,0 +1,22 @@
+# enforce-signed-images isimli ClusterPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-signed-images
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: verify-cosign-signature
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    verifyImages:
+    - imageReferences:
+      - "registry.company.com/apps/*"
+      attestations: []
+      key: |-
+        -----BEGIN PUBLIC KEY-----
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7p+q8H4zQx...
+        -----END PUBLIC KEY-----

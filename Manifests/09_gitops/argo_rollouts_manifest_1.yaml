@@ -1,0 +1,32 @@
+# billing-service isimli Rollout nesnesi tanımlama dosyası
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: billing-service
+  namespace: production
+spec:
+  replicas: 5
+  # Eski deployment'ı ezecek seçici
+  selector:
+    matchLabels:
+      app: billing-service
+  strategy:
+    canary:
+      # Trafik yönlendirme adımları
+      steps:
+      - setWeight: 10 # İlk olarak trafiğin %10'unu yeni sürüme gönder
+      - pause: { duration: 10m } # 10 dakika boyunca gözlemle (süresiz beklemek için pause: {} yazılabilir)
+      - setWeight: 30 # Sorun yoksa %30'a yükselt
+      - pause: { duration: 5m }
+      - setWeight: 60
+      - pause: { duration: 5m }
+  template:
+    metadata:
+      labels:
+        app: billing-service
+    spec:
+      containers:
+      - name: api
+        image: billing:v2.0
+        ports:
+        - containerPort: 8080

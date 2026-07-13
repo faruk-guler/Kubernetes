@@ -1,0 +1,23 @@
+# spiffe_ve_spire_zero_trust isimli IstioOperator nesnesi tanımlama dosyası
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  meshConfig:
+    # Envoy'un SPIRE agent soketini dinlemesini sağlayın
+    trustDomain: "company.com"
+  values:
+    sidecarInjectorWebhook:
+      templates:
+        spire: |
+          spec:
+            containers:
+            - name: istio-proxy
+              volumeMounts:
+              - name: workload-socket
+                mountPath: /var/run/secrets/spiffe.io
+                readOnly: true
+            volumes:
+            - name: workload-socket
+              csi:
+                driver: "spiffe.csi.spiffe.io"
+                readOnly: true

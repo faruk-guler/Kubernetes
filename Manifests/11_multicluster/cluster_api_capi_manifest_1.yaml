@@ -1,0 +1,21 @@
+# worker-health-check isimli MachineHealthCheck nesnesi tanımlama dosyası
+apiVersion: machine.cluster.x-k8s.io/v1beta1
+kind: MachineHealthCheck
+metadata:
+  name: worker-health-check
+  namespace: default
+spec:
+  # Hangi cluster'ı izleyeceğini belirtin
+  clusterName: my-workload-cluster
+  # Hangi makinelere uygulanacağını seçin
+  selector:
+    matchLabels:
+      nodepool: worker-pool
+  # Hangi durumlarda makinenin bozuk sayılacağını tanımlayın:
+  unhealthyConditions:
+  - type: Ready
+    status: Unknown
+    timeout: 300s # 5 dakika boyunca durum bilinmiyorsa
+  - type: Ready
+    status: "False"
+    timeout: 300s

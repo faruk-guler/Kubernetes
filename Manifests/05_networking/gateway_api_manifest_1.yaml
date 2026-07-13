@@ -1,0 +1,15 @@
+# external-gateway isimli Gateway nesnesi tanımlama dosyası
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: external-gateway
+  namespace: infra-system
+spec:
+  gatewayClassName: cilium # Kullanılacak GatewayClass
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All # HTTPRoute dosyalarının hangi namespace'lerde olabileceğini seçer

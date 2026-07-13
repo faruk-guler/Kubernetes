@@ -1,0 +1,17 @@
+# my-web-app isimli Kubernetes nesnesi tanımlama dosyası
+apiVersion: score.dev/v1b1
+metadata:
+  name: my-web-app
+containers:
+  web:
+    image: registry.company.com/my-web-app:v1.0.0
+    variables:
+      DATABASE_URL: "postgresql://db.company.com:5432/app"
+      LOG_LEVEL: "INFO"
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+    ports:
+      http:
+        targetPort: 8080

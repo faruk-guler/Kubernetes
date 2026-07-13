@@ -1,0 +1,11 @@
+# default-deny-all isimli NetworkPolicy nesnesi tanımlama dosyası
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: production
+spec:
+  podSelector: {} # Boş süslü parantez, namespace altındaki tüm podları seçer
+  policyTypes:
+    - Ingress
+    - Egress

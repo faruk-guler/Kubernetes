@@ -1,0 +1,25 @@
+# enforce-image-signature isimli ClusterPolicy nesnesi tanımlama dosyası
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-image-signature
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: verify-signature
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaces:
+          - production
+    verifyImages:
+    - imageReferences:
+      - "ghcr.io/company/*"
+      attestations: []
+      key: |-
+        -----BEGIN PUBLIC KEY-----
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE9p39m3xP...
+        -----END PUBLIC KEY-----

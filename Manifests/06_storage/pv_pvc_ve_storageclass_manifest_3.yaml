@@ -1,0 +1,11 @@
+# ebs-gp3-sc isimli StorageClass nesnesi tanımlama dosyası
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ebs-gp3-sc
+provisioner: ebs.csi.aws.com # CSI Driver adı
+volumeBindingMode: WaitForFirstConsumer # Pod zamanlanana kadar disk açma
+allowVolumeExpansion: true # Online disk genişletmeye izin ver
+parameters:
+  type: gp3
+  iops: "3000"

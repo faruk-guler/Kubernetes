@@ -1,0 +1,15 @@
+# asamali_teslimat_progressive_delivery isimli Kubernetes nesnesi tanımlama dosyası
+spec:
+  strategy:
+    canary:
+      trafficRouting:
+        nginx:
+          stableService: payment-api-stable
+      steps:
+      - setHeaderRoute:
+          name: internal-testers
+          match:
+          - header:
+              name: X-Canary-User
+              exact: "true"
+      - pause: {} # Manuel onay verilene kadar beklet

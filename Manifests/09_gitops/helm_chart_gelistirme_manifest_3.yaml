@@ -1,0 +1,12 @@
+# helm_chart_gelistirme isimli Kubernetes nesnesi tanımlama dosyası
+apiVersion: v2
+name: my-app
+description: "Kurumsal Spring Boot Mikroservis Uygulaması Helm Chart Paketi"
+type: application # application (uygulama) veya library (kütüphane)
+version: 1.2.3     # Chart (Kubernetes Yapılandırma) Sürümü
+appVersion: "2.1.0" # Uygulamanın Asıl Kendi Sürümü (Docker Image Tag)
+dependencies:
+  - name: postgresql
+    version: 12.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled # İsteğe bağlı bağımlılık kontrolü

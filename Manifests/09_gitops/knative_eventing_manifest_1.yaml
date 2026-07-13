@@ -1,0 +1,16 @@
+# order-created-trigger isimli Service nesnesi tanımlama dosyası
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: order-created-trigger
+  namespace: production
+spec:
+  broker: default-event-broker
+  filter:
+    attributes:
+      type: order.created # Sadece sipariş oluşturuldu olaylarını yakala
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: billing-service # Hedef Knative Servisi

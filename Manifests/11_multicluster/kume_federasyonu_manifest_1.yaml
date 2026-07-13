@@ -1,0 +1,18 @@
+# offloading-policy isimli NamespaceOffloading nesnesi tanımlama dosyası
+apiVersion: offloading.liqo.io/v1alpha1
+kind: NamespaceOffloading
+metadata:
+  name: offloading-policy
+  namespace: production # Uygulanacak namespace
+spec:
+  # EnforceSameName: Uzak kümede de aynı isimle namespace oluştur
+  namespaceMappingStrategy: EnforceSameName
+  # LocalAndRemote: Podları hem yerel hem de uzak kümede çalıştır (dağıtık)
+  # Remote: Podları sadece uzak kümede çalıştır
+  podOffloadingStrategy: LocalAndRemote
+  # Uzak kümenin scheduler seçicisi
+  clusterSelector:
+    matchExpressions:
+      - key: liqo.io/type
+        operator: In
+        values: ["virtual-node"]

@@ -1,0 +1,29 @@
+# edge-sensor-collector isimli Deployment nesnesi tanımlama dosyası
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edge-sensor-collector
+  namespace: production
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sensor-collector
+    spec:
+      # Sadece Edge etiketi olan cihazlara deploy et:
+      nodeSelector:
+        device-type: edge-node
+      # Ağ kopmalarına karşı pod tahliyesini 1 saat ertele (Tolerations):
+      tolerations:
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 3600
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 3600
+      containers:
+      - name: collector
+        image: registry.company.com/edge/collector:v1.2.0

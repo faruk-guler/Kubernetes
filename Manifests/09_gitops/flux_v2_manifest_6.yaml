@@ -1,0 +1,25 @@
+# flux-failures-alert isimli Alert nesnesi tanımlama dosyası
+apiVersion: notification.toolkit.fluxcd.io/v1beta2
+kind: Provider
+metadata:
+  name: slack-provider
+  namespace: flux-system
+spec:
+  type: slack
+  address: https://hooks.slack.com/services/T00/B00/XX
+
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta2
+kind: Alert
+metadata:
+  name: flux-failures-alert
+  namespace: flux-system
+spec:
+  providerRef:
+    name: slack-provider
+  eventSeverity: error # Sadece hata durumlarını gönder
+  eventSources:
+    - kind: Kustomization
+      name: '*'
+    - kind: HelmRelease
+      name: '*'

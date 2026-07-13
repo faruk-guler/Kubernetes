@@ -1,0 +1,30 @@
+# {{env}}-billing-service isimli ApplicationSet nesnesi tanımlama dosyası
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: billing-appset-list
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - env: staging
+        namespace: billing-staging
+      - env: production
+        namespace: billing-prod
+  template:
+    metadata:
+      name: '{{env}}-billing-service'
+    spec:
+      project: default
+      source:
+        repoURL: 'https://github.com/company/billing-gitops.git'
+        targetRevision: HEAD
+        path: overlays/{{env}}
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

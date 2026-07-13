@@ -1,0 +1,18 @@
+# billing-api isimli Component nesnesi tanımlama dosyası
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: billing-api
+  description: "Ödeme ve Faturalandırma İşlemlerini Yöneten Java Spring Boot Servisi"
+  annotations:
+    # Grafana dashboard linki
+    grafana/dashboard-selector: "billing-app"
+    # Snyk/Trivy güvenlik taraması linki
+    snyk.io/project-ids: "billing-project-uuid"
+spec:
+  type: service
+  lifecycle: production
+  owner: group:team-billing # Sorumlu ekip referansı
+  system: billing-system
+  providesApis:
+    - billing-grpc-api

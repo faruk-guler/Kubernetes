@@ -1,0 +1,11 @@
+# grafana_panelleri isimli Kubernetes nesnesi tanımlama dosyası
+grafana:
+  enabled: true
+  # Veri kaynaklarının otomatik yüklenmesi
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki-query-frontend.monitoring.svc.cluster.local:3100
+      jsonData:
+        maxLines: 1000

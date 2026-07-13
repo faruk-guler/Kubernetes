@@ -1,0 +1,9 @@
+# ic_gelistirici_platformu_idp isimli Kubernetes nesnesi tanımlama dosyası
+port:
+  clientId: "YOUR_PORT_CLIENT_ID"
+  clientSecret: "YOUR_PORT_CLIENT_SECRET"
+  # Kümedeki hangi kaynakların Port paneline gönderileceğini belirleyin:
+  resources:
+    - kind: apps/v1/deployments
+      selector:
+        query: .metadata.labels.app

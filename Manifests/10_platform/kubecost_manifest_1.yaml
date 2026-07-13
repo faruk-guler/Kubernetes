@@ -1,0 +1,25 @@
+# kubecost-alerts isimli ConfigMap nesnesi tanımlama dosyası
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubecost-alerts
+  namespace: kubecost
+data:
+  alerts.yaml: |
+    alerts:
+      # Günlük maliyet %20'den fazla anlık artış gösterirse (Anomali Tespiti)
+      - name: daily-cost-anomaly
+        type: anomaly
+        threshold: 0.20
+        window: 1d
+        services:
+          - slack
+      # Aylık bütçe sınırı aşılırsa uyar
+      - name: namespace-budget-limit
+        type: budget
+        threshold: 500.00 # Aylık 500 USD bütçe sınırı
+        window: 30d
+        filter:
+          namespace: "billing-dev"
+        services:
+          - slack

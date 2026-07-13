@@ -1,0 +1,18 @@
+# dev-cluster-east isimli Cluster nesnesi tanımlama dosyası
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: dev-cluster-east
+  namespace: default
+spec:
+  # Platform ekibinin hazırladığı standart şablon sınıfı:
+  class: secure-corporate-k8s
+  topology:
+    version: v1.30.0
+    controlPlane:
+      replicas: 3
+    workers:
+      machineDeployments:
+      - class: default-worker-class
+        name: workers-pool
+        replicas: 5

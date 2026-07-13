@@ -1,0 +1,25 @@
+# billing-sub isimli Service nesnesi tanımlama dosyası
+apiVersion: eventing.knative.dev/v1
+kind: Subscription
+metadata:
+  name: billing-sub
+  namespace: production
+spec:
+  channel:
+    apiVersion: messaging.knative.dev/v1
+    kind: InMemoryChannel
+    name: orders-channel
+  delivery:
+    deadLetterSink:
+      ref:
+        apiVersion: v1
+        kind: Service
+        name: dead-letter-display-service # Hatalı mesajların birikeceği yer (DLQ)
+    retry: 5 # Hata durumunda 5 kere tekrar dene
+    backoffPolicy: exponential # Üssel artan bekleme süresiyle dene
+    backoffDelay: PT1S # 1 saniyelik başlangıç gecikmesi
+  subscriber:
+    ref:
+      apiVersion: v1
+      kind: Service
+      name: billing-service

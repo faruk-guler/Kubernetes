@@ -1,0 +1,10 @@
+# oci-helm-repo isimli HelmRepository nesnesi tanımlama dosyası
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: oci-helm-repo
+  namespace: flux-system
+spec:
+  type: oci
+  interval: 5m
+  url: oci://ghcr.io/company/charts

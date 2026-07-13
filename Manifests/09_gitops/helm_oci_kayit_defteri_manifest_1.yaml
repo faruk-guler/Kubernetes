@@ -1,0 +1,41 @@
+# helm_oci_kayit_defteri isimli Kubernetes nesnesi tanımlama dosyası
+name: Publish Helm OCI Chart
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/**' # Sadece charts klasörü değiştiğinde tetiklenir
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Install Helm
+      uses: azure/setup-helm@v4
+      with:
+        version: 'v3.14.0'
+
+    - name: Log in to GHCR OCI Registry
+      run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io \
+          --username ${{ github.actor }} \
+          --password-stdin
+
+    - name: Lint and Package Chart
+      run: |
+        helm lint ./charts/my-chart
+        helm package ./charts/my-chart --destination .deploy
+
+    - name: Push Chart to OCI Registry
+      run: |
+        # deploy klasörü içinde üretilen tgz arşivini push et
+        helm push .deploy/my-chart-*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts

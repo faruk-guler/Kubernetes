@@ -1,0 +1,41 @@
+# spring-boot-golden-path isimli Template nesnesi tanımlama dosyası
+apiVersion: backstage.io/v1beta3
+kind: Template
+metadata:
+  name: spring-boot-golden-path
+  title: "Spring Boot Mikroservis Başlatıcı"
+  description: "Şirket içi mimari standartlarına uygun, CI/CD ve Kubernetes YAML dosyaları hazır Spring Boot şablonu."
+spec:
+  owner: group:platform-team
+  type: service
+  parameters:
+    - title: Servis Detayları
+      required:
+        - component_id
+        - owner
+      properties:
+        component_id:
+          title: Servis Adı
+          type: string
+        owner:
+          title: Sahip Ekip
+          type: string
+          ui:field: OwnerPicker
+  steps:
+    # 1. Şablon kodlarını depodan çek
+    - id: template
+      name: Şablonu Getir
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          componentId: ${{ parameters.component_id }}
+          owner: ${{ parameters.owner }}
+    # 2. GitHub üzerinde yeni repository aç ve kodları yükle
+    - id: publish
+      name: GitHub'da Yayınla
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: ${{ parameters.component_id }} servisi
+        repoUrl: 'github.com?owner=my-company&repo=${{ parameters.component_id }}'

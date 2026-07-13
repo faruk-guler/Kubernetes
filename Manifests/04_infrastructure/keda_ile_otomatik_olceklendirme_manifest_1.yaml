@@ -1,0 +1,10 @@
+# rabbitmq-credentials isimli Secret nesnesi tanımlama dosyası
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbitmq-credentials
+  namespace: production
+type: Opaque
+data:
+  # amqp://user:password@rabbitmq.host:5672/vhost (Base64 formatında)
+  host: YW1xcDovL3VzZXI6cGFzc3dvcmRAcmFiYml0bXEuZGV2OjU2NzIv
