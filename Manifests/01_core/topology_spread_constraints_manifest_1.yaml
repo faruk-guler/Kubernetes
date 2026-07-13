@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: balanced-app
+  namespace: production
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: balanced-app
+  template:
+    metadata:
+      labels:
+        app: balanced-app
+    spec:
+      topologySpreadConstraints:
+      # 1. Bölgeler (Zones) düzeyinde dengeli dağıtım kuralı
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: balanced-app
+      # 2. Düğümler (Hosts) düzeyinde dengeli dağıtım kuralı
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: balanced-app
+      containers:
+      - name: app-container
+        image: nginx:alpine

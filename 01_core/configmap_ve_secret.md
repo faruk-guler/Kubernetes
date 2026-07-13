@@ -23,6 +23,8 @@ Bu ConfigMap'i bir Pod içerisine iki farklı yöntemle enjekte (inject) edebili
 1. **Çevre Değişkeni (Environment Variable) Olarak:** `LOG_LEVEL` ve `UI_THEME` değerleri direkt uygulamanın içine işletim sistemi çevre değişkeni olarak aktarılır.
 2. **Dosya/Birim (Volume Mount) Olarak:** `settings.json` verisi, konteynerin içindeki bir klasöre fiziksel bir dosya gibi monte edilir. Pod çalıştığı sürece uygulama bu dosyayı okuyabilir.
 
+> 💡 **Meta-veri Aktarımı (Alternative):** Eğer dışarıdan yapılandırma enjekte etmek yerine, doğrudan pod'un kendi çalışma verilerini (Pod Adı, IP'si, CPU/RAM limitleri gibi) çevre değişkeni veya dosya olarak aktarmak istiyorsanız [Downward API](downward_api.md) konusuna göz atabilirsiniz.
+
 ---
 
 ## 2. Secret: Hassas Verilerin Korunması

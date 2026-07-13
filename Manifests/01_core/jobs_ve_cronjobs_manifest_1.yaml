@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+  namespace: production
+spec:
+  schedule: "0 0 * * *" # Her gece 00:00'da çalışır
+  concurrencyPolicy: Forbid # Bir önceki bitmeden yenisini başlatma
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 1800 # En fazla 30 dakika çalışabilir
+      backoffLimit: 2 # Hata durumunda en fazla 2 kez dene
+      ttlSecondsAfterFinished: 3600 # İş bittikten 1 saat sonra temizle
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup-script
+            image: postgres:15-alpine
+            command:
+            - /bin/sh
+            - -c
+            - echo "Backing up database..." && sleep 60 && echo "Backup completed successfully!"

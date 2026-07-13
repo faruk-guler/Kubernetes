@@ -44,9 +44,13 @@ Her node'da çalışan Kubernetes'in "kaptan" ajanıdır. API Server'dan gelen t
 
 Node üzerindeki ağ kurallarını yönetir. İçerideki servislerin (Service) birbirleriyle iletişim kurmasını ve trafiğin doğru pod'lara yönlendirilmesini sağlayan (genellikle iptables/IPVS kullanarak) ağ bileşenidir.
 
-### C. Container Runtime
+### C. Container Runtime (Konteyner Çalışma Zamanı)
 
-Konteynerleri fiilen başlatan ve durduran yazılımdır. Eskiden varsayılan olarak Docker kullanılırdı, ancak günümüzde (2026 standartlarında) OCI uyumlu daha hafif araçlar olan **containerd** veya **CRI-O** kullanılır.
+Konteynerleri fiilen başlatan ve durduran yazılımdır. Kubelet ile iletişim kurmak için **CRI (Container Runtime Interface)** standardını kullanırlar.
+
+* **Eski Dönem (Docker):** Eskiden Kubernetes doğrudan Docker'ı kullanırdı. Ancak Docker, Kubernetes için gereksiz olan birçok geliştirici aracını barındırıyordu ve CRI standardına doğrudan uymuyordu. Bu yüzden Kubernetes, 1.24 sürümü ile Docker desteğini (dockershim) sonlandırdı.
+* **containerd:** Docker'ın içinden çıkarılarak sadeleştirilen, bugün bulut sağlayıcılarında (EKS, GKE, AKS) en yaygın kullanılan endüstri standardı CRI çalışma zamanıdır.
+* **CRI-O:** Sadece ve sadece Kubernetes'in ihtiyaçlarını karşılamak üzere sıfırdan tasarlanmış, Red Hat (OpenShift) ekosisteminde varsayılan olan aşırı hafif ve güvenli bir alternatif çalışma zamanıdır.
 
 > **İleri Seviye Bilgi: Node Üzerinde Sorun Giderme (crictl)**
 > Kubernetes ortamlarında Docker yerine containerd kullanıldığı için, node'a SSH ile bağlandığınızda `docker ps` komutu çalışmaz. Bunun yerine Kubernetes'in resmi debug aracı olan `crictl` kullanılır:

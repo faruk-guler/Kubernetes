@@ -1,0 +1,7 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-app
+spec:
+  status:
+    readyReplicas: 3 # Eğer hazır replika sayısı 3 ise test PASS (başarılı) olur

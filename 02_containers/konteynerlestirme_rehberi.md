@@ -6,7 +6,20 @@ Kubernetes yolculuğumuzun ilk ve en kritik adımı, uygulamamızı bir konteyne
 
 ---
 
-## 1. Katman Önbelleği (Layer Caching) Mantığı
+## 1. Docker ve Podman: Konteyner Motorları (Container Engines)
+
+İmaj hazırlama aşamasına geçmeden önce, bu imajları oluşturan ve çalıştıran iki temel aracı tanımalıyız:
+
+* **Docker:** Konteyner teknolojisini popülerleştiren endüstri standardıdır. Arka planda sürekli çalışan bir servis (`dockerd` daemon) ve buna komut gönderen bir istemci (CLI) mimarisine sahiptir. İmaj derlemek ve çalıştırmak için varsayılan olarak root (yönetici) yetkisi gerektirir.
+* **Podman:** Docker'a modern ve güvenli bir alternatif olarak geliştirilmiştir. Docker ile aynı komut satırı arayüzüne sahiptir (`alias docker=podman` yapılabilir) ancak arka planda bir daemon (servis) gerektirmez (daemonless). En önemli özelliği, root yetkisi olmadan (rootless) güvenli bir şekilde konteyner çalıştırıp imaj derleyebilmesidir. Her iki araç da aynı `Dockerfile` (veya `Containerfile`) standardını destekler.
+
+> ⚠️ **Kubernetes ile İlişkisi:** Docker ve Podman doğrudan Kubernetes kümesinin içinde (düğümlerde) çalışmazlar. Biz geliştiriciler olarak imajı Docker/Podman ile **derler ve test ederiz**. Kubernetes ise bu imajları düğümlere indirip kendi içindeki **containerd** veya **CRI-O** gibi çalışma zamanları (runtimes) aracılığıyla çalıştırır.
+
+> 💡 **Derinlemesine İzolasyon:** Konteynerlerin Linux çekirdeği seviyesindeki izolasyon mekanizmalarını (Namespaces, cgroups, chroot/pivot_root) öğrenmek için [Linux Çekirdeği Seviyesinde Konteyner İzolasyonu](linux_cekirdek_izolasyonu_namespaces_ve_pivot_root.md) rehberine göz atabilirsiniz.
+
+---
+
+## 2. Katman Önbelleği (Layer Caching) Mantığı
 
 Docker, bir imajı inşa ederken (build) her satırdaki talimatı bir **katman (layer)** olarak yazar. Bir katman değişmediği sürece Docker bir sonraki derlemede önbellekten (cache) okur ve saniyeler içinde derleme tamamlanır. Ancak üstteki bir katman değiştiğinde, altındaki tüm katmanların önbelleği geçersiz kılınır ve baştan çalıştırılır.
 
@@ -15,7 +28,7 @@ Docker, bir imajı inşa ederken (build) her satırdaki talimatı bir **katman (
 
 ---
 
-## 2. Multi-Stage Build (Çok Aşamalı Derleme)
+## 3. Multi-Stage Build (Çok Aşamalı Derleme)
 
 Bir Go, Java veya TypeScript uygulamasını derlemek için derleyicilere, SDK'lara ve paket yöneticilerine ihtiyacımız vardır. Ancak bu araçların uygulamayı çalıştırmak için üretim (production) ortamına gitmesine gerek yoktur. Örneğin bir Go derleyicisi ~800MB yer kaplarken, ürettiği derlenmiş binary dosyası sadece 10-15MB'tır.
 
@@ -24,7 +37,7 @@ Bir Go, Java veya TypeScript uygulamasını derlemek için derleyicilere, SDK'la
 
 ---
 
-## 3. Dil Bazında Optimize Dockerfile Şablonları
+## 4. Dil Bazında Optimize Dockerfile Şablonları
 
 ### Go ve Distroless Kullanımı
 
@@ -122,7 +135,7 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 
 ---
 
-## 4. `.dockerignore` Dosyası
+## 5. `.dockerignore` Dosyası
 
 Dockerfile ile aynı dizinde bulunması gereken `.dockerignore`, yerel bilgisayarınızdaki gereksiz veya gizli dosyaların Docker daemon'a gönderilmesini engelleyerek hem build süresini kısaltır hem de güvenliği artırır:
 
@@ -147,7 +160,7 @@ vendor/
 
 ---
 
-## 5. Güvenlik Kontrol Listesi (Security Checklist)
+## 6. Güvenlik Kontrol Listesi (Security Checklist)
 
 * **Root Olmayan Kullanıcı (Non-Root User):** Konteyner içindeki uygulamayı asla `root` olarak çalıştırmayın. Olası bir konteynerden sızma (`container escape`) durumunda saldırgan ana makinenin de root yetkisine sahip olur. Dockerfile sonuna mutlaka `USER 1000:1000` ekleyin.
 * **Sabit Versiyon Etiketleri (Pinning Tags):** `FROM base:latest` kullanmayın. `latest` etiketi her an değişebilir ve uygulamanızın localde çalışırken canlı ortamda (production) çökmesine yol açabilir. Her zaman `golang:1.22.3-alpine` gibi tam sürüm belirtin.
@@ -155,7 +168,7 @@ vendor/
 
 ---
 
-## 6. Trivy ile Güvenlik Taraması
+## 7. Trivy ile Güvenlik Taraması
 
 Oluşturduğumuz imajlardaki donanımsal kütüphane ve bağımlılık açıklarını (CVE) bulmak için Trivy kullanılır:
 

@@ -1,32 +1,34 @@
-# Test ve Küme Analiz Araçları
+# Kubernetes Üzerinde Test Metodolojileri
 
-Bir Kubernetes kümesi (cluster) dışarıdan bakıldığında tamamen sağlıklı görünebilir. Ancak arka planda deprecated (artık kaldırılmış) API çağrıları yapılıyor, kullanılmayan ve bellek yakan Secret/ConfigMap nesneleri birikiyor veya fark edilmeyen ciddi güvenlik açıkları barındırılıyor olabilir.
+Bir Kubernetes kümesi için uygulama geliştirirken veya kümenin kendisini yönetirken, yaptığımız yapılandırmaların ve yazdığımız kodların doğruluğunu test etmek kritik önem taşır. Kubernetes ekosisteminde test süreçleri, klasik yazılım testlerinden farklı olarak cluster kaynaklarının doğrulanmasını da içerir.
 
-Bu bölümde, kümenizin "sağlık röntgenini" çekecek analiz araçlarını ve Kubernetes iş yüklerinizi test etmek için kullanılan modern test metodolojilerini ele alacağız.
+Bu bölümde; birim (unit) testlerden, YAML tabanlı uçtan uca (E2E) testlere ve kaos mühendisliği direnç testlerine kadar uzanan modern test metodolojilerini ele alacağız.
 
 ---
 
 ## 1. Kubernetes Test Piramidi
 
-Kubernetes ortamlarında test süreçleri, klasik yazılım testlerinden farklı olarak cluster kaynaklarının doğrulanmasını da içerir ve dört aşamadan oluşur:
+Kubernetes test süreçleri dört temel aşamadan oluşur:
 
 ```
-         ┌───────────────────────────┐
-         │     Chaos Engineering     │  ◄── Canlıda direnç testi (Chaos Mesh)
-         ├───────────────────────────┤
-         │      E2E YAML Tests       │  ◄── Kümede kaynak doğrulaması (KUTTL, Chainsaw)
-         ├───────────────────────────┤
-         │   Integration / Linting   │  ◄── Lokal test (Kind, Polaris, Kube-Linter)
-         ├───────────────────────────┤
-         │    Unit Tests (Go/Fake)   │  ◄── Operatör mantığı sahte client ile (testing)
-         └───────────────────────────┘
+          ┌───────────────────────────┐
+          │     Chaos Engineering     │  ◄── Canlıda direnç testi (Chaos Mesh)
+          ├───────────────────────────┤
+          │      E2E YAML Tests       │  ◄── Kümede kaynak doğrulaması (KUTTL, Chainsaw)
+          ├───────────────────────────┤
+          │   Integration / Linting   │  ◄── Lokal test (Kind, Polaris, Kube-Linter)
+          ├───────────────────────────┤
+          │    Unit Tests (Go/Fake)   │  ◄── Operatör mantığı sahte client ile (testing)
+          └───────────────────────────┘
 ```
 
 ---
 
 ## 2. Birim Testi (Go & Fake Client ile Controller Testi)
 
-Kendi geliştirdiğiniz Kubernetes Operatörlerini veya özel kaynak denetleyicilerini (controller) test etmek için gerçek bir kümeye ihtiyaç duymadan, hafızada (in-memory) çalışan sahte bir `fake client` kullanılır:
+Kendi geliştirdiğiniz Kubernetes Operatörlerini veya özel kaynak denetleyicilerini (controller) test etmek için gerçek bir kümeye ihtiyaç duymadan, hafızada (in-memory) çalışan sahte bir `fake client` kullanılır.
+
+Bu sayede API Server'a gerçek HTTP çağrıları yapmadan, kube-apiserver davranışlarını taklit edebiliriz:
 
 ```go
 package main
@@ -72,9 +74,8 @@ func TestReconcile(t *testing.T) {
 
 Kod yazmadan, sadece hazırladığınız YAML dosyalarının Kubernetes üzerinde istediğiniz gibi davranıp davranmadığını test etmek için **KUTTL (Kubernetes Test Tool)** veya modern alternatifi **Chainsaw** kullanılır.
 
-### KUTTL Test Klasör Yapısı
-
-```
+### KUTTL Test Klasör Yapısı:
+```text
 tests/
   ├── kuttl-test.yaml    # Test yapılandırma dosyası
   └── e2e/
@@ -83,89 +84,22 @@ tests/
           └── 01-assert.yaml   # Adım 1: Replikaların "3" olduğunu doğrula
 ```
 
-### 01-assert.yaml (Doğrulama Dosyası)
+KUTTL, belirtilen kaynağın durumunu (status) kontrol ederek testin başarılı olup olmadığına karar verir.
 
-KUTTL, belirtilen kaynağın durumunu (status) kontrol ederek testin başarılı olup olmadığına karar verir:
+📌 **Örnek Doğrulama Manifesti:** Okunabilirliği korumak amacıyla uzun YAML dosyası ayrılmıştır. İlgili konfigürasyonun tam halini [kuttl_assert.yaml](../Manifests/03_architecture/kuttl_assert.yaml) adresinden inceleyebilirsiniz.
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: test-app
-spec:
-  status:
-    readyReplicas: 3 # Eğer hazır replika sayısı 3 ise test PASS (başarılı) olur
-```
-
-Testi çalıştırmak için:
-
+Testi çalıştırmak için şu komut kullanılır:
 ```bash
 kubectl kuttl test --config tests/kuttl-test.yaml
 ```
 
 ---
 
-## 4. Polaris ile Manifest Güvenlik ve Standart Taraması
-
-**Polaris**, Kubernetes manifestlerinizi en iyi pratiklere (best practices) göre tarayarak not verir. CPU/RAM limitlerinin unutulması, root kullanıcısıyla çalışan podlar gibi açıkları tespit eder.
-
-```bash
-# Yerel manifest klasörünüzü tarayın (CI/CD süreçlerine entegre edilebilir)
-polaris audit --audit-path ./k8s-manifests/ --format pretty
-```
-
----
-
-## 5. Kaos Mühendisliği: Chaos Mesh
+## 4. Kaos Mühendisliği (Chaos Engineering): Chaos Mesh
 
 Sistemlerin beklenmedik donanım ve ağ arızaları altında ayakta kalıp kalmadığını test etmek amacıyla, küme üzerinde planlı kaos yaratmak için **Chaos Mesh** kullanılır.
 
-* **Kaos Örnekleri:** Rastgele podları öldürme (PodKill), ağa yapay gecikmeler ekleme (Network Delay), disk veya CPU doluluğunu yapay olarak artırma.
-
----
-
-## 6. Küme Sağlık Röntgeni ve Analiz Araçları
-
-Kümenizin sağlığını ölçen, kullanılmayan kaynakları ve sürüm uyumluluklarını tarayan en popüler 5 açık kaynaklı araç:
-
-### 1. Popeye — Küme Temizleyici (Sanitizer)
-
-Cluster'daki kullanılmayan ConfigMap/Secret nesnelerini, limitsiz podları ve yanlış yapılandırılmış servisleri tarayarak size A ile F arasında bir karne verir.
-
-```bash
-kubectl popeye -n production
-```
-
-### 2. Pluto — Kaldırılan (Deprecated) API Tespiti
-
-Kubernetes sürüm yükseltmesi (Upgrade) yapmadan önce, manifestlerinizde artık kaldırılmış veya güncelliğini yitirmiş API sürümleri olup olmadığını tespit eder.
-
-```bash
-pluto detect-files -d ./manifests/ --target-versions k8s=v1.32
-```
-
-### 3. Nova — Helm Güncellik Analizi
-
-Kümede kurulu olan Helm chart'larının güncel sürümlerini kontrol eder ve eskiyen bağımlılıkları raporlar.
-
-```bash
-nova find --wide
-```
-
-### 4. KubeCapacity — Kaynak Tüketim Tablosu
-
-Kümedeki düğümlerin (nodes) ve podların rezerve edilen (requests/limits) kaynaklarını tek bir tabloda birleştirerek kolay okunabilir şekilde sunar.
-
-```bash
-kubectl resource-capacity --util --pods
-```
-
-### 5. Goldilocks — CPU/Memory Request Önerisi
-
-Podlarınızın gerçek kullanım metriklerini izleyerek, VPA (Vertical Pod Autoscaler) verileri ışığında en ideal CPU ve RAM `request/limit` değerlerini görsel bir dashboard üzerinden önerir.
-
----
-
-## 7. Özet
-
-Kubernetes'te test ve analiz araçları, sistemin gelecekteki kararlılığını garanti altına almanın tek yoludur. **Pluto** ile kaldırılan API'lerin, **Popeye** ile israf edilen kaynakların ve **Polaris** ile güvenlik açıklarının taranması, kümenizin her zaman sağlıklı ve en iyi standartlarda (production-ready) kalmasını sağlar.
+* **Kaos Örnekleri:**
+  - **PodKill:** Belirli aralıklarla rastgele pod'ları öldürerek sistemin self-healing (kendi kendini iyileştirme) hızını ölçer.
+  - **Network Chaos:** Konteynerler arası iletişime yapay gecikmeler (latency) veya paket kayıpları (packet loss) ekler.
+  - **Stress Chaos:** Pod'lara yapay olarak CPU ve bellek yükü bindirerek limitlerin doğru çalışıp çalışmadığını test eder.
