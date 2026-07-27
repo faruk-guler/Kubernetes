@@ -4,9 +4,9 @@ Kubernetes üzerinde bir hata ile karşılaşıldığında, rastgele komutlar ç
 
 ---
 
-## 1. Hata Teşhis Hiyerarşisi
+## 1. Hata Teşhis Hiyerarşisi ve Karar Ağacı
 
-Herhangi bir sorun anında aşağıdaki sıralama ile katmanlar incelenmelidir:
+Herhangi bir sorun anında aşağıdaki sıralama ile katmanlar incelenmeli ve karar ağacı takip edilmelidir:
 
 ```
 [ HATA TEŞHİS ADIMLARI ]
@@ -20,6 +20,29 @@ Herhangi bir sorun anında aşağıdaki sıralama ile katmanlar incelenmelidir:
         ├──► 4. Düğüm (Node)      ──► Düğüm 'Ready' mi? Disk veya Bellek baskısı var mı?
         │
         └──► 5. Kontrol Düzlemi   ──► API Server, Scheduler ve etcd sağlıklı mı?
+```
+
+### Sistematik Hata Ayıklama Akış Şeması (Decision Tree)
+
+```text
+                                [ HATA BİLDİRİMİ ]
+                                        |
+                          +-------------+-------------+
+                          |                           |
+                  Status = Pending            Status = Running (Ama Hatalı)
+                          |                           |
+                  `kubectl describe`          `kubectl logs -f <pod>`
+                - Node kaynakları mı doldu?    (Uygulama içi exception / NullPointer?)
+                - PVC eşleşmedi mi?                   |
+                - Toleration eksik mi?        Status = CrashLoopBackOff
+                                                      |
+                                              Exit Kodunu İncele!
+                                           (`kubectl describe pod`)
+                                                      |
+                     +--------------------------------+--------------------------------+
+                     |                                |                                |
+             Exit Code 137                     Exit Code 1                     Exit Code 0
+             (OOMKilled - RAM Aşıldı!)       (Uygulama Çökmesi / Hata)        (Konteyner İşi Bitti)
 ```
 
 ---
@@ -36,6 +59,16 @@ Pod durumlarının (status) anlamları ve ilk bakılması gereken yerler:
 | `OOMKilled` | Konteyner bellek sınırını aştı. | Konteyner üzerinde tanımlanan `limits.memory` yetersizdir. Sınırı artırın. |
 | `Evicted` | Düğümde kaynak bittiği için pod tahliye edildi. | Düğümün disk veya bellek durumunu (`df -h`, `free -m`) kontrol edin. |
 | `Terminating` | Pod silinirken askıda kaldı. | Genellikle finalizer veya PV bağlantısının kopmamasından kaynaklanır. Zorla silmek için: `kubectl delete pod <pod-name> --grace-period=0 --force` |
+
+### Linux Exit Kodları ve Anlamları
+
+| Exit Kodu | Hata Adı | Anlamı ve Çözüm Adımı |
+| :--- | :--- | :--- |
+| **Exit Code 0** | `Success` | Konteyner içindeki ana süreç tamamlandı ve kapandı (Job'lar için normaldir, web sunucusu için anormaldir). |
+| **Exit Code 1 / 255** | `Application Error` | Uygulama koda bağlı bir hata fırlattı (Örn: Veritabanına bağlanamadı veya syntax hatası). `kubectl logs` okunmalıdır. |
+| **Exit Code 137** | `OOMKilled (SIGKILL)` | Konteyner kendisine verilen RAM limitini aştığı için Kubelet tarafından zorla **öldürülmüştür**. `limits.memory` artırılmalıdır. |
+| **Exit Code 139** | `Segmentation Fault` | Konteyner bellekte yetkisiz bir adrese erişmeye çalıştı (C/C++ veya kütüphane çökmesi). |
+| **Exit Code 143** | `Graceful Termination` | Kubelet pod'a `SIGTERM` sinyali gönderdi ve pod 30 saniye içinde kapandı (Normal RollingUpdate süreci). |
 
 ### Pod Sorun Giderme Komutları
 

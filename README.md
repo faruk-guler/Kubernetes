@@ -19,7 +19,7 @@ Author: faruk guler
 Date: 2026
 ```
 
-![Kubernetes Logo](Images/kubernetes.png)
+![Kubernetes Logo](Images/kubernetes-wordmark.png)
 
 ## 📖 Kubernetes'e Başlarken
 
@@ -137,22 +137,22 @@ Bu devasa bilgi yığınında kaybolmamak için dokümantasyonu aşağıdaki "Ze
  ┌─────────────────────────────────────────────────┘
  │
  ▼
- [04_infrastructure] ──> [05_networking] ──> [06_storage]
-                                                        │
- ┌──────────────────────────────────────────────────────┘
+ [04_infrastructure] ──> [05_installations] ──> [06_networking]
+                                                              │
+ ┌────────────────────────────────────────────────────────────┘
  │
  ▼
- [07_security] ──> [08_observability] ──> [09_gitops]
-                                                    │
- ┌──────────────────────────────────────────────────┘
+ [07_storage] ──> [08_security] ──> [09_observability]
+                                                     │
+ ┌───────────────────────────────────────────────────┘
  │
  ▼
- [10_platform] ──> [11_multicluster] ──> [12_ai]
-                                               │
- ┌─────────────────────────────────────────────┘
+ [10_gitops] ──> [11_platform] ──> [12_multicluster]
+                                                   │
+ ┌─────────────────────────────────────────────────┘
  │
  ▼
- [13_troubleshooting] ──> [14_migration] ──> [ SON ]
+ [13_ai] ──> [14_troubleshooting] ──> [15_migration] ──> [ SON ]
 ```
 
 ```text
