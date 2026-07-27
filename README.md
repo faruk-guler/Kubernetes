@@ -18,8 +18,7 @@ POC: Debian 12 "Bookworm"
 Author: faruk guler
 Date: 2026
 ```
-
-![Kubernetes Logo](Images/kubernetes-wordmark.png)
+<img src="Images/kubernetes-wordmark.png" alt="Kubernetes Logo" width="380">
 
 ## 📖 Kubernetes'e Başlarken
 
