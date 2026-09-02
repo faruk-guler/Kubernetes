@@ -1,0 +1,26 @@
+# 3 Dugumlu, Otomatik Failover ve Anlik Goruntu Destekli CloudNative-PG PostgreSQL Kumesi
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-production-cluster
+  namespace: database
+spec:
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.2
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 50Gi
+    storageClass: gp3-encrypted
+  monitoring:
+    enablePodMonitor: true
+  backup:
+    volumeSnapshot:
+      className: ebs-snapshot-class
+    retentionPolicy: "30d"
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "4Gi"
+      cpu: "2000m"

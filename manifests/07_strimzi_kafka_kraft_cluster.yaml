@@ -1,0 +1,107 @@
+# Strimzi Kafka KRaft Mimarisi: 3-Düğümlü Dual-Role Küme, Topic ve Kullanıcı
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: dual-role-nodes
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: enterprise-kafka
+spec:
+  replicas: 3
+  roles:
+    - controller
+    - broker
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: 50Gi
+        class: gp3-ebs # Veya standart StorageClass
+        deleteClaim: false
+  resources:
+    requests:
+      memory: 4Gi
+      cpu: "1"
+    limits:
+      memory: 6Gi
+      cpu: "2"
+  template:
+    pod:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: strimzi.io/name
+                      operator: In
+                      values:
+                        - enterprise-kafka-kafka
+                topologyKey: "kubernetes.io/hostname"
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: enterprise-kafka
+  namespace: kafka
+  annotations:
+    strimzi.io/node-pools: enabled
+    strimzi.io/kraft: enabled
+spec:
+  kafka:
+    version: 3.7.0
+    metadataVersion: 3.7-IV4
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+    config:
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      default.replication.factor: 3
+      min.insync.replicas: 2
+      log.retention.hours: 168
+      log.segment.bytes: 1073741824
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: payments-audit-log
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: enterprise-kafka
+spec:
+  partitions: 6
+  replicas: 3
+  config:
+    retention.ms: 1209600000 # 14 gun saklama
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: payment-consumer-app
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: enterprise-kafka
+spec:
+  authentication:
+    type: tls
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: topic
+          name: payments-audit-log
+          patternType: literal
+        operation: Read

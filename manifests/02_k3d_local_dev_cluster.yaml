@@ -1,0 +1,29 @@
+# K3d ile Cok Dugumlu (1 Server, 2 Agent) Yerel Gelistirme Kumesi Yapilandirmasi
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: dev-cluster
+servers: 1
+agents: 2
+image: rancher/k3s:v1.32.1-k3s1
+ports:
+  - port: 8080:80
+    nodeFilters:
+      - loadbalancer
+  - port: 8443:443
+    nodeFilters:
+      - loadbalancer
+registries:
+  create:
+    name: k3d-registry.localhost
+    host: "0.0.0.0"
+    hostPort: "5001"
+options:
+  k3s:
+    extraArgs:
+      - arg: --disable=traefik # Ingress-NGINX veya Cilium eBPF yuklemek icin varsayilan Traefik'i kapat
+        nodeFilters:
+          - server:*
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true

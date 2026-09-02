@@ -1,0 +1,31 @@
+# Talos Linux Immutable (Degismez) Isletim Sistemi Control-Plane Makine Yapilandirmasi
+version: v1alpha1
+debug: false
+persist: true
+machine:
+  type: controlplane
+  token: "talos.secret.cluster.token"
+  ca:
+    crt: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCg=="
+  network:
+    hostname: "talos-cp-01"
+    interfaces:
+      - interface: eth0
+        dhcp: false
+        addresses:
+          - "192.168.1.50/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "192.168.1.1"
+  install:
+    disk: "/dev/sda"
+    image: "factory.talos.dev/installer/default:v1.9.0"
+    wipe: false
+cluster:
+  id: "prod-cluster"
+  secret: "cluster-secret-key"
+  controlPlane:
+    endpoint: "https://talos-api.company.internal:6443"
+  network:
+    cni:
+      name: none # Cilium eBPF kurulumu icin varsayilan CNI devre disi birakilir

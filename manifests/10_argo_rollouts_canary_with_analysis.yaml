@@ -1,0 +1,52 @@
+# Otomatik Prometheus Metrik Analizli ve Otomatik Geri Almali (Rollback) Argo Rollouts Canary Sablonu
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: payments-canary-rollout
+  namespace: production
+spec:
+  replicas: 10
+  strategy:
+    canary:
+      analysis:
+        templates:
+          - templateName: success-rate-analysis
+        args:
+          - name: service-name
+            value: payments-canary-svc
+      steps:
+        - setWeight: 20
+        - pause: { duration: 10m } # 10 dakika boyunca metrikleri incele
+        - setWeight: 50
+        - pause: { duration: 10m }
+        - setWeight: 100
+  selector:
+    matchLabels:
+      app: payments-service
+  template:
+    metadata:
+      labels:
+        app: payments-service
+    spec:
+      containers:
+        - name: payments
+          image: ghcr.io/company/payments:v3.1.0
+          ports:
+            - containerPort: 8080
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate-analysis
+  namespace: production
+spec:
+  metrics:
+    - name: success-rate
+      interval: 1m
+      successCondition: result[0] >= 0.99 # Basari orani %99'un altina duserse otomatik Rollback tetikle
+      failureLimit: 2
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring:9090
+          query: |
+            sum(rate(http_requests_total{status!~"5.*"}[2m])) / sum(rate(http_requests_total[2m]))
