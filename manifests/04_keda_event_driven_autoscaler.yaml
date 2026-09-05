@@ -1,0 +1,34 @@
+# Olay Odakli Otomatik Olceklendirme (KEDA): Kuyruk Boyutuna Gore 0'dan N'e Pod Olcekleme
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: rabbitmq-auth
+  namespace: processing
+spec:
+  secretTargetRef:
+    - key: host
+      name: rabbitmq-secret
+      parameter: host
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: order-worker-scaler
+  namespace: processing
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: order-processor
+  pollingInterval: 15
+  cooldownPeriod: 60
+  minReplicaCount: 0 # Kuyruk bosses sifira indir (Scale-to-Zero ile %100 maliyet tasarrufu)
+  maxReplicaCount: 30
+  triggers:
+    - type: rabbitmq
+      metadata:
+        queueName: orders-queue
+        mode: QueueLength
+        value: "20" # Her 20 bekleyen mesaj icin 1 yeni Pod baslat
+      authenticationRef:
+        name: rabbitmq-auth

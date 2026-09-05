@@ -1,0 +1,46 @@
+# Sifir Guven (Zero Trust) Ag Guvenligi: Default-Deny + L7 HTTP Metot Kisitlama + CoreDNS Izin
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all-ingress-egress
+  namespace: production
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: billing-api-l7-policy
+  namespace: production
+spec:
+  endpointSelector:
+    matchLabels:
+      app: billing-api
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: frontend
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+          rules:
+            http:
+              - method: "GET"
+                path: "/api/v1/invoices/.*"
+              - method: "POST"
+                path: "/api/v1/checkout"
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"

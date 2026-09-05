@@ -1,0 +1,52 @@
+# Prometheus Operator ServiceMonitor, Metrik Alarm Kurallari (PrometheusRule) ve Slack Bildirimleri
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: payment-service-monitor
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: payment-service
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: api-high-error-rate-alerts
+  namespace: monitoring
+spec:
+  groups:
+    - name: api-alerts
+      rules:
+        - alert: HighHttp5xxErrorRate
+          expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100 > 5
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "HTTP 5xx Hata Orani %5 Uzerinde!"
+            description: "Servis son 5 dakikadir yuksek oranda 5xx sunucu hatasi vermektedir."
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: slack-alerts
+  namespace: monitoring
+spec:
+  route:
+    groupBy: ['alertname', 'namespace']
+    groupWait: 30s
+    repeatInterval: 4h
+    receiver: 'slack-notifications'
+  receivers:
+    - name: 'slack-notifications'
+      slackConfigs:
+        - channel: '#k8s-critical-alerts'
+          apiURL:
+            name: alertmanager-slack-webhook
+            key: url
+          sendResolved: true

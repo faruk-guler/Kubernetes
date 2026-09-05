@@ -1,0 +1,21 @@
+# Spotify Backstage ve Port IDP Dahili Gelistirici Portali Yazilim Katalog Bileseni
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: payment-processing-service
+  description: "Kurumsal kredi karti ve sepet odeme mikroservisi"
+  annotations:
+    github.com/project-slug: "company/payment-processing-service"
+    backstage.io/techdocs-ref: "dir:."
+    prometheus.io/rule: "HighHttp5xxErrorRate"
+  tags:
+    - java
+    - spring-boot
+    - critical
+spec:
+  type: service
+  lifecycle: production
+  owner: payments-team
+  system: checkout-platform
+  providesApis:
+    - payment-grpc-api

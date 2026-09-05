@@ -1,0 +1,157 @@
+# Argo Rollouts ile Gelişmiş Dağıtım Yöntemleri
+
+Kubernetes'in yerleşik `Deployment` nesnesi, kademeli güncelleme (RollingUpdate) sırasında hata oranlarını denetleyemez veya otomatik geri alma (rollback) kararlarını metrik analizlerine göre veremez. **Argo Rollouts**, Kubernetes'e gelişmiş **Canary, Blue/Green ve A/B Testing** yetenekleri ekleyen, **Prometheus, Grafana Loki, Datadog** gibi izleme araçlarından aldığı metrikleri analiz ederek hatalı sürümleri otomatik olarak geri çeken (auto-abort) gelişmiş bir dağıtım denetleyicisidir.
+
+---
+
+## 1. Kurulum Adımları
+
+Argo Rollouts denetleyicisini ve komut satırı eklentisini (CLI Plugin) kurmak için:
+
+```bash
+# 1. Helm ile Denetleyici Kurulumu
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update
+
+helm install argo-rollouts argo/argo-rollouts \
+  --namespace argo-rollouts \
+  --create-namespace \
+  --set dashboard.enabled=true \
+  --set notifications.enabled=true
+
+# 2. Kubectl Plugin (Krew yardımıyla) Kurulumu:
+kubectl krew install argo-rollouts
+kubectl argo rollouts version
+```
+
+---
+
+## 2. Standart Deployment Nesnesini Rollout'a Dönüştürme
+
+Mevcut bir Deployment'ı Rollout yapısına geçirmek için `apiVersion` ve `kind` alanlarını güncellemeniz ve strateji adımlarını tanımlamanız yeterlidir.
+
+### Örnek `Rollout` Yapılandırması (`billing-rollout.yaml`)
+
+Dönüşüm sonrasında eski deployment'ın replica sayısını sıfırlayıp yönetimi Rollout'a devredin:
+
+```bash
+kubectl scale deployment billing-service --replicas=0 -n production
+```
+
+---
+
+## 3. Experiment (Deney) ile Paralel Sürüm Karşılaştırması
+
+Argo Rollouts'un en güçlü özelliklerinden biri, iki farklı sürümü (örneğin v2.0-stable ve v3.0-canary) gerçek kullanıcı trafiğinin küçük bir yüzdesinde karşılaştırıp hangisinin daha hızlı ve hatasız çalıştığını test etmeyi sağlayan **Experiment** kaynağıdır.
+
+### Örnek `Experiment` Tanımı
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Experiment
+metadata:
+  name: billing-baseline-vs-canary
+  namespace: production
+spec:
+  duration: 15m
+  templates:
+    - name: baseline
+      specRef: stable
+      replicas: 1
+    - name: canary
+      specRef: canary
+      replicas: 1
+  analyses:
+    - name: latency-check
+      templateName: http-latency-check
+```
+
+---
+
+## 4. Çoklu Analiz Kaynağı (AnalysisTemplate)
+
+Sürümün doğruluğunu test ederken tek bir kaynağa bağlı kalmak yerine, hem Prometheus'tan hata oranını çekebilir hem de Datadog veya Cloudwatch üzerindeki servis durumlarını aynı anda doğrulayabilirsiniz:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: multi-provider-analysis
+  namespace: production
+spec:
+  metrics:
+    - name: prometheus-error-rate
+      interval: 1m
+      successCondition: result[0] <= 0.01
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring:9090
+          query: sum(rate(http_requests_total{status=~"5.."}[2m])) / sum(rate(http_requests_total[2m]))
+    - name: datadog-latency
+      interval: 1m
+      provider:
+        datadog:
+          query: "avg:trace.http.request.duration{service:billing-service}"
+```
+
+---
+
+## 5. Pre/Post Promotion (Geçiş Öncesi ve Sonrası) Analizleri
+
+Özellikle Blue/Green dağıtımlarda, trafiği yeni ortama (Green) aktarmadan hemen önce (**Pre-Promotion**) entegrasyon testlerini çalıştırmak ve geçiş bittikten hemen sonra (**Post-Promotion**) performans analizlerini devreye almak için adım yapılandırmaları kullanılır:
+
+```yaml
+strategy:
+  blueGreen:
+    activeService: billing-prod
+    previewService: billing-preview
+    prePromotionAnalysis:
+      templates:
+        - templateName: integration-smoke-tests
+    postPromotionAnalysis:
+      templates:
+        - templateName: production-slo-monitor
+```
+
+---
+
+## 6. Slack Bildirimleri (Notifications)
+
+Rollout süreçlerindeki durum değişikliklerini (Örn: pause durumuna geçme, hata algılama ve rollback durumları) anlık olarak Slack kanalınıza iletmek için bildirimler kurgulanabilir:
+
+```yaml
+metadata:
+  annotations:
+    notifications.argoproj.io/subscribe.on-rollout-aborted.slack: k8s-deploy-alerts
+    notifications.argoproj.io/subscribe.on-rollout-completed.slack: k8s-deploy-alerts
+    notifications.argoproj.io/subscribe.on-rollout-paused.slack: k8s-deploy-alerts
+```
+
+---
+
+## 7. ArgoCD Entegrasyonu
+
+ArgoCD, Argo Rollouts nesnelerini yerel olarak tanır. Rollout güncellendiğinde, tüm adımlar başarıyla geçilip analizler olumlu sonuçlanana kadar ArgoCD uygulamayı "Progressing (İlerliyor)" durumunda gösterir. Rollout bittiğinde durum "Healthy (Sağlıklı)" olur.
+
+---
+
+## 8. Rollout CLI Yönetim ve Hata Ayıklama Komutları
+
+```bash
+# 1. Tüm aktif rollout durumlarını izleyin (Dinamik dashboard arayüzü)
+kubectl argo rollouts get rollout billing-service -n production --watch
+
+# 2. Manuel duraklatılmış (paused) bir rollout'u bir sonraki adıma geçirin (Promote)
+kubectl argo rollouts promote billing-service -n production
+
+# 3. Kademeli adımları es geçip doğrudan %100 yükleme yapın
+kubectl argo rollouts promote billing-service -n production --full
+
+# 4. Acil bir durumda güncellemeyi iptal edin ve anında kararlı sürüme geri dönün (Abort/Rollback)
+kubectl argo rollouts abort billing-service -n production
+kubectl argo rollouts undo billing-service -n production
+
+# 5. Görsel web arayüzünü (Dashboard) yerel bilgisayarınızda başlatın
+kubectl argo rollouts dashboard -n production
+# Tarayıcıda http://localhost:3100 adresini açın
+```

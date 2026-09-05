@@ -1,0 +1,14 @@
+# Kurumsal RKE2 Sunucu (Control-Plane) Yapilandirma Dosyasi (/etc/rancher/rke2/config.yaml)
+token: "K10secretTokenForHighAvailabilityClustering::server:prod"
+tls-san:
+  - "k8s-api.company.internal"
+  - "192.168.1.100"
+cni:
+  - "cilium"
+disable:
+  - "rke2-ingress-nginx" # Modern Gateway API veya Ingress-NGINX'i Helm ile yonetmek icin kapat
+profile: "cis" # CIS Benchmark sertifikali otomatik guvenlik sikilastirma
+write-kubeconfig-mode: "0640"
+etcd-snapshot-schedule: "0 */4 * * *"
+etcd-snapshot-retention: 28
+system-default-registry: ""

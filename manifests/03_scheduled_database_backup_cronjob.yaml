@@ -1,0 +1,48 @@
+# Otomatik Veritabani Yedekleme CronJob Sablonu (Concurrency ve Retention Destekli)
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-nightly-backup
+  namespace: database
+spec:
+  schedule: "0 2 * * *" # Her gece 02:00'da calistir
+  concurrencyPolicy: Forbid # Onceki yedek bitmeden yenisini baslatma
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 2 # Hata alirsa en fazla 2 kez tekrar dene
+      activeDeadlineSeconds: 1800 # 30 dakika icinde bitmezse gorevi sonlandir
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: pg-dump
+              image: postgres:17-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Veritabani yedekleme baslatiliyor..."
+                  pg_dump -h db-service -U postgres mydatabase | gzip > /backups/backup-$(date +%Y%m%d_%H%M%S).sql.gz
+                  echo "Yedek basariyla alindi."
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-credentials
+                      key: password
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 512Mi
+                limits:
+                  cpu: 1000m
+                  memory: 1Gi
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backups
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: nfs-backup-pvc

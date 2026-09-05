@@ -1,0 +1,47 @@
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: example-runner-deploy
+  namespace: actions-runner-system
+spec:
+  replicas: 1
+  template:
+    spec:
+      # Hangi depo (repository) için koşucu sağlanacağı
+      repository: example-user/example-repo
+      # Veya tüm organizasyon için:
+      # organization: example-org
+      
+      # GitHub Actions yaml'ındaki "runs-on: self-hosted" eşleşmesi için etiketler
+      labels:
+        - "self-hosted"
+        - "k8s-linux-amd64"
+        
+      # İsteğe bağlı: Runner'ın kaynak kısıtlamaları
+      resources:
+        requests:
+          cpu: "1"
+          memory: "2Gi"
+        limits:
+          cpu: "4"
+          memory: "8Gi"
+---
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: HorizontalRunnerAutoscaler
+metadata:
+  name: example-runner-autoscaler
+  namespace: actions-runner-system
+spec:
+  # Ölçeklendirilecek hedef
+  scaleTargetRef:
+    name: example-runner-deploy
+  
+  # Kapasite sınırları
+  minReplicas: 1
+  maxReplicas: 15
+  
+  # Ölçeklendirme metrikleri (Sıradaki iş yoğunluğuna göre)
+  metrics:
+  - type: PercentageRunnersBusy
+    scaleUpThreshold: '0.75'    # Runner'ların %75'i doluysa yenisini yarat
+    scaleDownThreshold: '0.25'  # Kullanım %25'e düşerse pod sayısını azalt

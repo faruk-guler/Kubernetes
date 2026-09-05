@@ -1,0 +1,36 @@
+# Sertlestirilmis containerd Calisma Zamani ve Private Registry Mirror Yapilandirmasi (/etc/containerd/config.toml)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: containerd-production-config
+  namespace: kube-system
+data:
+  config.toml: |
+    version = 2
+
+    [plugins."io.containerd.grpc.v1.cri"]
+      sandbox_image = "registry.k8s.io/pause:3.10"
+      max_concurrent_downloads = 10
+
+      [plugins."io.containerd.grpc.v1.cri".containerd]
+        default_runtime_name = "runc"
+        discard_unpacked_layers = true
+
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+          runtime_type = "io.containerd.runc.v2"
+          
+          # cgroupv2 destegi ve systemd cgroup yoneticisi (Zorunlu K8s Standardi)
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+            SystemdCgroup = true
+
+      # Guvenli Kurumsal Kayit Defteri (Registry Mirror) Yapilandirmasi
+      [plugins."io.containerd.grpc.v1.cri".registry]
+        config_path = "/etc/containerd/certs.d"
+
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+          endpoint = ["https://mirror.gcr.io", "https://registry-1.docker.io"]
+
+        [plugins."io.containerd.grpc.v1.cri".registry.configs."private-registry.company.internal".tls]
+          ca_file   = "/etc/containerd/certs.d/company-ca.crt"
+          cert_file = "/etc/containerd/certs.d/client.crt"
+          key_file  = "/etc/containerd/certs.d/client.key"

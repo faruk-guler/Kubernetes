@@ -1,0 +1,136 @@
+# Karmada ile Kurumsal Çoklu Küme (Multi-Cluster) Federasyonu ve Yönetimi
+
+Büyük ölçekli kurumsal altyapılarda, tüm uygulamaları tek bir devasa Kubernetes kümesinde çalıştırmak ciddi bir risk yönetimi açığı oluşturur. Bu nedenle günümüz altyapı tasarımlarında çoklu küme (Multi-Cluster) mimarileri standarttır.
+
+Kümeleri tek tek bağımsız yönetmenin yarattığı operasyonel yükü çözmek amacıyla, CNCF projesi olan **Karmada**, binlerce Kubernetes kümesini tek bir "Kontrol Düzlemi (Control Plane)" üzerinden, standart Kubernetes API'sine sadık kalarak yönetmenizi sağlar.
+
+---
+
+## 1. Neden Çoklu Küme Mimarisi?
+
+* **Hata Etki Alanını Daraltma (Blast Radius):** Tek bir kümede yaşanacak ağ veya DNS çökmesi tüm şirketi etkiler. Çoklu kümede ise bir küme çökerse diğerleri çalışmaya devam eder.
+* **Düşük Gecikme Süresi (Latency):** Kullanıcılara coğrafi olarak en yakın konumdaki (Örn: Avrupa, Asya, Amerika) kümeden hizmet verilmesi.
+* **Yasal Uyum (Compliance/GDPR):** Ülkelerin yasal kuralları gereği, yerel müşteri verilerinin ülke sınırları dışındaki sunucularda barındırılamaması.
+* **Ölçek Sınırları (Scale Limits):** Tek bir Kubernetes kümesinin düğüm (node) ve pod kapasite sınırlarını aşan devasa iş yükleri.
+
+---
+
+## 2. Karmada Kurulumu ve Küme Katılımı
+
+Karmada kontrol düzlemini yerel olarak kurmak ve yönetici CLI aracını yüklemek için:
+
+```bash
+# 1. Karmada CLI aracını kurun
+curl -s https://raw.githubusercontent.com/karmada-io/karmada/master/hack/install-cli.sh | sudo bash
+
+# 2. Karmada Kontrol Düzlemini Başlatın
+karmadactl init
+
+# 3. Workload kümelerini Karmada kontrolüne dahil edin (Join)
+karmadactl join cluster-europe --kubeconfig=/root/.kube/config --member-context=member1
+karmadactl join cluster-asia --kubeconfig=/root/.kube/config --member-context=member2
+```
+
+---
+
+## 3. PropagationPolicy (İş Yükü Yayılım Politikası)
+
+Karmada'da standart bir Kubernetes Deployment nesnesi oluşturduğunuzda, bu nesnenin hangi workload kümelerine, hangi kuralla (Örn: Eşit dağıt, sadece Avrupa'ya dağıt vb.) gönderileceğini **PropagationPolicy** CRD nesnesi belirler.
+
+### Karmada Yayılım Politikası (PropagationPolicy)
+
+```yaml
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: global-api-propagation
+  namespace: production
+spec:
+  resourceSelectors:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: payment-service
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - cluster-eu-central
+        - cluster-us-east
+        - cluster-ap-southeast
+    replicaScheduling:
+      replicaSchedulingType: Divided
+      replicaDivisionPreference: Weighted
+      weightPreference:
+        staticWeightList:
+          - targetCluster:
+              clusterNames: [cluster-eu-central]
+            weight: 50
+          - targetCluster:
+              clusterNames: [cluster-us-east]
+            weight: 30
+          - targetCluster:
+              clusterNames: [cluster-ap-southeast]
+            weight: 20
+```
+
+---
+
+## 4. OverridePolicy (Küme Bazlı Yapılandırma Ezme/Yama)
+
+Her kümeye aynı YAML'ı göndermek istesek de, bazı kümelerde (Örn: Asya kümesi) veritabanı IP adresi veya imaj etiketleri farklı olmak zorundadır. Bunu yönetmek için **OverridePolicy** kullanılır:
+
+```yaml
+apiVersion: policy.karmada.io/v1alpha1
+kind: OverridePolicy
+metadata:
+  name: asia-image-override
+  namespace: production
+spec:
+  resourceSelectors:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: payment-service
+  targetCluster:
+    clusterNames:
+      - cluster-ap-southeast
+  overriders:
+    plaintext:
+      - path: "/spec/template/spec/containers/0/image"
+        operator: replace
+        value: "registry.asia.company.com/payment-service:v1.0"
+```
+
+---
+
+## 5. Kümeler Arası Ağ Entegrasyonu
+
+Karmada ile dağıtılan podların farklı kümeler üzerinden birbiriyle konuşması için **Submariner** ağı entegre edilir. Submariner, Wireguard/IPSec tünelleri kurarak kümeler arası pod IP'lerinin yönlendirilmesini sağlar.
+*(Detaylı ağ ve DNS yapılandırmaları için bkz: Kümeler Arası Ağ)*
+
+---
+
+## 6. Global Load Balancing (Küresel Yük Dengeleme)
+
+Karmada, birden fazla kümede koşan uygulamalarınızın önüne tek bir ortak giriş noktası koymak için **MultiClusterIngress (MCI)** özelliğini sunar.
+
+MCI, bulut sağlayıcının (Örn: AWS Route53 GeoDNS veya Anycast IP) küresel yük dengeleyicisi ile konuşarak, kullanıcının DNS sorgusunu coğrafi olarak en yakın ve sağlıklı çalışan Kubernetes kümesine (Cluster) yönlendirir:
+
+```yaml
+apiVersion: networking.karmada.io/v1alpha1
+kind: MultiClusterIngress
+metadata:
+  name: global-store-mci
+  namespace: production
+spec:
+  ingressClassName: karmada-ingress
+  rules:
+    - host: store.company.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: payment-service
+                port:
+                  number: 80
+```
