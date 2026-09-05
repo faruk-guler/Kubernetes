@@ -125,34 +125,7 @@ Ve bir şey bozulduğunda paniklemeden önce şunu sorun: *"Kubernetes şu an ne
 
 ## 🗺️ Öğrenim Yol Haritası (Roadmap)
 
-Bu devasa bilgi yığınında kaybolmamak için dokümantasyonu aşağıdaki "Zero to Hero" sırasıyla okumanız tavsiye edilir:
-
-```text
-        [ BAŞLANGIÇ ]
-              │
-              ▼
-  [01_containers] ──> [02_getting_started] ──> [03_core]
-                                                    │
-  ┌─────────────────────────────────────────────────┘
-  │
-  ▼
-  [04_infrastructure] ──> [05_installations] ──> [06_networking]
-                                                                │
-  ┌─────────────────────────────────────────────────────────────┘
-  │
-  ▼
-  [07_storage] ──> [08_security] ──> [09_observability]
-                                                      │
-  ┌───────────────────────────────────────────────────┘
-  │
-  ▼
-  [10_gitops] ──> [11_platform] ──> [12_multicluster]
-                                                    │
-  ┌─────────────────────────────────────────────────┘
-  │
-  ▼
-  [13_ai] ──> [14_troubleshooting] ──> [15_migration] ──> [ SON ]
-```
+Bu devasa bilgi yığınında kaybolmamak için dokümantasyonu sırasıyla okumanız tavsiye edilir:
 
 ```text
 Teşekkürler:
