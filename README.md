@@ -127,8 +127,9 @@ Ve bir şey bozulduğunda paniklemeden önce şunu sorun: *"Kubernetes şu an ne
 
 Bu devasa bilgi yığınında kaybolmamak için dokümantasyonu sırasıyla okumanız tavsiye edilir:
 
+## Teşekkürler:
+
 ```text
-Teşekkürler:
 https://mstryoda.github.io/kubernetes-kitap/
 https://k8s-tr.github.io/k8s-docs/
 https://k8s.1w2.net/
