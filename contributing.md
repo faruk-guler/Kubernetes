@@ -5,7 +5,7 @@ Katkılarınızı issue veya pull request olarak gönderebilirsiniz.
 ## Pull request öncesi
 
 1. Değişikliği dar kapsamlı ve açıklanabilir tutun.
-2. Temiz ve sade olmsına özen gösterin.
+2. Temiz ve sade olmasına özen gösterin.
 
 
 ## Repoya eklenmemesi gerekenler
